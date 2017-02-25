@@ -6,7 +6,7 @@
         "type": "OpticalDistanceSensor"
       },
       "lineFollowVariables": {
-        "white": 0.996090,
+        "white": 0.80,
         "black" : 0.263930,
         "lowSpeed": 0.4,
         "highSpeed": 0.9,
@@ -28,7 +28,11 @@
       "portnum": 0,
       "driveSysInitialPower": 0.3,
       "driveSysTargetPower": 0.3,
-      "angleTolerance": 3.0
+      "angleTolerance": 3.0,
+      "straightPID_kp" : 0.025,
+      "turnPID_kp" : 0.005,
+      "PID_minSpeed" : -1.0,
+      "PID_maxSpeed" : 1.0
     },
     "__IMU_unused": {
       "name" : "navx",

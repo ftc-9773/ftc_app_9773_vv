@@ -107,14 +107,16 @@ public class NavigationChecks {
             navcheck = NavChecksSupported.CHECK_TARGET_YAW_GYRO;
             timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
             timer.reset();
-            prev_speed = prev_yaw = estimatedYaw = -1;
+            prev_yaw = estimatedYaw = -1;
+            prev_speed = 0;
         }
 
         @Override
         public void reset() {
             timer.reset();
-            prev_speed = prev_yaw = estimatedYaw = -1;
-            targetYaw = gyro.getYaw(); // Needs to be changed.
+            prev_yaw = estimatedYaw = -1;
+            prev_speed = 0;
+//            targetYaw = gyro.getYaw(); // Needs to be changed.
         }
 
         @Override
@@ -128,10 +130,10 @@ public class NavigationChecks {
                     prev_speed = navigationObj.distanceBetweenAngles(curYaw, prev_yaw) / timer.milliseconds();
                     prev_speed = (navigationObj.getSpinDirection(prev_yaw, curYaw) == Navigation.SpinDirection.CLOCKWISE) ?
                             prev_speed : -prev_speed;
-                }
+                } else { prev_speed = 0; }
                 prev_yaw = estimatedYaw = curYaw;
                 timer.reset();
-                DbgLog.msg("ftc9773: prev_speed=%f, prev_yaw=%f", prev_speed, prev_yaw);
+//                DbgLog.msg("ftc9773: prev_speed=%f, prev_yaw=%f", prev_speed, prev_yaw);
             }
             if (navigationObj.distanceBetweenAngles(estimatedYaw, targetYaw) <= angleTolerance) {
                 return (true);

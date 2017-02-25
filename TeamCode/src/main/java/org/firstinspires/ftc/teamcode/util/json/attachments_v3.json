@@ -24,7 +24,7 @@
         "__comment" : "The following 2 values have to be changed",
         "__scaleRangeMin" : 0.15,
         "__scaleRangeMax" : 0.549,
-        "needReverse" : true,
+        "needReverse" : false,
         "__fixedPositions" : true,
         "__comment_speed" : "speed is in the units of centimeters per second",
         "speed" : 14.5,
@@ -69,12 +69,12 @@
         "maxButton" : "gamepad1.right_trigger"
       },
       "liftServo":{
-        "motorType" : "servo",
+        "motorType" : "CRservo",
         "motor" : "Tetrix-HS755-HB",
         "__scaleRange" : "upright:120, expand: 230",
         "scaleRangeMin" : 0.47,
         "scaleRangeMax" : 0.902,
-        "needReverse" : false,
+        "needReverse" : true,
         "fixedPositions" : true,
         "minButton" : "gamepad1.left_bumper",
         "maxButton" : "gamepad1.right_bumper"

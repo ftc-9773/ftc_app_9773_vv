@@ -230,16 +230,14 @@ public class AutonomousActions {
                     e.printStackTrace();
                 }
                 DbgLog.msg("ftc9773: shootParticles: numberOfParticles to shoot = %d", numParticles);
-                if (numParticles > 0) {
+                if (numParticles == 1) {
                     robot.particleObj.releaseParticles();
-                    curOpMode.sleep(500);
+                    curOpMode.sleep(1000);
                     robot.particleObj.keepParticles();
-                    curOpMode.sleep(1200);
-                    if (numParticles > 1) {
-                        robot.particleObj.releaseParticles();
-                        curOpMode.sleep(1200);
-                        robot.particleObj.keepParticles();
-                    }
+                }else if (numParticles == 2) {
+                    robot.particleObj.releaseParticles();
+                    curOpMode.sleep(2000);
+                    robot.particleObj.keepParticles();
                 }
                 break;
             }

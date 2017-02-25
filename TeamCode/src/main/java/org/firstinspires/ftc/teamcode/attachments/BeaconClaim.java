@@ -182,7 +182,7 @@ public class BeaconClaim implements Attachment {
     }
     public void pushBeacon(){
         if (buttonServoCR != null) {
-            updateBeaconServoLength(BeaconClaimOperation.EXTEND);
+//            updateBeaconServoLength(BeaconClaimOperation.EXTEND);
 
             buttonServoCR.setPower(-1.0);
         } else if (buttonServoLinear != null) {
@@ -197,7 +197,7 @@ public class BeaconClaim implements Attachment {
     }
     public void retractBeacon(){
         if (buttonServoCR != null) {
-            updateBeaconServoLength(BeaconClaimOperation.RETRACT);
+//            updateBeaconServoLength(BeaconClaimOperation.RETRACT);
             buttonServoCR.setPower(1.0);
         } else if (buttonServoLinear != null) {
             lastOp = BeaconClaimOperation.RETRACT;
@@ -211,7 +211,7 @@ public class BeaconClaim implements Attachment {
     }
     public void idleBeacon(){
         if (buttonServoCR != null) {
-            updateBeaconServoLength(BeaconClaimOperation.NONE);
+//            updateBeaconServoLength(BeaconClaimOperation.NONE);
             buttonServoCR.setPower(0.0);
         } else if (buttonServoLinear != null) {
             lastOp = BeaconClaimOperation.NONE;
@@ -270,7 +270,7 @@ public class BeaconClaim implements Attachment {
         DbgLog.msg("ftc9773: timeToExtend=%f millis, lengthToExtend=%f cm",
                 timeToExtend, lengthToExtend);
         activateButtonServo(timeToExtend, lengthToExtend);
-        curOpMode.sleep(50);
+        curOpMode.sleep(100);
         deactivateButtonServo(timeToExtend, lengthToExtend);
     }
 
@@ -291,18 +291,27 @@ public class BeaconClaim implements Attachment {
     public boolean isBeaconRed() {
         int redValue = colorSensor1.red();
         int blueValue = colorSensor1.blue();
-        if (redValue >= 3 && ((redValue - blueValue) >= 2)) {
-            return true;
+        if (redValue > blueValue) {
+            return (true);
         } else {
-            return false;
+            return (false);
         }
+//        if (redValue >= 3 && ((redValue - blueValue) >= 2)) {
+//            return true;
+//        } else {
+//            return false;
+//        }
     }
 
     public boolean isBeaconBlue() {
         int redValue = colorSensor1.red();
         int blueValue = colorSensor1.blue();
-        return (blueValue >= 3 && ((blueValue - redValue) >= 2));
-
+//        return (blueValue >= 3 && ((blueValue - redValue) >= 2));
+        if (blueValue > redValue) {
+            return (true);
+        } else {
+            return (false);
+        }
     }
 
     public String checkBeaconColor() {
@@ -327,5 +336,6 @@ public class BeaconClaim implements Attachment {
     public double getStrokeLength() {
         return strokeLength;
     }
+
 
 }
