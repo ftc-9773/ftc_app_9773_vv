@@ -269,7 +269,7 @@ public class BeaconClaim implements Attachment {
         double timeToExtend = lengthToExtend * (1000 / buttonServoSpeed);
         DbgLog.msg("ftc9773: timeToExtend=%f millis, lengthToExtend=%f cm",
                 timeToExtend, lengthToExtend);
-        activateButtonServo(timeToExtend, lengthToExtend);
+        activateButtonServo(timeToExtend + 200, lengthToExtend);
         curOpMode.sleep(100);
         deactivateButtonServo(timeToExtend, lengthToExtend);
     }

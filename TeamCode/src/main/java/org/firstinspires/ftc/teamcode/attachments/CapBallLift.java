@@ -55,6 +55,10 @@ public class CapBallLift implements  Attachment {
             String motorType = liftServoObj.getString(key);
             if (motorType.equalsIgnoreCase("CRservo")) {
                 liftServoCR = curOpMode.hardwareMap.crservo.get("liftServo");
+                if (liftServoObj.getBoolean("needReverse")) {
+                    DbgLog.msg("ftc9773: Reversing the lift servo");
+                    liftServoCR.setDirection(CRServo.Direction.REVERSE);
+                }
             } else {
                 liftServo = curOpMode.hardwareMap.servo.get("liftServo");
                 liftServo.scaleRange(liftServoObj.getDouble("scaleRangeMin"),
@@ -76,7 +80,7 @@ public class CapBallLift implements  Attachment {
     public void autoPlacement(){
         //Unfolding
         unfoldFork();
-        curOpMode.sleep(500);
+        curOpMode.sleep(1000);
         idleFork();
         //raising
         applyPower(1);
