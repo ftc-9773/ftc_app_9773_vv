@@ -30,6 +30,17 @@
       "maxDistance2" : -5.0, "motorSpeed" : 0.3},
     {"type" : "Programmed", "value" : "claimAbeacon"}
   ],
+  "TownsendHarris_Red_ParticlesAndPark2" : [
+    {"type" : "Programmed", "value" : "startPartAcc"},
+    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0, "inches" : 9.0, "motorSpeed" : 0.5},
+    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 320.0, "motorSpeed" : 0.4},
+    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 320.0, "inches" : 27.0, "motorSpeed" : 0.5},
+    {"type" : "Programmed", "value" : "Sleep","milliSeconds": 2000},
+    {"type" : "Programmed", "value" : "shootParticles", "numberOfParticles" : 2},
+    {"type" : "programmed", "value" : "stopPartAcc"},
+    {"type" : "Programmed", "value" : "Sleep","milliSeconds": 1000},
+    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 320.0, "inches" : 19.0, "motorSpeed" : 0.75}
+  ],
   "TownsendHarrisBlue" : [
     {"type" : "Programmed", "value" : "startPartAcc"},
     {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0, "inches" : 30.0, "motorSpeed" : 0.75},
@@ -62,13 +73,15 @@
       "maxDistance2" : -5.0, "motorSpeed" : 0.3},
     {"type" : "Programmed", "value" : "claimAbeacon"}
   ],
-  "TownsendHarrisBlue_Blue_ParticlesAndPark2" : [
+  "TownsendHarris_Blue_ParticlesAndPark2" : [
     {"type" : "Programmed", "value" : "startPartAcc"},
     {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0, "inches" : 9.0, "motorSpeed" : 0.5},
     {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 35.0, "motorSpeed" : 0.3},
     {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 35.0, "inches" : 30.0, "motorSpeed" : 0.5},
+    {"type" : "Programmed", "value" : "Sleep","milliSeconds": 2000},
     {"type" : "Programmed", "value" : "shootParticles", "numberOfParticles" : 2},
     {"type" : "programmed", "value" : "stopPartAcc"},
+    {"type" : "Programmed", "value" : "Sleep","milliSeconds": 1000},
     {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 45.0, "inches" : 15.0, "motorSpeed" : 0.75}
   ],
   "testing2" : [
