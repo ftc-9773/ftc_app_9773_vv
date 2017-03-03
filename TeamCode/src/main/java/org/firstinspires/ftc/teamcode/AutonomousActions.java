@@ -118,7 +118,6 @@ public class AutonomousActions {
                 break;
             }
             case "TurnDegrees": {
-                DbgLog.msg("ftc9773: currentYaw = %f", robot.navigation.gyro.getYaw());
                 double degrees = 0.0;
                 double speed = robot.navigation.turnMaxSpeed;
                 try {
@@ -130,7 +129,11 @@ public class AutonomousActions {
                     e.printStackTrace();
                 }
                 //robot.navigation.navxMicro.turnRobot(degrees, speed, navigationChecks);
-                DbgLog.msg("ftc9773: currentYaw = %f", robot.navigation.gyro.getYaw());
+                double curYaw = robot.navigation.gyro.getYaw();
+                double targerYaw = robot.navigation.getTargetYaw(curYaw, degrees);
+                DbgLog.msg("ftc9773: currentYaw = %f, degrees=%f, speed=%f, targetYaw=%f",
+                        curYaw, degrees, speed, targerYaw);
+                robot.navigation.setRobotOrientation(targerYaw, speed);
                 break;
             }
             case "TurnUntilWhiteLine": {

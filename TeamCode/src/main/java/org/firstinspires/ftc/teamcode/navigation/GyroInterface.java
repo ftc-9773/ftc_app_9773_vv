@@ -13,10 +13,7 @@ public interface GyroInterface {
     void testAndSetGyroStatus();
     double getUpdateCount();
     double getAngleTolerance();
-
-    void setRobotOrientation(double targetAngle, double speed, NavigationChecks navigationChecks);
-
-    void turnRobot(double angle, double speed, NavigationChecks navigationChecks);
+    //ToDo:  Create a close() method
 
     void goStraightPID(boolean driveBackwards, double degrees, float speed);
 }

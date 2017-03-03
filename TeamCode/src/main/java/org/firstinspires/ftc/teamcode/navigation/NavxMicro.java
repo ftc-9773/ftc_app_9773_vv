@@ -128,7 +128,7 @@ public class NavxMicro implements GyroInterface {
         return getModifiedYaw();
     }
 
-    public double getModifiedYaw() {
+    private double getModifiedYaw() {
         double newYaw = 0.0;
         double curYaw = navx_device.getYaw();
         // Note:  The navx outputs values from 0 to 180 degrees and -180 to 0 degrees as the
@@ -146,6 +146,8 @@ public class NavxMicro implements GyroInterface {
         return ((double)navx_device.getPitch());
     }
 
+    // Todo: Implement close() to call AHRS.close() when exiting the opmode
+
     @Override
     public boolean isGyroWorking() {
         return navxIsWorking();
@@ -161,94 +163,6 @@ public class NavxMicro implements GyroInterface {
             navxYaw = modifiedYaw;
         }
         return (navxYaw);
-    }
-
-    @Override
-    public void setRobotOrientation(double targetYaw, double speed, NavigationChecks navigationChecks) {
-        // The orientation is with respect to the initial autonomous starting position
-        // The initial orientation of the robot at the beginning of the autonomous period
-        // is '0'. targetAngle is between 0 to 360 degrees.
-        double curYaw = getModifiedYaw();
-        double yawDiff;
-        double diff = targetYaw - curYaw;
-        double angleToTurn = diff>180 ? diff-360 : diff<-180 ? diff+360 : diff;
-//        turnRobot(angleToTurn, speed, navigationChecks);
-        double rightPower, leftPower;
-        if (angleToTurn > 0 && angleToTurn < 360) {
-            // Spin clockwise
-            leftPower = speed;
-            rightPower = -1 * leftPower;
-        }
-        else if (angleToTurn < 0 && angleToTurn > -360) {
-            // Spin counter clockwise
-            rightPower = speed;
-            leftPower = -1 * rightPower;
-        } else {
-            DbgLog.msg("ftc9773: angle %f is invalid!", angleToTurn);
-            return;
-        }
-        DbgLog.msg("ftc9773: power left = %f, right = %f",leftPower, rightPower);
-        robot.instrumentation.reset();
-        while (!navigationChecks.stopNavigation()) {
-            this.robot.driveSystem.turnOrSpin(leftPower, rightPower);
-            robot.instrumentation.addInstrData();
-            yawDiff = navigation.distanceBetweenAngles(getModifiedYaw(), targetYaw);
-            if (yawDiff <= angleTolerance)
-                break;
-        }
-        this.robot.driveSystem.stop();
-        robot.instrumentation.printToConsole();
-    }
-
-    @Override
-    public void turnRobot(double angle, double speed, NavigationChecks navigationChecks) {
-        double leftPower=0.0, rightPower=0.0;
-        double startingYaw, targetYaw, yawDiff;
-        double min_angleToTurn=0.0;
-//        LoopStatistics instr = new LoopStatistics();
-        if (angle > 0 && angle < 360) {
-            // Spin clockwise
-            leftPower = speed;
-            rightPower = -1 * leftPower;
-        }
-        else if (angle < 0 && angle > -360) {
-            // Spin counter clockwise
-            rightPower = speed;
-            leftPower = -1 * rightPower;
-        } else {
-            DbgLog.msg("ftc9773: angle %f is invalid!", angle);
-            return;
-        }
-
-        // Note the current yaw value
-        startingYaw = getModifiedYaw();
-        min_angleToTurn = Math.abs(angle) - angleTolerance;
-        targetYaw = startingYaw + angle;
-        if (targetYaw > 360) {
-            targetYaw %= 360;
-        } else if (targetYaw < 0) {
-            targetYaw += 360;
-        }
-        DbgLog.msg("ftc9773: power left = %f, right = %f",leftPower, rightPower);
-        DbgLog.msg("ftc9773: raw Yaw = %f, Starting yaw = %f, Current Yaw = %f, targetYaw = %f",
-                navx_device.getYaw(), startingYaw, getModifiedYaw(), targetYaw);
-
-//        instr.startLoopInstrumentation();
-        robot.instrumentation.reset();
-        while (curOpMode.opModeIsActive() && !navigationChecks.stopNavigation()) {
-            this.robot.driveSystem.turnOrSpin(leftPower,rightPower);
-//            instr.updateLoopInstrumentation();
-            robot.instrumentation.addInstrData();
-            yawDiff = navigation.distanceBetweenAngles(getModifiedYaw(), startingYaw);
-            if (yawDiff > min_angleToTurn)
-                break;
-            //DbgLog.msg("ftc9773: yawDiff=%f", yawDiff);
-        }
-
-        DbgLog.msg("ftc9773: angle = %f", angle);
-        this.robot.driveSystem.stop();
-//        instr.printLoopInstrumentation();
-        robot.instrumentation.printToConsole();
     }
 
     @Override
