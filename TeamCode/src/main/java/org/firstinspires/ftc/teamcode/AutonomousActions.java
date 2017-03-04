@@ -26,6 +26,7 @@ public class AutonomousActions {
     LinearOpMode curOpMode;
     public String allianceColor;
     AutonomousOptionsReader autoCfg;
+    AutonomousOptionsReader autoCfg2;
     String replayFilesDir;
     DriveSystem driveSystem;
     final double CM2INCHES = 0.3937;
@@ -421,12 +422,41 @@ public class AutonomousActions {
         }
     }
 
+    public void invokeSubmethod(String submethodName, JSONObject actionObj2) throws InterruptedException {
+        int len2 = autoCfg2.actions.length();
+        String replayFile;
+        String methodName;
+//        JSONObject actionObj2;
+        for(int i =0; i<len2 && curOpMode.opModeIsActive(); i++){
+            try {
+                actionObj2 = autoCfg2.getAction(i);
+                String key = JsonReader.getRealKeyIgnoreCase(actionObj2, "type");
+                if (actionObj2.getString(key).equalsIgnoreCase("Replay")) {
+                    key = JsonReader.getRealKeyIgnoreCase(actionObj2, "value");
+                    replayFile = this.replayFilesDir + actionObj2.getString(key);
+                    DbgLog.msg("ftc9773: Replaying the file %s", replayFile);
+                    replayFileAction(replayFile);
+                }
+                else if (actionObj2.getString(key).equalsIgnoreCase("Programmed")) {
+                    key = JsonReader.getRealKeyIgnoreCase(actionObj2, "value");
+                    methodName = actionObj2.getString(key);
+                    DbgLog.msg("ftc9773: Invoking method: %s", methodName);
+                    invokeMethod(methodName, actionObj2);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public void doActions() throws InterruptedException {
         int len = autoCfg.actions.length();
+//        int len2 = autoCfg2.actions.length();
         JSONObject actionObj;
 
         String replayFile;
         String methodName;
+        String submethodName;
 //        DbgLog.msg("ftc9773: Number of autonomous actions = %d", len);
         for (int i =0; i<len && curOpMode.opModeIsActive(); i++) {
             DbgLog.msg("ftc9773: i=%d", i);
@@ -445,11 +475,17 @@ public class AutonomousActions {
                     DbgLog.msg("ftc9773: Invoking method: %s", methodName);
                     invokeMethod(methodName,actionObj);
                 }
+                else if (actionObj.getString(key).equalsIgnoreCase("Submethod")){
+                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "value");
+                    submethodName = actionObj.getString(key);
+                    autoCfg2 = new AutonomousOptionsReader(JsonReader.autonomousOptFile, submethodName);
+                    DbgLog.msg("ftc9773: Invoking submethod: %s", submethodName);
+                    invokeSubmethod(submethodName, autoCfg2.jsonRoot);//TODO: check action object
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
     }
-
 
 }
