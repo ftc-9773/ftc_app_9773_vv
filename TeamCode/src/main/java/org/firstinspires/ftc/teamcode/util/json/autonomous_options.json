@@ -1,6 +1,6 @@
 {
   "TownsendHarrisRed" : [
-    {"type" : "Submethod", "value" : "goAndClaimBeacon"}
+    {"type" : "Submethod", "value" : "verifyBeaconColorOnly"}
   ],
   "TownsendHarris_Red_ParticlesAndPark2" : [
     {"type" : "Programmed", "value" : "startPartAcc"},
