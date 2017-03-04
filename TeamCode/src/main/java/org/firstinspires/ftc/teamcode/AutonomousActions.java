@@ -422,11 +422,11 @@ public class AutonomousActions {
         }
     }
 
-    public void invokeSubmethod(String submethodName, JSONObject actionObj2) throws InterruptedException {
+    public void invokeSubmethod() throws InterruptedException {
         int len2 = autoCfg2.actions.length();
         String replayFile;
         String methodName;
-//        JSONObject actionObj2;
+        JSONObject actionObj2;
         for(int i =0; i<len2 && curOpMode.opModeIsActive(); i++){
             try {
                 actionObj2 = autoCfg2.getAction(i);
@@ -480,7 +480,7 @@ public class AutonomousActions {
                     submethodName = actionObj.getString(key);
                     autoCfg2 = new AutonomousOptionsReader(JsonReader.autonomousOptFile, submethodName);
                     DbgLog.msg("ftc9773: Invoking submethod: %s", submethodName);
-                    invokeSubmethod(submethodName, autoCfg2.jsonRoot);//TODO: check action object
+                    invokeSubmethod();//TODO: check action object
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
