@@ -402,7 +402,7 @@ public class AutonomousActions {
                     curOpMode.sleep(20);
                     distanceFromWall = robot.navigation.rangeSensor.getDistance(DistanceUnit.CM);
                 }
-                if (Math.abs(targetDistance - distanceFromWall) > distTolerance) {
+                if ((Math.abs(targetDistance - distanceFromWall) > distTolerance) ) {
                     distanceToShift = CM2INCHES * (targetDistance - distanceFromWall);
                     DbgLog.msg("ftc9773: targetDistance=%f cm, moveDistance=%f, distanceFromWall=%f cm, tolerance = %f cm, distanceToShift=%f inches, motorSpeed=%f, returnToSamePos=%b",
                             targetDistance, moveDistance, distanceFromWall, distTolerance,

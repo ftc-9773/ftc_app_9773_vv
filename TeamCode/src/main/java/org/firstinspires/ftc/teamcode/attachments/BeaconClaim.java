@@ -136,6 +136,7 @@ public class BeaconClaim implements Attachment {
                     buttonServoSpeed, strokeLength);
         }
         if (coloSensor1Obj != null) {
+            DbgLog.msg("ftc9773: color sensor not null");
             colorSensor1 = curOpMode.hardwareMap.get(ModernRoboticsI2cColorSensor.class, "colorSensor1");
             // "blink" the color sensor so that we can visually see that it is working
             colorSensor1.enableLed(false);

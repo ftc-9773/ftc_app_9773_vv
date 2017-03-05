@@ -3,6 +3,6 @@
   "__Comment" : "startingPosition can be 1 or 2",
   "startingPosition" : 1,
   "enableBackGroundTasks" : false,
-  "autonomousOption" : "TownsendHarrisRed",
+  "autonomousOption" : "test1",
   "robot" : "2017_2_26_TownsendHarris_Robot"
 }

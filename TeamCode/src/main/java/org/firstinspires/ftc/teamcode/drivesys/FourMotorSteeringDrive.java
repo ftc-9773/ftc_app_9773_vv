@@ -325,21 +325,21 @@ public class FourMotorSteeringDrive extends DriveSystem {
 //        DbgLog.msg("ftc9773: Motor = %s, curPos = %d, isZeroPos = %b", motor.toString(), curPos, motor==motorL1 ? L1IsZero : motor==motorR1 ? R1IsZero : motor==motorL2 ? L2IsZero : R2IsZero);
         if(motor==motorL1 && L1IsZero) {
 //            DbgLog.msg("ftc9773: Motor = L1, curPos = %d, isZeroPos = %b", curPos, L1IsZero);
-            if(L1Timer.milliseconds()>1000) L1IsZero = false;
+            if(L1Timer.milliseconds()>100) L1IsZero = false;
             skipWhileLoop = true;}
         if(motor==motorL2 && L2IsZero) {
 //            DbgLog.msg("ftc9773: Motor = L2, curPos = %d, isZeroPos = %b", curPos, L2IsZero);
-            if(L2Timer.milliseconds()>1000) L2IsZero = false;
+            if(L2Timer.milliseconds()>100) L2IsZero = false;
             skipWhileLoop = true;
         }
         if(motor==motorR1 && R1IsZero) {
 //            DbgLog.msg("ftc9773: Motor = R1, curPos = %d, isZeroPos = %b",  curPos, R1IsZero);
-            if(R1Timer.milliseconds()>1000) R1IsZero = false;
+            if(R1Timer.milliseconds()>100) R1IsZero = false;
             skipWhileLoop = true;
         }
         if(motor==motorR2 && R2IsZero) {
 //            DbgLog.msg("ftc9773: Motor = R2, curPos = %d, isZeroPos = %b", curPos, R2IsZero);
-            if(R2Timer.milliseconds()>1000) R2IsZero = false;
+            if(R2Timer.milliseconds()>100) R2IsZero = false;
             skipWhileLoop = true;
         }
         if (skipWhileLoop) return curPos;
