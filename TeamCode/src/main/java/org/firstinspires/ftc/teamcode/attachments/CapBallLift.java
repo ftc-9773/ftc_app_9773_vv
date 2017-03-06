@@ -70,7 +70,7 @@ public class CapBallLift implements  Attachment {
                 liftServo.setPosition(1);
             }
             liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         } catch (JSONException e) {
             e.printStackTrace();
