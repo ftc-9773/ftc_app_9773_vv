@@ -152,7 +152,5 @@ public abstract class DriveSystem {
     public void testEncoders(){return;}
 
     public abstract void scalePower(double multiplier);
-    public abstract double getScaleMultiplier();
-    public abstract void reverseTeleop();
 
 }

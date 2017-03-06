@@ -21,18 +21,15 @@ public class CapBallLift implements  Attachment {
     FTCRobot robot;
     LinearOpMode curOpMode;
     DcMotor liftMotor;
-    CRServo liftServoCR = null;
-    Servo liftServo = null;
-    public boolean runToPosition = false;
-    public boolean lockLift = false;
-    public  boolean useEncoders = false;
-    public int downPosition, midPosition, upPosition;
+    CRServo liftServoCR = null,crownServoCR=null;
+    Servo liftServo = null, crownServo= null;
+    boolean lockLift = false;
 
 
     public CapBallLift(FTCRobot robot, LinearOpMode curOpMode, JSONObject rootObj) {
         String key;
         JSONObject liftObj = null;
-        JSONObject motorsObj = null, liftMotorObj = null, liftServoObj=null;
+        JSONObject motorsObj = null, liftMotorObj = null, liftServoObj=null, crownServoObj=null;
 
         this.robot = robot;
         this.curOpMode = curOpMode;
@@ -43,7 +40,6 @@ public class CapBallLift implements  Attachment {
             motorsObj = liftObj.getJSONObject(key);
             key = JsonReader.getRealKeyIgnoreCase(motorsObj, "liftMotor");
             liftMotorObj = motorsObj.getJSONObject(key);
-            useEncoders = liftMotorObj.getBoolean("useEncoders");
             liftMotor = curOpMode.hardwareMap.dcMotor.get("liftMotor");
             if (liftMotorObj.getBoolean("needReverse")) {
                 DbgLog.msg("ftc9773: Reversing the lift servo");
@@ -52,9 +48,6 @@ public class CapBallLift implements  Attachment {
             liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             double maxSpeed = liftMotorObj.getDouble("maxSpeed");
             liftMotor.setMaxSpeed((int)(liftMotor.getMaxSpeed() * maxSpeed));
-            downPosition = liftMotorObj.getInt("downPosition");
-            midPosition = liftMotorObj.getInt("midPosition");
-            upPosition = liftMotorObj.getInt("upPosition");
 
             key = JsonReader.getRealKeyIgnoreCase(motorsObj, "liftServo");
             liftServoObj = motorsObj.getJSONObject(key);
@@ -76,8 +69,27 @@ public class CapBallLift implements  Attachment {
                 }
                 liftServo.setPosition(1);
             }
+            key = JsonReader.getRealKeyIgnoreCase(motorsObj, "crownServo");
+            crownServoObj = motorsObj.getJSONObject(key);
+            key = JsonReader.getRealKeyIgnoreCase(crownServoObj,"motorType");
+            String crownMotorType = crownServoObj.getString(key);
+            if (crownMotorType.equalsIgnoreCase("CRServo")){
+                crownServoCR = curOpMode.hardwareMap.crservo.get("crownServo");
+                if (crownServoObj.getBoolean("needReverse")){
+                    DbgLog.msg("ftc9773: Reversing the crown servo");
+                    crownServoCR.setDirection(CRServo.Direction.REVERSE);
+                }
+            } else {
+                crownServo = curOpMode.hardwareMap.servo.get("crownServo");
+                crownServo.scaleRange(crownServoObj.getDouble("scaleRangeMin"), crownServoObj.getDouble("scaleRangeMax"));
+                if (crownServoObj.getBoolean("needReverse")){
+                    DbgLog.msg("ftc9773: Reversing the crown servo");
+                    crownServo.setDirection(Servo.Direction.REVERSE);
+                }
+                crownServo.setPosition(1);
+            }
+
             liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         } catch (JSONException e) {
@@ -88,19 +100,23 @@ public class CapBallLift implements  Attachment {
     public void autoPlacement(){
         //Unfolding
         unfoldFork();
-        curOpMode.sleep(1000);
+        curOpMode.sleep(700);
         idleFork();
         //raising
-        goToMidPosition();
+        applyPower(1);
+        curOpMode.sleep(500);
+        applyPower(0);
         //lowering
-        goToDownPosition();
+        applyPower(-1);
+        curOpMode.sleep(500);
+        applyPower(0);
     }
 
     public void applyPower(double power){
-        if (!runToPosition){
+        if (!lockLift){
             liftMotor.setPower(power);
         }
-        else if (runToPosition || lockLift){
+        else if (lockLift){
             if(liftMotor.getMode() != DcMotor.RunMode.RUN_TO_POSITION) {
                 liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             }
@@ -110,137 +126,75 @@ public class CapBallLift implements  Attachment {
     public void lockLiftMotor(){
         lockLift = true;
         liftMotor.setTargetPosition(liftMotor.getCurrentPosition());
-        if(liftMotor.getMode() != DcMotor.RunMode.RUN_TO_POSITION) {
-            liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        }
-        liftMotor.setPower(1);
     }
     public void unlockLiftMotor(){
-        runToPosition = false;
         lockLift = false;
-        liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
     public void unfoldFork(){
-        if (liftServoCR != null) {
-            liftServoCR.setPower(-1);
-        } else {
-            liftServo.setPosition(1);
-        }
+        liftServoCR.setPower(-1);
     }
     public void foldFork(){
-        if (liftServoCR != null) {
-            liftServoCR.setPower(1);
-        } else {
-            liftServo.setPosition(0);
-        }
+        liftServoCR.setPower(1);
     }
     public void idleFork(){
+        liftServoCR.setPower(0);
+    }
+
+    public void activateCrown(){
+        if (crownServo != null){
+            crownServo.setPosition(0);
+        } else if (crownServoCR != null){
+            crownServoCR.setPower(1);
+        }
+    }
+    public void deactivateCrown(){
+        if (crownServo != null){
+            crownServo.setPosition(1);
+        } else if (crownServoCR != null){
+            crownServoCR.setPower(-1);
+        }
+    }
+    public void idleCrown(){
+        if (crownServoCR != null){
+            crownServoCR.setPower(0);
+        }
+    }
+
+    @Override
+    public void getAndApplyDScmd() {
+        float power;
+
+        power = -curOpMode.gamepad2.right_stick_y;
+
+        applyPower(power);
+
+        if(curOpMode.gamepad2.right_bumper){
+            lockLiftMotor();
+        }
+        if (curOpMode.gamepad2.left_bumper){
+            unlockLiftMotor();
+        }
+
+
         if (liftServoCR != null) {
-            liftServoCR.setPower(0);
+            if (liftServoCR!= null && curOpMode.gamepad2.a) {
+                autoPlacement();
+            } else if (liftServoCR !=null && curOpMode.gamepad2.y) {
+                foldFork();
+            } else if (liftServoCR != null && curOpMode.gamepad2.a && (curOpMode.gamepad2.left_trigger != 0.0)) {
+                unfoldFork();
+            } else {
+                idleFork();
+            }
         }
-    }
-    public void goToDownPosition(){
-        runToPosition = true;
-        liftMotor.setTargetPosition(downPosition);
-        if(liftMotor.getMode() != DcMotor.RunMode.RUN_TO_POSITION) {
-            liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        }
-        liftMotor.setPower(1);
-        curOpMode.sleep(500);
-    }
-    public void goToMidPosition(){
-        runToPosition = true;
-        liftMotor.setTargetPosition(midPosition);
-        if(liftMotor.getMode() != DcMotor.RunMode.RUN_TO_POSITION) {
-            liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        }
-        liftMotor.setPower(1);
-        while (liftMotor.isBusy()){
-            curOpMode.idle();
-        }
-    }
-    public void gotToUpPosition(){
-        runToPosition = true;
-        liftMotor.setTargetPosition(upPosition);
-        if(liftMotor.getMode() != DcMotor.RunMode.RUN_TO_POSITION) {
-            liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        }
-        liftMotor.setPower(1);
-        curOpMode.sleep(500);
-    }
-    public boolean isAtDownRange(){
-        int curPosition = liftMotor.getCurrentPosition();
-        int lowerBound = downPosition - 1680;
-        int upperBound = downPosition + 1680;
 
-        if (curPosition < lowerBound || curPosition > upperBound){
-            return false;
+        if (curOpMode.gamepad2.dpad_left){
+            activateCrown();
+        } else if (curOpMode.gamepad2.dpad_right){
+            deactivateCrown();
         } else {
-            return true;
+            idleCrown();
         }
     }
-    public boolean isAtMidRange(){
-        int curPosition = liftMotor.getCurrentPosition();
-        int lowerBound = downPosition + 1681;
-        int upperBound = (upPosition /2) - 1;
-
-        if (curPosition < lowerBound || curPosition > upperBound){
-            return false;
-        } else {
-            return true;
-        }
-    }
-    public boolean isAtUpRange(){
-        int curPosition = liftMotor.getCurrentPosition();
-        int lowerBound = upPosition / 2;
-
-        if (curPosition < lowerBound ){
-            return false;
-        } else {
-            return true;
-        }
-    }
-    public boolean reachedDownPosition(){
-        int curPosition = liftMotor.getCurrentPosition();
-        int lowerBound = downPosition - 100;
-        int upperBound = downPosition + 100;
-
-        if (curPosition < lowerBound || curPosition > upperBound){
-            return false;
-        } else {
-            return true;
-        }
-    }
-    public boolean reachedMidPosition(){
-        int curPosition = liftMotor.getCurrentPosition();
-        int lowerBound = midPosition - 100;
-        int upperBound = midPosition + 100;
-
-        if (curPosition < lowerBound || curPosition > upperBound){
-            return false;
-        } else {
-            return true;
-        }
-    }
-    public boolean reachedUpPosition(){
-        int curPosition = liftMotor.getCurrentPosition();
-        int lowerBound = upPosition - 100;
-        int upperBound = upPosition + 100;
-
-        if (curPosition < lowerBound || curPosition > upperBound){
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    public double getCurrentPower(){
-        return liftMotor.getPower();
-    }
-
-    public double getCurrentPosition() {
-        return liftMotor.getCurrentPosition();
-    }
-
-
 }

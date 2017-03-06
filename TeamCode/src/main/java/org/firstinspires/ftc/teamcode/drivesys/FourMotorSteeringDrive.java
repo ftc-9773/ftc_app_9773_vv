@@ -28,7 +28,6 @@ public class FourMotorSteeringDrive extends DriveSystem {
     boolean L1IsZero, L2IsZero, R1IsZero, R2IsZero;
     ElapsedTime L1Timer, L2Timer, R1Timer, R2Timer;
     double scaleMultiplier = 1.0;
-    int reverseMultiplier = 1;
 
     public class ElapsedEncoderCounts implements DriveSystem.ElapsedEncoderCounts {
         long encoderCountL1;
@@ -218,8 +217,8 @@ public class FourMotorSteeringDrive extends DriveSystem {
 
     @Override
     public void drive(float speed, float direction) {
-        double left = ((reverseMultiplier*speed + direction) * frictionCoefficient) * scaleMultiplier;
-        double right = ((reverseMultiplier*speed - direction) * frictionCoefficient) * scaleMultiplier;
+        double left = ((speed + direction) * frictionCoefficient) * scaleMultiplier;
+        double right = ((speed - direction) * frictionCoefficient) * scaleMultiplier;
 
         if (prevPowerL1 != left) {
             motorL1.setPower(left);
@@ -529,17 +528,7 @@ public class FourMotorSteeringDrive extends DriveSystem {
 
         return (connected);
     }
-
-    @Override
     public void scalePower(double scaleMultiplier){
         this.scaleMultiplier = scaleMultiplier;
-    }
-
-    @Override
-    public double getScaleMultiplier(){ return scaleMultiplier;}
-
-    @Override
-    public void reverseTeleop(){
-        reverseMultiplier *= -1;
     }
 }
