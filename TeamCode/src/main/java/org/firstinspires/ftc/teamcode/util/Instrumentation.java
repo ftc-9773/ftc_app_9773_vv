@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.util;
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -10,6 +11,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.drivesys.DriveSystem;
 import org.firstinspires.ftc.teamcode.navigation.GyroInterface;
+import org.firstinspires.ftc.teamcode.navigation.LineFollow;
 import org.firstinspires.ftc.teamcode.navigation.Navigation;
 
 import java.text.SimpleDateFormat;
@@ -27,16 +29,21 @@ public class Instrumentation {
     public enum InstrumentationID {LOOP_RUNTIME, RANGESENSOR_CM, NAVX_DEGREES, NAVX_YAW_MONITOR}
     public enum LoopType {DRIVE_TO_DISTANCE, DRIVE_UNTIL_WHITELINE, DRIVE_TILL_BEACON, TURN_ROBOT}
     private List<InstrBaseClass> instrObjects = new ArrayList<InstrBaseClass>();
-    public String loopRuntimeLog, rangeSensorLog, gyroLog;
+    public String loopRuntimeLog, rangeSensorLog, gyroLog, odsLog;
 
     public class InstrBaseClass {
         public InstrumentationID instrID;
         public int iterationCount;
+        public String description;
         public void reset() {return;}
         public void addInstrData() {return;}
         public void writeToFile() {return;}
         public void printToConsole() {return;}
         public void closeLog() {return;}
+        public void setDescription(String description) {
+            this.description = description;
+            return;
+        }
     }
 
     public class LoopRuntime extends InstrBaseClass {
@@ -90,8 +97,8 @@ public class Instrumentation {
         @Override
         public void writeToFile() {
             avgTime = totalTime / iterationCount;
-            String strToWrite = String.format("ftc9773: Timestamp:%s, totalTime=%f, minTime=%f, " +
-                    "avgTime=%f, maxTime=%f, count=%d",
+            String strToWrite = String.format("Timestamp:, %s, totalTime=, %f, minTime=%, f, " +
+                    "avgTime=, %f, maxTime=, %f, count=, %d",
                     new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()),
                     totalTime, minTime, avgTime, maxTime, iterationCount);
             fileObj.fileWrite(strToWrite);
@@ -108,6 +115,103 @@ public class Instrumentation {
         public void closeLog() {
             if (this.fileObj != null) {
                 DbgLog.msg("ftc9773: Instrumentation: Closing loopRuntime fileobj");
+                this.fileObj.close();
+            }
+        }
+    }
+
+    public class ODSlightDetected extends  InstrBaseClass {
+        public LineFollow lfObj;
+        ElapsedTime timer;
+        DriveSystem.ElapsedEncoderCounts elapsedCounts;
+        int updateCnt;
+        double prevLightDetected;
+        double totalLight, avgLight, minLight, maxLight;
+        boolean printEveryUpdate;
+        String logFile;
+        FileRW fileObj;
+
+        public ODSlightDetected(LineFollow lfObj, boolean printEveryUpdate) {
+            this.lfObj = lfObj;
+            this.printEveryUpdate = printEveryUpdate;
+            elapsedCounts = robot.driveSystem.getNewElapsedCountsObj();
+            timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+            timer.reset();
+            iterationCount = updateCnt = 0;
+            avgLight = totalLight = maxLight = 0;
+            minLight = Double.MAX_VALUE;
+            if (odsLog != null) {
+                // Create a FileRW object
+                logFile = FileRW.getTimeStampedFileName(odsLog);
+                logFile = logFile + ".csv";
+                this.fileObj = new FileRW(logFile, true);
+                if (this.fileObj == null) {
+                    DbgLog.error("Error! Could not create the file %s", logFile);
+                }
+            }
+        }
+
+        @Override
+        public void reset() {
+            timer.reset();
+            elapsedCounts.reset();
+            iterationCount = updateCnt = 0;
+            avgLight = totalLight = maxLight = 0;
+            minLight = Double.MAX_VALUE;
+            if (printEveryUpdate) {
+                String strToWrite = String.format("method being instrumented=, %s", description);
+                fileObj.fileWrite(strToWrite);
+                strToWrite = String.format("voltage, millis, iteration, updateCnt, curLight, prevLight, inches, speed");
+                fileObj.fileWrite(strToWrite);
+            }
+        }
+
+        @Override
+        public void addInstrData() {
+            iterationCount++;
+            double curLightDetected = lfObj.getLightDetected();
+            minLight = (curLightDetected < minLight) ? curLightDetected : minLight;
+            maxLight = (curLightDetected > maxLight) ? curLightDetected : maxLight;
+            if ((curLightDetected != prevLightDetected)) {
+                totalLight += curLightDetected;
+                updateCnt++;
+                double distanceTravelled = elapsedCounts.getDistanceTravelledInInches();
+                double millis = timer.milliseconds();
+                double speed = distanceTravelled / millis;
+                if (printEveryUpdate) {
+                    String strToWrite = String.format("%f, %f, %d, %d, %f, %f, %f, %f", robot.getVoltage(),
+                            timer.milliseconds(), iterationCount, updateCnt, curLightDetected,
+                            prevLightDetected, distanceTravelled, speed);
+                    fileObj.fileWrite(strToWrite);
+                }
+                prevLightDetected = curLightDetected;
+                elapsedCounts.reset();
+                timer.reset();
+            }
+        }
+
+        @Override
+        public void printToConsole() {
+            avgLight = totalLight / updateCnt;
+            DbgLog.msg("ftc9773: Starting time=%f, minLight=%f, maxLight=%f, avgLight=%f, iter_count=%d, " +
+                    "updateCnt=%d",
+                    timer.startTime(), minLight, maxLight, avgLight, iterationCount, updateCnt);
+        }
+
+        @Override
+        public void writeToFile() {
+            // Write to file is different than printToConsole because we write to a .csv file format
+            avgLight = totalLight / iterationCount;
+            fileObj.fileWrite(String.format("TimeStamp=, %s, minLight=, %f, maxLight=, %f, avgLight=, %f, " +
+                    "iter_count=, %d, updateCnt=, %d",
+                    new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()),
+                    minLight, maxLight, avgLight, iterationCount, updateCnt));
+        }
+
+        @Override
+        public void closeLog() {
+            if (this.fileObj != null) {
+                DbgLog.msg("ftc9773: Instrumentation: Closing rangeSensor fileobj");
                 this.fileObj.close();
             }
         }
@@ -156,7 +260,9 @@ public class Instrumentation {
             iterationCount = 0;
             timer.reset();
             if (printEveryUpdate) {
-                String strToWrite = String.format("voltage, millis, iteration, cm, runningAvg");
+                String strToWrite = String.format("method being instrumented=, %s", description);
+                fileObj.fileWrite(strToWrite);
+                strToWrite = String.format("voltage, millis, iteration, cm, runningAvg");
                 fileObj.fileWrite(strToWrite);
             }
         }
@@ -165,7 +271,8 @@ public class Instrumentation {
         public void addInstrData() {
             iterationCount++;
             double curDistance = rangeSensor.getDistance(DistanceUnit.CM);
-            if (curDistance >= 100) { return; }
+            // If the curDistance is > 255 cm or 100 inches, ignore this measurement
+            if (curDistance >= 255) { return; }
             if (runningAvg <= 0.0) { runningAvg = curDistance; }
             if (curDistance < minDistance) { minDistance = curDistance; }
             if (curDistance > maxDistance) { maxDistance = curDistance; }
@@ -189,8 +296,10 @@ public class Instrumentation {
         @Override
         public void writeToFile() {
             avgDistance = totalDistance / iterationCount;
-            fileObj.fileWrite(String.format("ftc9773: Starting time=%f, minDistance=%f, maxDistance=%f, avgDistance=%f, count=%d, runningAvg=%f",
-                    timer.startTime(), minDistance, maxDistance, avgDistance, iterationCount, runningAvg));
+            fileObj.fileWrite(String.format("TimeStamp=, %s, minDistance=, %f, maxDistance=, %f, " +
+                    "avgDistance=, %f, count=, %d, runningAvg=, %f",
+                    new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()),
+                    minDistance, maxDistance, avgDistance, iterationCount, runningAvg));
         }
 
         @Override
@@ -258,7 +367,8 @@ public class Instrumentation {
             maxSpeed = totalSpeed = avgSpeed = 0.0;
             prevDegrees = prevTimeStamp = -1;
             if (printEveryUpdate) {
-                String strToWrite = null;
+                String strToWrite = String.format("method being instrumented=, %s", description);
+                fileObj.fileWrite(strToWrite);
                 if (robot.driveSystem.getDriveSysType() == DriveSystem.DriveSysType.FOUR_MOTOR_6WD) {
                     strToWrite = String.format("voltage, millis, iteration, yaw degrees, speed, pitch, updateCount, " +
                             "L1power, L2power, R1power, R2power, L1counts, L2counts, R1counts, R2counts");
@@ -310,9 +420,10 @@ public class Instrumentation {
         @Override
         public void writeToFile() {
             avgDegrees = totalDegrees / iterationCount;
-            fileObj.fileWrite(String.format("ftc9773: Starting time=%f, minDegrees=%f, " +
-                    "maxDegrees=%f, avgDegreese=%f, count=%d, updateCount=%f, minSpeed=%f, maxSpeed=%f",
-                    timer.startTime(), minDegrees, maxDegrees, avgDegrees, iterationCount, updateCount, minSpeed, maxSpeed));
+            fileObj.fileWrite(String.format("TimeStamp=, %s, minDegrees=, %f, " +
+                    "maxDegrees=, %f, avgDegreese=, %f, count=, %d, updateCount=, %f, minSpeed=, %f, maxSpeed=, %f",
+                    new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()),
+                    minDegrees, maxDegrees, avgDegrees, iterationCount, updateCount, minSpeed, maxSpeed));
         }
 
         @Override
@@ -394,12 +505,13 @@ public class Instrumentation {
     }
 
     public Instrumentation(FTCRobot robot, LinearOpMode curOpMode, String loopRuntimeLog,
-                           String rangeSensorLog, String gyroLog) {
+                           String rangeSensorLog, String gyroLog, String odsLog) {
         this.robot = robot;
         this.curOpMode = curOpMode;
         this.loopRuntimeLog = loopRuntimeLog;
         this.rangeSensorLog = rangeSensorLog;
         this.gyroLog = gyroLog;
+        this.odsLog = odsLog;
     }
 
     public void addAction(InstrBaseClass action) {
@@ -411,8 +523,9 @@ public class Instrumentation {
         this.instrObjects.remove(action);
     }
 
-    public void reset() {
+    public void reset(String description) {
         for (InstrBaseClass a: this.instrObjects) {
+            a.setDescription(description);
             a.reset();
         }
     }

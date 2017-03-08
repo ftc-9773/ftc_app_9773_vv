@@ -398,9 +398,19 @@ public class AutonomousActions {
                     e.printStackTrace();
                 }
                 distanceFromWall = robot.navigation.rangeSensor.getDistance(DistanceUnit.CM);
-                while (distanceFromWall >= 255){
+                int i=0;
+                while ((distanceFromWall >= 255) && (i<10)){ // Try for 200 milli seconds
                     curOpMode.sleep(20);
                     distanceFromWall = robot.navigation.rangeSensor.getDistance(DistanceUnit.CM);
+                }
+                if (distanceFromWall >= 255) {
+                    // get the value from the weighted average of the range sensor
+                    distanceFromWall = robot.navigation.getRangeSensorRunningAvg();
+                    if (distanceFromWall < 0) {
+                        // Ensure that the robot does not move sideways when the distance from wall
+                        // is unknown.
+                        distanceFromWall = targetDistance;
+                    }
                 }
                 if ((Math.abs(targetDistance - distanceFromWall) > distTolerance) ) {
                     distanceToShift = CM2INCHES * (targetDistance - distanceFromWall);
@@ -415,6 +425,9 @@ public class AutonomousActions {
                     DbgLog.msg("ftc9773: targetDistance=%f cm, moveDistance=%f, distanceFromWall=%f cm, tolerance = %f cm, distanceToShift=%f inches, motorSpeed=%f, returnToSamePos=%b",
                             targetDistance, moveDistance, distanceFromWall, distTolerance,
                             distanceToShift, motorSpeed, returnToSamePos);
+                    // Still have to move forward, even though the robot does not shift sideways
+                    double startingYaw = (allianceColor.equalsIgnoreCase("red") ? 0.0 : 180);
+                    robot.navigation.goStraightToDistance(moveDistance, startingYaw, (float) motorSpeed);
                 }
                 break;
             }

@@ -4,5 +4,5 @@
   "startingPosition" : 1,
   "enableBackGroundTasks" : false,
   "autonomousOption" : "verifyBeaconColorOnly",
-  "robot" : "2017_2_5_Pleasantville_Robot"
+  "robot" : "2017_3_17-19_Scranton_Robot"
 }

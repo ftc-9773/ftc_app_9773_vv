@@ -258,12 +258,12 @@ public class FourMotorSteeringDrive extends DriveSystem {
     //  new optimization in the drive() method, where the prevPower values are saved and
     //  the new power values do not get applied if they are same as the previous power values.
     @Override
-    public void setMaxSpeed(float speed) {
-        DbgLog.msg("ftc9773: Current max speed =%d", maxSpeedCPS);
-        motorL1.setMaxSpeed((int) (maxSpeedCPS * speed));
-        motorL2.setMaxSpeed((int) (maxSpeedCPS * speed));
-        motorR1.setMaxSpeed((int) (maxSpeedCPS * speed));
-        motorR2.setMaxSpeed((int) (maxSpeedCPS * speed));
+    public void setMaxSpeedCPS(int cps) {
+        DbgLog.msg("ftc9773: Current max speed =%d, new maxspeedCPS=%d", maxSpeedCPS, cps);
+        motorL1.setMaxSpeed(cps);
+        motorL2.setMaxSpeed(cps);
+        motorR1.setMaxSpeed(cps);
+        motorR2.setMaxSpeed(cps);
     }
 
     @Override

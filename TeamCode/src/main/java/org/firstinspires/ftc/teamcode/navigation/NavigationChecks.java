@@ -181,13 +181,13 @@ public class NavigationChecks {
     public class CheckRobotTilting extends NavCheckBaseClass {
         double pitchDegrees;
         GyroInterface gyro;
-        double navxPitch;
+        double initialPitch;
         // TODO: 12/29/16 Investigate the feasibility of using phone's builtin sensors to detect tilting
 
         public CheckRobotTilting(double pitchDegrees) {
             this.pitchDegrees = pitchDegrees;
             gyro = navigationObj.gyro;
-            navxPitch = gyro.getPitch();
+            initialPitch = gyro.getPitch();
             navcheck = NavChecksSupported.CHECK_ROBOT_TILTING;
         }
 
@@ -198,7 +198,7 @@ public class NavigationChecks {
 
         @Override
         public boolean stopNavigation() {
-            if (Math.abs(gyro.getPitch() - navxPitch) > pitchDegrees) {
+            if (Math.abs(gyro.getPitch() - initialPitch) > pitchDegrees) {
                 return (true);
             } else {
                 return (false);
@@ -258,8 +258,27 @@ public class NavigationChecks {
     }
 
     public class CheckForWhiteLine extends NavCheckBaseClass {
+        LineFollow lfObj;
+        double prev_speed, prev_light;
+        ElapsedTime timer;
+        DriveSystem.ElapsedEncoderCounts elapsedEncoderCounts;
+        public CheckForWhiteLine(LineFollow lfObj) {
+            this.lfObj = lfObj;
+            timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+            timer.reset();
+            elapsedEncoderCounts = robot.driveSystem.getNewElapsedCountsObj();
+            prev_light = prev_speed = -1.0;
+        }
+
         @Override
         public boolean stopNavigation() {
+            double cur_light = lfObj.getLightDetected();
+            if (cur_light != prev_light) {
+                prev_light = cur_light;
+                prev_speed = elapsedEncoderCounts.getDistanceTravelledInInches() / timer.milliseconds();
+                timer.reset();
+                elapsedEncoderCounts.reset();
+            }
             if (navigationObj.lf.onWhiteLine()) {
                 return (true);
             } else {
@@ -269,6 +288,9 @@ public class NavigationChecks {
 
         @Override
         public void reset() {
+            timer.reset();
+            elapsedEncoderCounts.reset();
+            prev_light = prev_speed = -1.0;
             return;
         }
     }

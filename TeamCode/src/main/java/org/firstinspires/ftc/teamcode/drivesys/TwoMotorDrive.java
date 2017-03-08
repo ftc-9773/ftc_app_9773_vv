@@ -191,9 +191,9 @@ public class TwoMotorDrive extends DriveSystem{
     }
 
     @Override
-    public void setMaxSpeed(float maxSpeed) {
-        motorL.setMaxSpeed((int)(motorLMaxSpeed * maxSpeed));
-        motorR.setMaxSpeed((int)(motorRMaxSpeed * maxSpeed));
+    public void setMaxSpeedCPS(int cps) {
+        motorL.setMaxSpeed(cps);
+        motorR.setMaxSpeed(cps);
     }
 
     @Override

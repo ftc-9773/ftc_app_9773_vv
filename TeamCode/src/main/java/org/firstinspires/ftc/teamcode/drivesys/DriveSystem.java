@@ -128,7 +128,7 @@ public abstract class DriveSystem {
 
     public abstract void turnDegrees(double degrees, float speed, NavigationChecks navExc);
 
-    public abstract void setMaxSpeed(float speed);
+    public abstract void setMaxSpeedCPS(int maxSpeedCPS);
     public abstract void resumeMaxSpeed();
     public abstract void reverse();
     public abstract ElapsedEncoderCounts getNewElapsedCountsObj();

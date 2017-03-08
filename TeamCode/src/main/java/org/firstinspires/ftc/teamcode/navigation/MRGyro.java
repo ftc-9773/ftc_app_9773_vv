@@ -138,7 +138,7 @@ public class MRGyro implements GyroInterface {
         }
         correction = this.straightPID_kp * error / 2;
         // Ensure that 0.25 <= speed <= 0.75 so that correction can be meanigful.
-        speed = Range.clip(speed, 0.25f, 0.75f);
+        speed = Range.clip(speed, 0.1f, 0.75f);
         leftSpeed = Range.clip(speed - correction, 0, 1);
         rightSpeed = Range.clip(speed + correction, 0, 1);
 

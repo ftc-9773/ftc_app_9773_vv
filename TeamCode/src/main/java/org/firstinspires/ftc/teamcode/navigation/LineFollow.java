@@ -22,7 +22,6 @@ public class LineFollow{
     double white, black, mid;
     double lowSpeed, highSpeed;
     double odsOffset;
-    double prevLight;
     double basePower, Kp;
     DriveSystem driveSystem;
     long stopTimeStamp=0;
@@ -50,18 +49,11 @@ public class LineFollow{
         DbgLog.msg("ftc9773: Kp = %f, odsOffset=%f", this.Kp, this.odsOffset);
 //        this.white = -1;
 //        this.black = -1;
-        prevLight = -1;
-    }
-
-    public void searchForWhiteLine(){
-        // ToDo:  Move the robot for ~ 2 seconds or until a white line is found.
-        //  ToDo:  We may not actually need this if turnOrSpin can reliably find the white line
-        return;
     }
 
     public void turnUntilWhiteLine(boolean spinClockwise) {
         double leftInitialPower=0.0, rightInitialPower=0.0;
-        driveSystem.setMaxSpeed((float) this.robot.navigation.turnMaxSpeed);
+        driveSystem.setMaxSpeedCPS((int)2500);
         if(spinClockwise){
             leftInitialPower = 0.3;
             rightInitialPower = -leftInitialPower;
@@ -79,36 +71,10 @@ public class LineFollow{
         driveSystem.resumeMaxSpeed();
 
     }
-    public void driveUntilWhiteLine(double speed, long timeoutMillis){
-        // timeout puts an upper limit on how long the while loop can run
-        long startTime = System.nanoTime();
-        this.robot.driveSystem.setMaxSpeed((float) speed);
-        while((lightSensor.getLightDetected()<this.mid) && robot.curOpMode.opModeIsActive()
-                && ((System.nanoTime() - startTime) < (timeoutMillis*1000000))) {
-            driveSystem.drive((float) 1.0, 0);
-            DbgLog.msg("ftc9773: light detected = %f", lightSensor.getLightDetected());
-        }
-        DbgLog.msg("ftc9773: light detected = %f", lightSensor.getLightDetected());
-        driveSystem.stop();
-        driveSystem.resumeMaxSpeed();
-    }
-
-    public void drivePastWhiteLine(double speed) {
-        // timeout puts an upper limit on how long the while loop can run
-        ElapsedTime timeout = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-        this.robot.driveSystem.setMaxSpeed((float) speed);
-        timeout.reset();
-        while((lightSensor.getLightDetected()>this.mid) && robot.curOpMode.opModeIsActive()
-                && (timeout.milliseconds() < 1000)) {
-            driveSystem.drive((float) 1.0, 0);
-        }
-        driveSystem.stop();
-        driveSystem.resumeMaxSpeed();
-    }
 
     public void printMinMaxLightDetected() {
         double minLight = 1.0, maxLight=0.0, curLight;
-        driveSystem.setMaxSpeed((float)robot.navigation.turnMaxSpeed);
+        driveSystem.setMaxSpeedCPS((int)2500);
         robot.driveSystem.turnOrSpin(-0.4, 0.4);
         double initialYaw = robot.navigation.gyro.getYaw();
         double diffYaw=0.0;
@@ -126,29 +92,12 @@ public class LineFollow{
         robot.curOpMode.telemetry.update();
     }
 
-    public void followLineProportional() {
-        double light = lightSensor.getLightDetected();
-
-//        double lightOffset = (light-mid)/(white-mid);
-//        double odsOffset = (this.robot.distanceLeft/(this.robot.distanceLeft+this.robot.distanceRight));
-//        double leftPower = basePower+ Kp*lightOffset;
-//        double rightPower = basePower- Kp*lightOffset;
-//        leftPower = leftPower*odsOffset*2;
-//        rightPower = rightPower*(1-odsOffset)*2;
-
-        double error = mid - light;
-        double correction = this.Kp * error;
-        double leftCorrection = this.odsOffset * correction;
-        double rightCorrection = (1 - this.odsOffset) * correction;
-        double leftPower = Range.clip(basePower - leftCorrection, -1.0, 1.0);
-        double rightPower = Range.clip(basePower + rightCorrection, -1.0, 1.0);
-        DbgLog.msg("ftc9773: lightDetected = %f, error = %f, correction = %f, left correction = %f, right correction = %f, leftPower=%f, rightPower=%f",
-                light, error, correction, leftCorrection, rightCorrection, leftPower,rightPower);
-        driveSystem.turnOrSpin(leftPower, rightPower);
-
-//        DbgLog.msg("ftc9773: lightDetected = %f", lightSensor.getLightDetected());
-//        DbgLog.msg("ftc9773: error=%f, correction=%f, leftPower=%f, rightPower=%f",
-//                error, correction, leftPower, rightPower);
+    public double getLightDetected() {
+        if (lightSensor != null) {
+            return (lightSensor.getLightDetected());
+        } else {
+            return (0.0);
+        }
     }
 
     public boolean onWhiteLine() {
