@@ -66,6 +66,11 @@ public class TwoMotorDrive extends DriveSystem{
             DbgLog.msg("ftc9773: printCurrent...(): encoder counts: L=%d, R=%d",
                     motorL.getCurrentPosition(), motorR.getCurrentPosition());
         }
+
+        @Override
+        public void copyFrom(DriveSystem.ElapsedEncoderCounts otherElapsedCounts) {
+
+        }
     }
 
     public TwoMotorDrive(DcMotor motorL, DcMotor motorR, int maxSpeedCPS,
@@ -188,6 +193,36 @@ public class TwoMotorDrive extends DriveSystem{
         setDriveSysMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         return;
+    }
+
+    @Override
+    public void driveToEncoderCounts(DriveSystem.ElapsedEncoderCounts fromC,
+                                     DriveSystem.ElapsedEncoderCounts toC, float speed) {
+        int targetCountsL, targetCountsR;
+        ElapsedEncoderCounts fromCounts = (ElapsedEncoderCounts) fromC;
+        ElapsedEncoderCounts toCounts = (ElapsedEncoderCounts) toC;
+
+        targetCountsL = (int)(toCounts.encoderCountL - fromCounts.encoderCountL);
+        targetCountsR = (int)(toCounts.encoderCountR - fromCounts.encoderCountR);
+
+        motorL.setTargetPosition(getNonZeroCurrentPos(motorL) + targetCountsL);
+        motorR.setTargetPosition(getNonZeroCurrentPos(motorR) +  targetCountsR);
+        DbgLog.msg("ftc9773: motorL1 current position = %d", getNonZeroCurrentPos(motorL));
+
+        setDriveSysMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        this.drive((float) (speed * frictionCoefficient), 0.0f);
+
+        while (motorL.isBusy()  && motorR.isBusy() && curOpMode.opModeIsActive()) {
+//                && !navExc.stopNavigation() && curOpMode.opModeIsActive()) {
+            curOpMode.idle();
+        }
+
+        this.stop();
+
+        DbgLog.msg("ftc9773: motorL1 current position = %d", getNonZeroCurrentPos(motorL));
+        setDriveSysMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
     }
 
     @Override

@@ -83,7 +83,19 @@ public class FileRW {
             }
             if(bufferedReader!=null)
                 bufferedReader.close();
+            rmIfZeroSize(); // Delete the file if size is '0';  this happens when we press "init"
+                            // button repititively without pressing "play".
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void rmIfZeroSize() {
+        try {
+            if (file.length() <= 0) {
+                file.delete();
+            }
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

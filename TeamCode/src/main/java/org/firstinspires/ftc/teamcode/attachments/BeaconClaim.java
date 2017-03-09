@@ -338,5 +338,8 @@ public class BeaconClaim implements Attachment {
         return strokeLength;
     }
 
+    public int getBlue() { return (colorSensor1!=null ? colorSensor1.blue() : 0);}
+
+    public int getRed() { return (colorSensor1!=null ? colorSensor1.red() : 0);}
 
 }

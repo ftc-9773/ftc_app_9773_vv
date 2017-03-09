@@ -11,7 +11,7 @@
   "Neverest20_21_1" : {
     "maxSpeed units": "rpm",
     "maxSpeed": 275,
-    "CPR": 560,
+    "CPR": 588,
     "stallTorque units": "oz-in",
     "stallTorque": 197,
     "stallCurrent units": "amps",

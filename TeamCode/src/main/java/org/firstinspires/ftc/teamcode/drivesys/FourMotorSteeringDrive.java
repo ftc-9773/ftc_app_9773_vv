@@ -79,6 +79,15 @@ public class FourMotorSteeringDrive extends DriveSystem {
 
             return (degreesTurned);
         }
+
+        @Override
+        public void copyFrom(DriveSystem.ElapsedEncoderCounts otherCounts) {
+            ElapsedEncoderCounts otherElapsedCounts = (ElapsedEncoderCounts) otherCounts;
+            this.encoderCountL1 = otherElapsedCounts.encoderCountL1;
+            this.encoderCountL2 = otherElapsedCounts.encoderCountL2;
+            this.encoderCountR1 = otherElapsedCounts.encoderCountR1;
+            this.encoderCountR2 = otherElapsedCounts.encoderCountR2;
+        }
     }
 
     public FourMotorSteeringDrive(DcMotor motorL1, DcMotor motorL2, DcMotor motorR1, DcMotor motorR2,
@@ -189,7 +198,7 @@ public class FourMotorSteeringDrive extends DriveSystem {
         double countsPerInch = motorCPR / wheel.getCircumference();
         double targetCounts = countsPerInch * distanceInInches;
 
-        motorL1.setTargetPosition(motorL1.getCurrentPosition() + (int) targetCounts);
+        motorL1.setTargetPosition(getNonZeroCurrentPos(motorL1) + (int) targetCounts);
         motorL2.setTargetPosition(getNonZeroCurrentPos(motorL2) + (int) targetCounts);
         motorR1.setTargetPosition(getNonZeroCurrentPos(motorR1) + (int) targetCounts);
         motorR2.setTargetPosition(getNonZeroCurrentPos(motorR2) + (int) targetCounts);
@@ -244,6 +253,42 @@ public class FourMotorSteeringDrive extends DriveSystem {
 
         DbgLog.msg("ftc9773: motorL1 current position = %d", getNonZeroCurrentPos(motorL1));
         setDriveSysMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    @Override
+    public void driveToEncoderCounts(DriveSystem.ElapsedEncoderCounts fromC,
+                                     DriveSystem.ElapsedEncoderCounts toC,
+                                     float speed) {
+        int targetCountsL1, targetCountsL2, targetCountsR1, targetCountsR2;
+        ElapsedEncoderCounts fromCounts = (ElapsedEncoderCounts) fromC;
+        ElapsedEncoderCounts toCounts = (ElapsedEncoderCounts) toC;
+
+        targetCountsL1 = (int)(toCounts.encoderCountL1 - fromCounts.encoderCountL1);
+        targetCountsL2 = (int)(toCounts.encoderCountL2 - fromCounts.encoderCountL2);
+        targetCountsR1 = (int)(toCounts.encoderCountR1 - fromCounts.encoderCountR1);
+        targetCountsR2 = (int)(toCounts.encoderCountR2 - fromCounts.encoderCountR2);
+
+        motorL1.setTargetPosition(getNonZeroCurrentPos(motorL1) + targetCountsL1);
+        motorL2.setTargetPosition(getNonZeroCurrentPos(motorL2) +  targetCountsL2);
+        motorR1.setTargetPosition(getNonZeroCurrentPos(motorR1) +  targetCountsR1);
+        motorR2.setTargetPosition(getNonZeroCurrentPos(motorR2) +  targetCountsR2);
+        DbgLog.msg("ftc9773: motorL1 current position = %d", getNonZeroCurrentPos(motorL1));
+
+        setDriveSysMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        this.drive((float) (speed * frictionCoefficient), 0.0f);
+
+        while (motorL1.isBusy() && motorL2.isBusy() && motorR1.isBusy() && motorR2.isBusy()
+                && curOpMode.opModeIsActive()) {
+//                && !navExc.stopNavigation() && curOpMode.opModeIsActive()) {
+            curOpMode.idle();
+        }
+
+        this.stop();
+
+        DbgLog.msg("ftc9773: motorL1 current position = %d", getNonZeroCurrentPos(motorL1));
+        setDriveSysMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
     }
 
     private void setDriveSysMode(DcMotor.RunMode runMode) {

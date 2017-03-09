@@ -3,12 +3,14 @@ package org.firstinspires.ftc.teamcode.util;
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.FTCRobot;
+import org.firstinspires.ftc.teamcode.attachments.BeaconClaim;
 import org.firstinspires.ftc.teamcode.drivesys.DriveSystem;
 import org.firstinspires.ftc.teamcode.navigation.GyroInterface;
 import org.firstinspires.ftc.teamcode.navigation.LineFollow;
@@ -29,7 +31,7 @@ public class Instrumentation {
     public enum InstrumentationID {LOOP_RUNTIME, RANGESENSOR_CM, NAVX_DEGREES, NAVX_YAW_MONITOR}
     public enum LoopType {DRIVE_TO_DISTANCE, DRIVE_UNTIL_WHITELINE, DRIVE_TILL_BEACON, TURN_ROBOT}
     private List<InstrBaseClass> instrObjects = new ArrayList<InstrBaseClass>();
-    public String loopRuntimeLog, rangeSensorLog, gyroLog, odsLog;
+    public String loopRuntimeLog, rangeSensorLog, gyroLog, odsLog, colorLog;
 
     public class InstrBaseClass {
         public InstrumentationID instrID;
@@ -116,6 +118,115 @@ public class Instrumentation {
             if (this.fileObj != null) {
                 DbgLog.msg("ftc9773: Instrumentation: Closing loopRuntime fileobj");
                 this.fileObj.close();
+            }
+        }
+    }
+
+    public class ColorSensorInstr extends InstrBaseClass {
+        BeaconClaim beaconClaimObj;
+        ElapsedTime timer;
+        DriveSystem.ElapsedEncoderCounts elapsedCounts, redMaxCounts, blueMaxCounts;
+        int updateCnt, redMaxUpdateCnt, blueMaxUpdateCnt;
+        int prevRed, prevBlue;
+        int maxRed, maxBlue;
+        boolean printEveryUpdate;
+        String logFile;
+        FileRW fileObj;
+
+        public ColorSensorInstr(BeaconClaim beaconClaimObj, boolean printEveryUpdate) {
+            this.beaconClaimObj = beaconClaimObj;
+            this.printEveryUpdate = printEveryUpdate;
+
+            elapsedCounts = robot.driveSystem.getNewElapsedCountsObj();
+            redMaxCounts = robot.driveSystem.getNewElapsedCountsObj();
+            blueMaxCounts = robot.driveSystem.getNewElapsedCountsObj();
+            timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+            timer.reset();
+            iterationCount = updateCnt = redMaxUpdateCnt = blueMaxUpdateCnt = 0;
+            prevRed = prevBlue = maxRed = maxBlue = 0;
+            if (colorLog != null) {
+                // Create a FileRW object
+                logFile = FileRW.getTimeStampedFileName(colorLog);
+                logFile = logFile + ".csv";
+                this.fileObj = new FileRW(logFile, true);
+                if (this.fileObj == null) {
+                    DbgLog.error("Error! Could not create the file %s", logFile);
+                }
+            }
+        }
+
+        @Override
+        public void reset() {
+            timer.reset();
+            elapsedCounts.reset();
+            redMaxCounts.reset();
+            blueMaxCounts.reset();
+            iterationCount = updateCnt = redMaxUpdateCnt = blueMaxUpdateCnt = 0;
+            prevRed = prevBlue = maxRed = maxBlue = 0;
+            if (printEveryUpdate) {
+                String strToWrite = String.format("method being instrumented=, %s", description);
+                fileObj.fileWrite(strToWrite);
+                strToWrite = String.format("voltage, millis, iteration, updateCnt, red, prevRed, blue, prevBlue, inches, speed");
+                fileObj.fileWrite(strToWrite);
+            }
+        }
+
+        @Override
+        public void addInstrData() {
+            iterationCount++;
+            int red = beaconClaimObj.getRed();
+            int blue = beaconClaimObj.getBlue();
+            if ((red != prevRed) || (blue != prevBlue)) {
+                updateCnt++;
+                double distanceTravelled = elapsedCounts.getDistanceTravelledInInches();
+                double millis = timer.milliseconds();
+                double speed = distanceTravelled / millis;
+                if (red > maxRed) {
+                    redMaxUpdateCnt = updateCnt;
+                    redMaxCounts.copyFrom(elapsedCounts);
+                }
+                if (blue > maxBlue) {
+                    blueMaxUpdateCnt = updateCnt;
+                    blueMaxCounts.copyFrom(elapsedCounts);
+                }
+                if (printEveryUpdate) {
+                    String strToWrite = String.format("%f, %f, %d, %d, %d, %d, %d, %d, %f, %f", robot.getVoltage(),
+                            timer.milliseconds(), iterationCount, updateCnt, red, prevRed,
+                            blue, prevBlue, distanceTravelled, speed);
+                    fileObj.fileWrite(strToWrite);
+                }
+                prevRed = red;
+                prevBlue = blue;
+                timer.reset();
+            }
+        }
+
+        @Override
+        public void printToConsole() {
+            DbgLog.msg("ftc9773: Starting time=%f, iter_count=%d, updateCnt=%d",
+                    timer.startTime(), iterationCount, updateCnt);
+        }
+
+        @Override
+        public void writeToFile() {
+            fileObj.fileWrite(String.format("TimeStamp=, %s, iter_count=, %d, updateCnt=, %d",
+                    new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()),
+                    iterationCount, updateCnt));
+        }
+
+        @Override
+        public void closeLog() {
+            if (this.fileObj != null) {
+                DbgLog.msg("ftc9773: Instrumentation: Closing colorSensor fileobj");
+                this.fileObj.close();
+            }
+        }
+
+        public void driveToColor(String redOrBlue, float speed) {
+            if (redOrBlue.equalsIgnoreCase("red")) {
+                robot.driveSystem.driveToEncoderCounts(elapsedCounts, redMaxCounts, speed);
+            } else if (redOrBlue.equalsIgnoreCase("blue")) {
+                robot.driveSystem.driveToEncoderCounts(elapsedCounts, blueMaxCounts, speed);
             }
         }
     }
@@ -505,13 +616,14 @@ public class Instrumentation {
     }
 
     public Instrumentation(FTCRobot robot, LinearOpMode curOpMode, String loopRuntimeLog,
-                           String rangeSensorLog, String gyroLog, String odsLog) {
+                           String rangeSensorLog, String gyroLog, String odsLog, String colorLog) {
         this.robot = robot;
         this.curOpMode = curOpMode;
         this.loopRuntimeLog = loopRuntimeLog;
         this.rangeSensorLog = rangeSensorLog;
         this.gyroLog = gyroLog;
         this.odsLog = odsLog;
+        this.colorLog = colorLog;
     }
 
     public void addAction(InstrBaseClass action) {

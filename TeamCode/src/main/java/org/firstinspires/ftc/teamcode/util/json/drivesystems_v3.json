@@ -19,7 +19,7 @@
     "__Comment" : "2 motors are linked to drive 3 wheels on each side, and the system uses steering control",
     "MaxMotorSpeed__Comment" : "MaxMotorSpeed is in the units of encoder counts per second",
     "MaxMotorSpeed__Comment2" : "This value has to be obtained by experimentation",
-    "AutonomousMaxMotorSpeed": 4000,
+    "AutonomousMaxMotorSpeed": 2500,
     "TeleOpMaxMotorSpeed": 4000,
     "Motors": {
       "fMotorL": "Neverest20_21_1",

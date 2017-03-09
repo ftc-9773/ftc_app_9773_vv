@@ -93,10 +93,10 @@ public class MRGyro implements GyroInterface {
     public double getPitch() {
         // Normally pitch is obtained by rawY(), but due to the way the mr-gyro is mounted on
         // Robot V3, the rawX() value gives the pitch, not rawY().
-//        return ((double)gyro.rawX());
+        return ((double)gyro.rawX());
         // ToDo: We need to figure out the way to get pitch value from MRGyro
         // Until then just return 0 pitch
-        return (0);
+//        return (0);
     }
 
     @Override

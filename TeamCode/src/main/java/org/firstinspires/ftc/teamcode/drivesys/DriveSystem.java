@@ -29,6 +29,7 @@ public abstract class DriveSystem {
         public abstract double getDistanceTravelledInInches();
         public abstract double getDegreesTurned();
         public abstract void printCurrentEncoderCounts();
+        public abstract void copyFrom(ElapsedEncoderCounts otherElapsedCounts);
     }
 
     public DriveSystem() {
@@ -127,6 +128,9 @@ public abstract class DriveSystem {
     public void stop() {return;}
 
     public abstract void turnDegrees(double degrees, float speed, NavigationChecks navExc);
+
+    public abstract void driveToEncoderCounts(ElapsedEncoderCounts fromCounts, ElapsedEncoderCounts toCounts,
+                                              float speed);
 
     public abstract void setMaxSpeedCPS(int maxSpeedCPS);
     public abstract void resumeMaxSpeed();

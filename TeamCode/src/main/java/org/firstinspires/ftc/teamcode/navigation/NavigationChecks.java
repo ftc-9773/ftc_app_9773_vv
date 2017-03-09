@@ -198,11 +198,13 @@ public class NavigationChecks {
 
         @Override
         public boolean stopNavigation() {
-            if (Math.abs(gyro.getPitch() - initialPitch) > pitchDegrees) {
-                return (true);
-            } else {
-                return (false);
-            }
+            return (false); // ToDo: Remove this line and uncomment the lines below once
+            // we figure out how to get MR gyro pitch values
+//            if (Math.abs(gyro.getPitch() - initialPitch) > pitchDegrees) {
+//                return (true);
+//            } else {
+//                return (false);
+//            }
         }
     }
 

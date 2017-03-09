@@ -35,6 +35,7 @@ public class Navigation {
     private Instrumentation.GyroDegrees gyroDegreesInstr;
     private Instrumentation.RangeSensorDistance rangeInstr;
     private Instrumentation.ODSlightDetected odsInstr;
+    private Instrumentation.ColorSensorInstr colorInstr;
     public enum GyroType {NAVX_MICRO, MR_GYRO}
 
 
@@ -104,6 +105,8 @@ public class Navigation {
             rangeInstr = robot.instrumentation.new RangeSensorDistance(this.rangeSensor, rangeSensorRunningAvg, true);
         if (lf != null)
             odsInstr = robot.instrumentation.new ODSlightDetected(this.lf, true);
+
+        colorInstr = robot.instrumentation.new ColorSensorInstr(robot.beaconClaimObj, true);
 //        driveToDistInstr = robot.instrumentation.new LoopRuntime(Instrumentation.LoopType.DRIVE_TO_DISTANCE);
 //        driveTillWhitelineInstr = robot.instrumentation.new LoopRuntime(Instrumentation.LoopType.DRIVE_UNTIL_WHITELINE);
 //        driveTillBeaconInstr = robot.instrumentation.new LoopRuntime(Instrumentation.LoopType.DRIVE_TILL_BEACON);
@@ -147,6 +150,7 @@ public class Navigation {
         if (gyroDegreesInstr != null) { gyroDegreesInstr.closeLog(); }
         if (rangeInstr != null) { rangeInstr.closeLog(); }
         if (odsInstr != null) { odsInstr.closeLog(); }
+        if (colorInstr != null) { colorInstr.closeLog(); }
 //        if (driveToDistInstr != null) { driveToDistInstr.closeLog(); }
 //        if (driveTillWhitelineInstr != null) { driveTillWhitelineInstr.closeLog(); }
 //        if (turnRobotInstr != null) { turnRobotInstr.closeLog(); }
@@ -287,6 +291,7 @@ public class Navigation {
                 }
             }
             robot.driveSystem.stop();
+            robot.instrumentation.addInstrData();
             robot.instrumentation.printToConsole();
             robot.instrumentation.writeToFile();
             robot.instrumentation.removeAction(gyroDegreesInstr);
@@ -326,6 +331,7 @@ public class Navigation {
                 }
             }
             robot.driveSystem.stop();
+            robot.instrumentation.addInstrData();
             robot.instrumentation.printToConsole();
             robot.instrumentation.writeToFile();
             robot.instrumentation.removeAction(gyroDegreesInstr);
@@ -345,6 +351,7 @@ public class Navigation {
                 robot.instrumentation.addInstrData();
             }
             robot.driveSystem.stop();
+            robot.instrumentation.addInstrData();
             robot.instrumentation.printToConsole();
             robot.instrumentation.writeToFile();
         }
@@ -362,6 +369,7 @@ public class Navigation {
         navChecks.addNewCheck(check2);
 //        robot.instrumentation.addAction(driveTillWhitelineInstr);
         robot.instrumentation.addAction(odsInstr);
+        robot.instrumentation.addAction(colorInstr);
         robot.instrumentation.addAction(gyroDegreesInstr);
         // Determine the distance from wall and see if beaconServo needs to be retracted
         // It might have been pre-extended before.
@@ -381,6 +389,7 @@ public class Navigation {
                 beaconServoExtender.continueTask();
             }
             robot.driveSystem.stop();
+            robot.instrumentation.addInstrData();
             robot.instrumentation.printToConsole();
             robot.instrumentation.writeToFile();
             // Update the encoderNav's current yaw with that of gyro
@@ -397,6 +406,7 @@ public class Navigation {
                 beaconServoExtender.continueTask();
             }
             robot.driveSystem.stop();
+            robot.instrumentation.addInstrData();
             robot.instrumentation.printToConsole();
             robot.instrumentation.writeToFile();
             if (driveBackwards) {
@@ -407,6 +417,8 @@ public class Navigation {
 //        robot.instrumentation.removeAction(driveTillWhitelineInstr);
         robot.instrumentation.removeAction(gyroDegreesInstr);
         robot.instrumentation.removeAction(odsInstr);
+        robot.instrumentation.removeAction(colorInstr);
+
     }
 
     public void driveUntilAllianceBeacon(double motorSpeed, double degrees,
@@ -456,9 +468,10 @@ public class Navigation {
                 robot.instrumentation.addInstrData();
                 beaconServoExtender.continueTask();
             }
+            robot.driveSystem.stop();
+            robot.instrumentation.addInstrData();
             robot.instrumentation.printToConsole();
             robot.instrumentation.writeToFile();
-            robot.driveSystem.stop();
             // Update the encoderNav's current yaw with that of gyro
             encoderNav.setCurrentYaw(gyro.getYaw());
         } else {
