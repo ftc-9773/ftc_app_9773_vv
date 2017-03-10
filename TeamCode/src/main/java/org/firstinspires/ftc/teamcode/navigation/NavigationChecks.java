@@ -325,6 +325,10 @@ public class NavigationChecks {
         }
     }
 
+    public class CheckBeaconColors extends NavCheckBaseClass{
+
+    }
+
     public NavigationChecks(FTCRobot robot, LinearOpMode curOpMode, Navigation navigationObj) {
         this.robot = robot;
         this.curOpMode = curOpMode;
