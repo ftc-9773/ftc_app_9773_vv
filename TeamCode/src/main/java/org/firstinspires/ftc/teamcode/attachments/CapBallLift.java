@@ -21,18 +21,17 @@ public class CapBallLift implements  Attachment {
     FTCRobot robot;
     LinearOpMode curOpMode;
     DcMotor liftMotor;
-    CRServo liftServoCR = null,crownServoCR=null;
-    Servo liftServo = null, crownServo= null;
+    CRServo liftServoCR = null;
+    Servo liftServo = null;
     boolean runToPosition = false;
     public boolean lockLift = false;
-    public  boolean useEncoders = false;
     public int downPosition, midPosition, upPosition;
 
 
     public CapBallLift(FTCRobot robot, LinearOpMode curOpMode, JSONObject rootObj) {
         String key;
         JSONObject liftObj = null;
-        JSONObject motorsObj = null, liftMotorObj = null, liftServoObj=null, crownServoObj=null;
+        JSONObject motorsObj = null, liftMotorObj = null, liftServoObj=null;
 
         this.robot = robot;
         this.curOpMode = curOpMode;
@@ -43,7 +42,6 @@ public class CapBallLift implements  Attachment {
             motorsObj = liftObj.getJSONObject(key);
             key = JsonReader.getRealKeyIgnoreCase(motorsObj, "liftMotor");
             liftMotorObj = motorsObj.getJSONObject(key);
-            useEncoders = liftMotorObj.getBoolean("useEncoders");
             liftMotor = curOpMode.hardwareMap.dcMotor.get("liftMotor");
             if (liftMotorObj.getBoolean("needReverse")) {
                 DbgLog.msg("ftc9773: Reversing the lift servo");
@@ -76,26 +74,6 @@ public class CapBallLift implements  Attachment {
                 }
                 liftServo.setPosition(1);
             }
-            key = JsonReader.getRealKeyIgnoreCase(motorsObj, "crownServo");
-            crownServoObj = motorsObj.getJSONObject(key);
-            key = JsonReader.getRealKeyIgnoreCase(crownServoObj,"motorType");
-            String crownMotorType = crownServoObj.getString(key);
-            if (crownMotorType.equalsIgnoreCase("CRServo")){
-                crownServoCR = curOpMode.hardwareMap.crservo.get("crownServo");
-                if (crownServoObj.getBoolean("needReverse")){
-                    DbgLog.msg("ftc9773: Reversing the crown servo");
-                    crownServoCR.setDirection(CRServo.Direction.REVERSE);
-                }
-            } else {
-                crownServo = curOpMode.hardwareMap.servo.get("crownServo");
-                crownServo.scaleRange(crownServoObj.getDouble("scaleRangeMin"), crownServoObj.getDouble("scaleRangeMax"));
-                if (crownServoObj.getBoolean("needReverse")){
-                    DbgLog.msg("ftc9773: Reversing the crown servo");
-                    crownServo.setDirection(Servo.Direction.REVERSE);
-                }
-                crownServo.setPosition(1);
-            }
-
             liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
@@ -107,7 +85,7 @@ public class CapBallLift implements  Attachment {
     public void autoPlacement(){
         //Unfolding
         unfoldFork();
-        curOpMode.sleep(700);
+        curOpMode.sleep(1000);
         idleFork();
         //raising
         goToMidPosition();
@@ -155,29 +133,10 @@ public class CapBallLift implements  Attachment {
         }
     }
     public void idleFork(){
-        liftServoCR.setPower(0);
-    }
-
-    public void activateCrown(){
-        if (crownServo != null){
-            crownServo.setPosition(0);
-        } else if (crownServoCR != null){
-            crownServoCR.setPower(1);
+        if (liftServoCR != null) {
+            liftServoCR.setPower(0);
         }
     }
-    public void deactivateCrown(){
-        if (crownServo != null){
-            crownServo.setPosition(1);
-        } else if (crownServoCR != null){
-            crownServoCR.setPower(-1);
-        }
-    }
-    public void idleCrown(){
-        if (crownServoCR != null){
-            crownServoCR.setPower(0);
-        }
-    }
-
     public void goToDownPosition(){
         runToPosition = true;
         liftMotor.setTargetPosition(downPosition);
@@ -204,8 +163,8 @@ public class CapBallLift implements  Attachment {
     }
     public boolean isAtDownPosition(){
         int curPosition = liftMotor.getCurrentPosition();
-        int lowerBound = downPosition - 1680;
-        int upperBound = downPosition + 1680;
+        int lowerBound = downPosition - 500;
+        int upperBound = downPosition + 500;
 
         if (curPosition < lowerBound || curPosition > upperBound){
             return false;
@@ -215,7 +174,7 @@ public class CapBallLift implements  Attachment {
     }
     public boolean isAtMidPosition(){
         int curPosition = liftMotor.getCurrentPosition();
-        int lowerBound = downPosition + 1681;
+        int lowerBound = downPosition + 501;
         int upperBound = (upPosition /2) - 1;
 
         if (curPosition < lowerBound || curPosition > upperBound){
@@ -227,7 +186,7 @@ public class CapBallLift implements  Attachment {
     public boolean isAtUpPosition(){
         int curPosition = liftMotor.getCurrentPosition();
         int lowerBound = upPosition / 2;
-        int upperBound = upPosition + 1680;
+        int upperBound = upPosition + 1000;
 
         if (curPosition < lowerBound || curPosition > upperBound){
             return false;
