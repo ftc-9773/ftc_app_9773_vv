@@ -66,7 +66,11 @@
         "fixedPositions" : false,
         "maxSpeed" : 0.9,
         "minButton" : "gamepad1.left_trigger",
-        "maxButton" : "gamepad1.right_trigger"
+        "maxButton" : "gamepad1.right_trigger",
+        "useEncoders" : true,
+        "downPosition" : 0,
+        "midPosition" : 3000,
+        "upPosition" : 9300
       },
       "liftServo":{
         "motorType" : "CRservo",
