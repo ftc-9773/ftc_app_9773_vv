@@ -90,6 +90,43 @@ public class FourMotorSteeringDrive extends DriveSystem {
         }
     }
 
+    public class DriveSysPosition implements DriveSystem.DriveSysPosition {
+        long encoderCountL1;
+        long encoderCountL2;
+        long encoderCountR1;
+        long encoderCountR2;
+
+        public DriveSysPosition() {
+            encoderCountL1 = encoderCountL2 = encoderCountR1 = encoderCountR2 = 0;
+        }
+
+        @Override
+        public void savePostion() {
+            encoderCountL1 = getNonZeroCurrentPos(motorL1);
+            encoderCountL2 = getNonZeroCurrentPos(motorL2);
+            encoderCountR1 = getNonZeroCurrentPos(motorR1);
+            encoderCountR2 = getNonZeroCurrentPos(motorR2);
+        }
+
+        @Override
+        public void resetPosition() {
+            encoderCountL1 = encoderCountL2 = encoderCountR1 = encoderCountR2 = 0;
+        }
+
+        @Override
+        public void driveToPosition(double speed) {
+            DbgLog.msg("ftc9773: drive to a previously saved position");
+
+            setDriveSysMode(DcMotor.RunMode.RUN_TO_POSITION);
+            drive((float) (speed * frictionCoefficient), 0.0f);
+            while (motorL1.isBusy() && motorL2.isBusy() && motorR1.isBusy() && motorR2.isBusy()
+                    && curOpMode.opModeIsActive()) {
+                curOpMode.idle();
+            }
+            stop();
+        }
+    }
+
     public FourMotorSteeringDrive(DcMotor motorL1, DcMotor motorL2, DcMotor motorR1, DcMotor motorR2,
                                   int maxSpeedCPS, double frictionCoefficient,
                                   double distanceBetweenWheels, Wheel wheel, int motorCPR) {
@@ -339,6 +376,12 @@ public class FourMotorSteeringDrive extends DriveSystem {
     public ElapsedEncoderCounts getNewElapsedCountsObj() {
         ElapsedEncoderCounts encoderCountsObj = new ElapsedEncoderCounts();
         return (encoderCountsObj);
+    }
+
+    @Override
+    public DriveSystem.DriveSysPosition getNewDrivesysPositionObj() {
+        DriveSysPosition driveSysPositionObj = new DriveSysPosition();
+        return (driveSysPositionObj);
     }
 
     @Override

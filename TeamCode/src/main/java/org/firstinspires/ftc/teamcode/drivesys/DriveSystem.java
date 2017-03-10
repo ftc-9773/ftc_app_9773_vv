@@ -25,11 +25,17 @@ public abstract class DriveSystem {
     DriveSysType driveSysType;
 
     public interface ElapsedEncoderCounts {
-        public abstract void reset();
-        public abstract double getDistanceTravelledInInches();
-        public abstract double getDegreesTurned();
-        public abstract void printCurrentEncoderCounts();
-        public abstract void copyFrom(ElapsedEncoderCounts otherElapsedCounts);
+        void reset();
+        double getDistanceTravelledInInches();
+        double getDegreesTurned();
+        void printCurrentEncoderCounts();
+        void copyFrom(ElapsedEncoderCounts otherElapsedCounts);
+    }
+
+    public interface DriveSysPosition {
+        void savePostion();
+        void resetPosition();
+        void driveToPosition(double speed);
     }
 
     public DriveSystem() {
@@ -136,6 +142,7 @@ public abstract class DriveSystem {
     public abstract void resumeMaxSpeed();
     public abstract void reverse();
     public abstract ElapsedEncoderCounts getNewElapsedCountsObj();
+    public abstract DriveSysPosition getNewDrivesysPositionObj();
     public abstract void printCurrentPosition();
     public abstract void initForPlay();
     public abstract String getDriveSysInstrData();

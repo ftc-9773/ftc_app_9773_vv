@@ -73,6 +73,36 @@ public class TwoMotorDrive extends DriveSystem{
         }
     }
 
+    public class DriveSysPosition implements DriveSystem.DriveSysPosition {
+        long encoderCountL;
+        long encoderCountR;
+        public DriveSysPosition() {
+            encoderCountL = encoderCountR = 0;
+        }
+
+        @Override
+        public void savePostion() {
+            encoderCountL = getNonZeroCurrentPos(motorL);
+            encoderCountR = getNonZeroCurrentPos(motorR);
+        }
+
+        @Override
+        public void resetPosition() {
+            encoderCountL = encoderCountR = 0;
+        }
+
+        @Override
+        public void driveToPosition(double speed) {
+            DbgLog.msg("ftc9773: driving to a previously saved position");
+            setDriveSysMode(DcMotor.RunMode.RUN_TO_POSITION);
+            drive((float) (speed * frictionCoefficient), 0.0f);
+            while (motorL.isBusy()  && motorR.isBusy() && curOpMode.opModeIsActive()) {
+                curOpMode.idle();
+            }
+            stop();
+        }
+    }
+
     public TwoMotorDrive(DcMotor motorL, DcMotor motorR, int maxSpeedCPS,
                          double frictionCoefficient, Wheel wheel, int motorCPR){
         this.motorL = motorL;
@@ -255,6 +285,13 @@ public class TwoMotorDrive extends DriveSystem{
     public ElapsedEncoderCounts getNewElapsedCountsObj() {
         ElapsedEncoderCounts encoderCountsObj = new ElapsedEncoderCounts();
         return encoderCountsObj;
+    }
+
+
+    @Override
+    public DriveSystem.DriveSysPosition getNewDrivesysPositionObj() {
+        DriveSysPosition driveSysPositionObj = new DriveSysPosition();
+        return (driveSysPositionObj);
     }
 
     @Override

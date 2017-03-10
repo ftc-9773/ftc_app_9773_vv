@@ -125,7 +125,9 @@ public class Instrumentation {
     public class ColorSensorInstr extends InstrBaseClass {
         BeaconClaim beaconClaimObj;
         ElapsedTime timer;
-        DriveSystem.ElapsedEncoderCounts elapsedCounts, redMaxCounts, blueMaxCounts;
+        DriveSystem.ElapsedEncoderCounts elapsedCounts;
+        DriveSystem.DriveSysPosition driveSysPosition, redMaxPostion, blueMaxPosition;
+        boolean redBeaconFound, blueBeaconFound;
         int updateCnt, redMaxUpdateCnt, blueMaxUpdateCnt;
         int prevRed, prevBlue;
         int maxRed, maxBlue;
@@ -138,8 +140,9 @@ public class Instrumentation {
             this.printEveryUpdate = printEveryUpdate;
 
             elapsedCounts = robot.driveSystem.getNewElapsedCountsObj();
-            redMaxCounts = robot.driveSystem.getNewElapsedCountsObj();
-            blueMaxCounts = robot.driveSystem.getNewElapsedCountsObj();
+            redMaxPostion = robot.driveSystem.getNewDrivesysPositionObj();
+            blueMaxPosition = robot.driveSystem.getNewDrivesysPositionObj();
+            redBeaconFound = blueBeaconFound = false;
             timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
             timer.reset();
             iterationCount = updateCnt = redMaxUpdateCnt = blueMaxUpdateCnt = 0;
@@ -159,8 +162,9 @@ public class Instrumentation {
         public void reset() {
             timer.reset();
             elapsedCounts.reset();
-            redMaxCounts.reset();
-            blueMaxCounts.reset();
+            redMaxPostion.resetPosition();
+            blueMaxPosition.resetPosition();
+            redBeaconFound = blueBeaconFound = false;
             iterationCount = updateCnt = redMaxUpdateCnt = blueMaxUpdateCnt = 0;
             prevRed = prevBlue = maxRed = maxBlue = 0;
             if (printEveryUpdate) {
@@ -176,6 +180,7 @@ public class Instrumentation {
             iterationCount++;
             int red = beaconClaimObj.getRed();
             int blue = beaconClaimObj.getBlue();
+
             if ((red != prevRed) || (blue != prevBlue)) {
                 updateCnt++;
                 double distanceTravelled = elapsedCounts.getDistanceTravelledInInches();
@@ -183,11 +188,11 @@ public class Instrumentation {
                 double speed = distanceTravelled / millis;
                 if (red > maxRed) {
                     redMaxUpdateCnt = updateCnt;
-                    redMaxCounts.copyFrom(elapsedCounts);
+                    redMaxPostion.savePostion();
                 }
                 if (blue > maxBlue) {
                     blueMaxUpdateCnt = updateCnt;
-                    blueMaxCounts.copyFrom(elapsedCounts);
+                    blueMaxPosition.savePostion();
                 }
                 if (printEveryUpdate) {
                     String strToWrite = String.format("%f, %f, %d, %d, %d, %d, %d, %d, %f, %f", robot.getVoltage(),
@@ -224,9 +229,9 @@ public class Instrumentation {
 
         public void driveToColor(String redOrBlue, float speed) {
             if (redOrBlue.equalsIgnoreCase("red")) {
-                robot.driveSystem.driveToEncoderCounts(elapsedCounts, redMaxCounts, speed);
+                redMaxPostion.driveToPosition(speed);
             } else if (redOrBlue.equalsIgnoreCase("blue")) {
-                robot.driveSystem.driveToEncoderCounts(elapsedCounts, blueMaxCounts, speed);
+                blueMaxPosition.driveToPosition(speed);
             }
         }
     }
