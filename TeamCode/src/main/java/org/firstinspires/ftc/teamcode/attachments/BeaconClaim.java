@@ -206,20 +206,6 @@ public class BeaconClaim implements Attachment {
         return curLength;
     }
 
-    // method to activate or reset beacon claim attachment
-    // This method should be called in the while(opModeIsActive) loop
-    @Override
-    public void getAndApplyDScmd() {
-        if (curOpMode.gamepad2.x){
-            pushBeacon();
-        }
-        else if (curOpMode.gamepad2.b){
-            retractBeacon();
-        }
-        else {
-            idleBeacon();
-        }
-    }
     private void updateBeaconServoLength(BeaconClaimOperation op) {
         if (lastOp == BeaconClaimOperation.NONE) {
             lastOpTimer.reset();
