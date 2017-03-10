@@ -205,8 +205,8 @@ public class CapBallLift implements  Attachment {
     }
     public boolean isAtDownPosition(){
         int curPosition = liftMotor.getCurrentPosition();
-        int lowerBound = downPosition - 500;
-        int upperBound = downPosition + 500;
+        int lowerBound = downPosition - 1680;
+        int upperBound = downPosition + 1680;
 
         if (curPosition < lowerBound || curPosition > upperBound){
             return false;
@@ -216,7 +216,7 @@ public class CapBallLift implements  Attachment {
     }
     public boolean isAtMidPosition(){
         int curPosition = liftMotor.getCurrentPosition();
-        int lowerBound = downPosition + 501;
+        int lowerBound = downPosition + 1681;
         int upperBound = (upPosition /2) - 1;
 
         if (curPosition < lowerBound || curPosition > upperBound){
@@ -228,7 +228,7 @@ public class CapBallLift implements  Attachment {
     public boolean isAtUpPosition(){
         int curPosition = liftMotor.getCurrentPosition();
         int lowerBound = upPosition / 2;
-        int upperBound = upPosition + 1000;
+        int upperBound = upPosition + 1680;
 
         if (curPosition < lowerBound || curPosition > upperBound){
             return false;
