@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.view.animation.PathInterpolator;
-
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.Range;
@@ -171,7 +169,6 @@ public class FTCRobot {
     }
 
     public void runTeleOp(String allianceColor) {
-        curOpMode.waitForStart();
         while (curOpMode.opModeIsActive()) {
             driverStation.getNextCmd();
             curOpMode.idle();
