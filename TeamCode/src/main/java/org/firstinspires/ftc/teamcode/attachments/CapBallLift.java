@@ -26,6 +26,7 @@ public class CapBallLift implements  Attachment {
     boolean lockLift = false;
     boolean runToPosition = false;
     public boolean lockLift = false;
+    public  boolean useEncoders = false;
     public int downPosition, midPosition, upPosition;
 
 
@@ -43,6 +44,7 @@ public class CapBallLift implements  Attachment {
             motorsObj = liftObj.getJSONObject(key);
             key = JsonReader.getRealKeyIgnoreCase(motorsObj, "liftMotor");
             liftMotorObj = motorsObj.getJSONObject(key);
+            useEncoders = liftMotorObj.getBoolean("useEncoders");
             liftMotor = curOpMode.hardwareMap.dcMotor.get("liftMotor");
             if (liftMotorObj.getBoolean("needReverse")) {
                 DbgLog.msg("ftc9773: Reversing the lift servo");
