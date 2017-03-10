@@ -60,14 +60,5 @@ public class ParticleRelease implements Attachment{
     public void keepParticles() {
         particleServo.setPosition(1.0);
     }
-    
-    @Override
-    public void getAndApplyDScmd() {
-        if (curOpMode.gamepad1.a) {
-            releaseParticles();
-        }
-        if (curOpMode.gamepad1.y) {
-            keepParticles();
-        }
-    }
+
 }

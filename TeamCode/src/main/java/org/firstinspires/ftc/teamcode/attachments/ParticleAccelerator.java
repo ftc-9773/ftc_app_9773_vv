@@ -98,14 +98,5 @@ public class ParticleAccelerator implements Attachment{
         if (launcherMotor1 != null) {  launcherMotor1.setPower(0.0); }
         if (launcherMotor2 != null) { launcherMotor2.setPower(0.0); }
     }
-    
-    @Override
-    public void getAndApplyDScmd() {
-        if (curOpMode.gamepad1.dpad_up) {
-            activateParticleAccelerator();
-        }
-        else if (curOpMode.gamepad1.dpad_down) {
-            deactivateParticleAccelerator();
-        }
-    }
+
 }

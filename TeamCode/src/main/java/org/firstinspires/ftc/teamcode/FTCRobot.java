@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.view.animation.PathInterpolator;
+
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.Range;
@@ -38,6 +40,7 @@ import static java.lang.Thread.sleep;
  */
 public class FTCRobot {
     public LinearOpMode curOpMode;
+    public DriverStation driverStation;
     public DriveSystem driveSystem=null;
     public Navigation navigation =null;
     private Attachment[] attachmentsArr;
@@ -63,6 +66,7 @@ public class FTCRobot {
      */
     public FTCRobot(LinearOpMode curOpMode, String robotName, String autoOrTeleop) {
         this.curOpMode = curOpMode;
+        this.driverStation = new DriverStation(this, curOpMode);
         this.autoOrTeleop = autoOrTeleop;
         RobotConfigReader robotConfig;
         robotConfig = new RobotConfigReader(JsonReader.baseDir+"robots.json",  robotName);
@@ -154,35 +158,8 @@ public class FTCRobot {
     }
 
     public void runTeleOp(String allianceColor) {
-        float speed;
-        float direction;
-
-        // Set the drive system teleop mode max speed
-        curOpMode.waitForStart();
-        boolean isReverse = false;
-        while(curOpMode.opModeIsActive()){
-            if(!isReverse) {
-                speed = -curOpMode.gamepad1.left_stick_y;
-                direction = curOpMode.gamepad1.right_stick_x;
-            }
-            else{
-                speed = curOpMode.gamepad1.left_stick_y;
-                direction = curOpMode.gamepad1.right_stick_x;
-            }
-            speed = (float) Range.clip(speed, -1.0, 1.0);
-            direction = (float) Range.clip(direction, -1.0, 1.0);
-
-            driveSystem.drive(speed, direction);
-            if(curOpMode.gamepad1.x){
-                isReverse = true;
-            }
-            else if(curOpMode.gamepad1.b){
-                isReverse = false;
-            }
-            for (Attachment anAttachment : attachmentsArr) {
-                anAttachment.getAndApplyDScmd();
-            }
-
+        while (curOpMode.opModeIsActive()) {
+            driverStation.getNextCmd();
             curOpMode.idle();
         }
     }
