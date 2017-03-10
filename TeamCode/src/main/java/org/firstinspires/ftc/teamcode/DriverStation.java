@@ -210,6 +210,10 @@ public class DriverStation {
                             robot.capBallLiftObj.applyPower(-curOpMode.gamepad2.right_stick_y);
                             liftStateMachine.switchState("Lifting");
                         }
+                        if (robot.capBallLiftObj.useEncoders && curOpMode.gamepad2.right_bumper){
+                            robot.capBallLiftObj.goToMidPosition();
+                            liftStateMachine.switchState("Mid");
+                        }
                         break;
                     case "Lifting":
                         if (robot.driveSystem.getScaleMultiplier() != 0.0){
@@ -245,6 +249,14 @@ public class DriverStation {
                             robot.capBallLiftObj.applyPower(-curOpMode.gamepad2.right_stick_y);
                             liftStateMachine.switchState("Lifting");
                         }
+                        if (robot.capBallLiftObj.useEncoders && curOpMode.gamepad2.left_bumper){
+                        robot.capBallLiftObj.goToDownPosition();
+                        liftStateMachine.switchState("Down");
+                    }
+                        if (robot.capBallLiftObj.useEncoders && curOpMode.gamepad2.right_bumper){
+                            robot.capBallLiftObj.gotToUpPosition();
+                            liftStateMachine.switchState("Up");
+                        }
                         break;
                     case "Up":
                         if (robot.driveSystem.getScaleMultiplier() != 0.1){
@@ -259,6 +271,10 @@ public class DriverStation {
                             }
                             robot.capBallLiftObj.applyPower(-curOpMode.gamepad2.right_stick_y);
                             liftStateMachine.switchState("Lifting");
+                        }
+                        if (robot.capBallLiftObj.useEncoders && curOpMode.gamepad2.left_bumper){
+                            robot.capBallLiftObj.goToMidPosition();
+                            liftStateMachine.switchState("Mid");
                         }
                         break;
                 }
