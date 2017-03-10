@@ -156,7 +156,9 @@ public class CapBallLift implements  Attachment {
         }
     }
     public void idleFork(){
-        liftServoCR.setPower(0);
+        if (liftServoCR != null) {
+            liftServoCR.setPower(0);
+        }
     }
 
     public void activateCrown(){
