@@ -50,18 +50,7 @@ public class Harvester implements Attachment {
         }
     }
 
-    @Override
-    public void getAndApplyDScmd(){
-        if(curOpMode.gamepad2.dpad_down){
-            intake();
-        }
-        else if (curOpMode.gamepad2.dpad_up){
-            output();
-        }
-        else {
-            idle();
-        }
-    }
+
 
     public void intake(){
         harvesterMotor.setPower(-1.0);
