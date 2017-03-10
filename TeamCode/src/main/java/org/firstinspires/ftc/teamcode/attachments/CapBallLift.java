@@ -129,6 +129,7 @@ public class CapBallLift implements  Attachment {
         }
     }
     public void lockLiftMotor(){
+        runToPosition = true;
         lockLift = true;
         liftMotor.setTargetPosition(liftMotor.getCurrentPosition());
         if(liftMotor.getMode() != DcMotor.RunMode.RUN_TO_POSITION) {
