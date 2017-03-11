@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.attachments.CapBallLift;
 import org.firstinspires.ftc.teamcode.attachments.Harvester;
 import org.firstinspires.ftc.teamcode.attachments.ParticleAccelerator;
 import org.firstinspires.ftc.teamcode.attachments.ParticleRelease;
+import org.firstinspires.ftc.teamcode.attachments.WallFollower;
 import org.firstinspires.ftc.teamcode.drivesys.DriveSystem;
 import org.firstinspires.ftc.teamcode.navigation.Navigation;
 import org.firstinspires.ftc.teamcode.util.BackgroundTasks;
@@ -43,6 +44,7 @@ public class FTCRobot {
     private Attachment[] attachmentsArr;
     public AutonomousActions autonomousActions;
     public BeaconClaim beaconClaimObj;
+    public WallFollower wallFollowObj;
     public CapBallLift capBallLiftObj;
     public Harvester harvesterObj;
     public ParticleAccelerator partAccObj;
@@ -129,6 +131,11 @@ public class FTCRobot {
                     attachmentsArr[i] = new BeaconClaim(this, curOpMode, rootObj);
                     beaconClaimObj = (BeaconClaim) attachmentsArr[i];
                     DbgLog.msg("ftc9773: beaconClaimObj created");
+                    break;
+                case "WallFollwer" :
+                    attachmentsArr[i] = new WallFollower(this, curOpMode, rootObj);
+                    wallFollowObj = (WallFollower) attachmentsArr[i];
+                    DbgLog.msg("ftc9773: wallFollowObj created");
                     break;
                 case "CapBallLift":
                     attachmentsArr[i] = new CapBallLift(this, curOpMode, rootObj);
