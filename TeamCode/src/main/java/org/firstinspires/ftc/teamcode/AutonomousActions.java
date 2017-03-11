@@ -26,6 +26,7 @@ public class AutonomousActions {
     LinearOpMode curOpMode;
     public String allianceColor;
     AutonomousOptionsReader autoCfg;
+    AutonomousOptionsReader autoCfg2;
     String replayFilesDir;
     DriveSystem driveSystem;
     final double CM2INCHES = 0.3937;
@@ -118,6 +119,7 @@ public class AutonomousActions {
                 break;
             }
             case "TurnDegrees": {
+                DbgLog.msg("ftc9773: currentYaw = %f", robot.navigation.gyro.getYaw());
                 double degrees = 0.0;
                 double speed = robot.navigation.turnMaxSpeed;
                 try {
@@ -129,11 +131,7 @@ public class AutonomousActions {
                     e.printStackTrace();
                 }
                 //robot.navigation.navxMicro.turnRobot(degrees, speed, navigationChecks);
-                double curYaw = robot.navigation.gyro.getYaw();
-                double targerYaw = robot.navigation.getTargetYaw(curYaw, degrees);
-                DbgLog.msg("ftc9773: currentYaw = %f, degrees=%f, speed=%f, targetYaw=%f",
-                        curYaw, degrees, speed, targerYaw);
-                robot.navigation.setRobotOrientation(targerYaw, speed);
+                DbgLog.msg("ftc9773: currentYaw = %f", robot.navigation.gyro.getYaw());
                 break;
             }
             case "TurnUntilWhiteLine": {
@@ -210,18 +208,6 @@ public class AutonomousActions {
                         degrees, maxDistance1, maxDistance2, motorSpeed);
                 robot.navigation.driveUntilAllianceBeacon(motorSpeed, degrees,
                         maxDistance1, maxDistance2);
-                break;
-            }
-            case "DriveAndClaimAllianceBeacon" : {
-                double motorSpeed=0.2;
-                try {
-                    String key = JsonReader.getRealKeyIgnoreCase(actionObj, "motorSpeed");
-                    motorSpeed = actionObj.getDouble(key);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                DbgLog.msg("ftc9773: motorSpeed: %f", motorSpeed);
-                robot.navigation.driveAndClaimAllianceBeacon(motorSpeed);
                 break;
             }
             case "startPartAcc":
@@ -410,21 +396,11 @@ public class AutonomousActions {
                     e.printStackTrace();
                 }
                 distanceFromWall = robot.navigation.rangeSensor.getDistance(DistanceUnit.CM);
-                int i=0;
-                while ((distanceFromWall >= 255) && (i<10)){ // Try for 200 milli seconds
+                while (distanceFromWall >= 255){
                     curOpMode.sleep(20);
                     distanceFromWall = robot.navigation.rangeSensor.getDistance(DistanceUnit.CM);
                 }
-                if (distanceFromWall >= 255) {
-                    // get the value from the weighted average of the range sensor
-                    distanceFromWall = robot.navigation.getRangeSensorRunningAvg();
-                    if (distanceFromWall < 0) {
-                        // Ensure that the robot does not move sideways when the distance from wall
-                        // is unknown.
-                        distanceFromWall = targetDistance;
-                    }
-                }
-                if ((Math.abs(targetDistance - distanceFromWall) > distTolerance) ) {
+                if (Math.abs(targetDistance - distanceFromWall) > distTolerance) {
                     distanceToShift = CM2INCHES * (targetDistance - distanceFromWall);
                     DbgLog.msg("ftc9773: targetDistance=%f cm, moveDistance=%f, distanceFromWall=%f cm, tolerance = %f cm, distanceToShift=%f inches, motorSpeed=%f, returnToSamePos=%b",
                             targetDistance, moveDistance, distanceFromWall, distTolerance,
@@ -437,9 +413,6 @@ public class AutonomousActions {
                     DbgLog.msg("ftc9773: targetDistance=%f cm, moveDistance=%f, distanceFromWall=%f cm, tolerance = %f cm, distanceToShift=%f inches, motorSpeed=%f, returnToSamePos=%b",
                             targetDistance, moveDistance, distanceFromWall, distTolerance,
                             distanceToShift, motorSpeed, returnToSamePos);
-                    // Still have to move forward, even though the robot does not shift sideways
-                    double startingYaw = (allianceColor.equalsIgnoreCase("red") ? 0.0 : 180);
-                    robot.navigation.goStraightToDistance(moveDistance, startingYaw, (float) motorSpeed);
                 }
                 break;
             }
@@ -449,12 +422,41 @@ public class AutonomousActions {
         }
     }
 
+    public void invokeSubmethod() throws InterruptedException {
+        int len2 = autoCfg2.actions.length();
+        String replayFile;
+        String methodName;
+        JSONObject actionObj2;
+        for(int i =0; i<len2 && curOpMode.opModeIsActive(); i++){
+            try {
+                actionObj2 = autoCfg2.getAction(i);
+                String key = JsonReader.getRealKeyIgnoreCase(actionObj2, "type");
+                if (actionObj2.getString(key).equalsIgnoreCase("Replay")) {
+                    key = JsonReader.getRealKeyIgnoreCase(actionObj2, "value");
+                    replayFile = this.replayFilesDir + actionObj2.getString(key);
+                    DbgLog.msg("ftc9773: Replaying the file %s", replayFile);
+                    replayFileAction(replayFile);
+                }
+                else if (actionObj2.getString(key).equalsIgnoreCase("Programmed")) {
+                    key = JsonReader.getRealKeyIgnoreCase(actionObj2, "value");
+                    methodName = actionObj2.getString(key);
+                    DbgLog.msg("ftc9773: Invoking method: %s", methodName);
+                    invokeMethod(methodName, actionObj2);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public void doActions() throws InterruptedException {
         int len = autoCfg.actions.length();
+//        int len2 = autoCfg2.actions.length();
         JSONObject actionObj;
 
         String replayFile;
         String methodName;
+        String submethodName;
 //        DbgLog.msg("ftc9773: Number of autonomous actions = %d", len);
         for (int i =0; i<len && curOpMode.opModeIsActive(); i++) {
             DbgLog.msg("ftc9773: i=%d", i);
@@ -473,11 +475,17 @@ public class AutonomousActions {
                     DbgLog.msg("ftc9773: Invoking method: %s", methodName);
                     invokeMethod(methodName,actionObj);
                 }
+                else if (actionObj.getString(key).equalsIgnoreCase("Submethod")){
+                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "value");
+                    submethodName = actionObj.getString(key);
+                    autoCfg2 = new AutonomousOptionsReader(JsonReader.autonomousOptFile, submethodName);
+                    DbgLog.msg("ftc9773: Invoking submethod: %s", submethodName);
+                    invokeSubmethod();//TODO: check action object
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
     }
-
 
 }
