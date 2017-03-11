@@ -359,7 +359,7 @@ public class Navigation {
 //        robot.instrumentation.removeAction(driveToDistInstr);
     }
 
-    public void goStraightToWhiteLine(double degrees, float motorSpeed, boolean driveBackwards) {
+    public void goStraightToWhiteLine(double degrees, float motorSpeed, boolean driveBackwards, double additionalDistance) {
         String methodSignature = String.format("goStraightToWhiteLine(degrees=%f, motorSpeed=%f, driveBackwards=%b)",
                 degrees, motorSpeed, driveBackwards);
         NavigationChecks navChecks = new NavigationChecks(robot, curOpMode, this);
@@ -387,6 +387,15 @@ public class Navigation {
                 gyro.goStraightPID(driveBackwards, degrees, motorSpeed);
                 robot.instrumentation.addInstrData();
                 beaconServoExtender.continueTask();
+            }
+            if (additionalDistance != 0){
+                navChecks.removeCheck(check1);
+                NavigationChecks.EncoderCheckForDistance encodercheck = navChecks.new EncoderCheckForDistance(additionalDistance);
+                navChecks.addNewCheck(encodercheck);
+                while (!navChecks.stopNavigation()) {
+                    gyro.goStraightPID(driveBackwards, degrees, motorSpeed);
+                    robot.instrumentation.addInstrData();
+                }
             }
             robot.driveSystem.stop();
             robot.instrumentation.addInstrData();
@@ -483,8 +492,72 @@ public class Navigation {
         robot.instrumentation.removeAction(rangeInstr);
     }
 
-    public void driveAndClaimAllianceBeacon(double motorSpeed) {
-        colorInstr.driveToColor(robot.autonomousActions.allianceColor, (float)motorSpeed);
+    public void driveToAllianceBeaconWhileScanning(double degrees, float motorSpeed,
+                                                   boolean driveBackwards, double additionalDistance,
+                                                   String driveToPosition) {
+        String methodSignature = String.format("driveAndClaimAllianceBeacon(degrees=%f, motorSpeed=%f, driveBackwards=%b," +
+                "additionalDistance=%f, driveToPosition=%s)",
+                degrees, motorSpeed, driveBackwards, additionalDistance, driveToPosition);
+        //colorInstr.driveToColor(robot.autonomousActions.allianceColor, (float)motorSpeed);
+        NavigationChecks navChecks = new NavigationChecks(robot, curOpMode, this);
+        NavigationChecks.CheckForWhiteLine check1 = navChecks.new CheckForWhiteLine(this.lf);
+        NavigationChecks.OpmodeInactiveCheck check2 = navChecks.new OpmodeInactiveCheck();
+        NavigationChecks.BeaconColorCheck beaconColorCheck = navChecks.new BeaconColorCheck(colorInstr, robot.autonomousActions.allianceColor);
+        navChecks.addNewCheck(check1);
+        navChecks.addNewCheck(check2);
+        navChecks.addNewCheck(beaconColorCheck);
+        robot.instrumentation.addAction(odsInstr);
+        robot.instrumentation.addAction(colorInstr);
+        robot.instrumentation.addAction(gyroDegreesInstr);
+
+        if (gyro.isGyroWorking()) {
+            NavigationChecks.CheckRobotTilting check3 = navChecks.new CheckRobotTilting(10);
+            navChecks.addNewCheck(check3);
+            robot.instrumentation.reset(methodSignature);
+            while (!navChecks.stopNavigation()) {
+                gyro.goStraightPID(driveBackwards, degrees, motorSpeed);
+                robot.instrumentation.addInstrData();
+            }
+            if (navChecks.stopNavCriterion == check1){
+                if (additionalDistance != 0) {
+                    navChecks.removeCheck(check1);
+                    NavigationChecks.EncoderCheckForDistance encodercheck = navChecks.new EncoderCheckForDistance(additionalDistance);
+                    navChecks.addNewCheck(encodercheck);
+                    while (!navChecks.stopNavigation()) {
+                        gyro.goStraightPID(driveBackwards, degrees, motorSpeed);
+                        robot.instrumentation.addInstrData();
+                    }
+                }
+            }
+            robot.driveSystem.stop();
+            robot.instrumentation.addInstrData();
+            robot.instrumentation.printToConsole();
+            robot.instrumentation.writeToFile();
+            // Update the encoderNav's current yaw with that of gyro
+            encoderNav.setCurrentYaw(gyro.getYaw());
+            colorInstr.driveToColor(robot.autonomousActions.allianceColor, motorSpeed, driveToPosition);
+        } else {
+            // Use purely encoder based navigation
+            if (driveBackwards) {
+                robot.driveSystem.reverse();
+            }
+            robot.instrumentation.reset(methodSignature);
+            while (!navChecks.stopNavigation()) {
+                robot.driveSystem.drive(motorSpeed, 0);
+                robot.instrumentation.addInstrData();
+            }
+            robot.driveSystem.stop();
+            robot.instrumentation.addInstrData();
+            robot.instrumentation.printToConsole();
+            robot.instrumentation.writeToFile();
+            if (driveBackwards) {
+                robot.driveSystem.reverse();
+            }
+        }
+//        robot.instrumentation.removeAction(driveTillWhitelineInstr);
+        robot.instrumentation.removeAction(gyroDegreesInstr);
+        robot.instrumentation.removeAction(odsInstr);
+        robot.instrumentation.removeAction(colorInstr);
     }
 
     public void setRobotOrientation(double targetYaw, double motorSpeed) {

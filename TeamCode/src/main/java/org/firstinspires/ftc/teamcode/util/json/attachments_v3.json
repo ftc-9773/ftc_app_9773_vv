@@ -27,7 +27,7 @@
         "needReverse" : false,
         "__fixedPositions" : true,
         "__comment_speed" : "speed is in the units of centimeters per second",
-        "speed" : 8.0,
+        "speed" : 12.0,
         "__comment_strokeLength" : "strokeLength is in the units of cm",
         "strokeLength" : 13.9,
         "minButton" : "gamepad1.a",

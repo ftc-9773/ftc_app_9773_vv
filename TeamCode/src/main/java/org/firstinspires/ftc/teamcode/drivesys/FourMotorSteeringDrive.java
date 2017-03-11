@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.navigation.NavigationChecks;
 
+import java.util.zip.DeflaterOutputStream;
+
 /*
  * Copyright (c) 2016 Robocracy 9773
  */
@@ -128,6 +130,37 @@ public class FourMotorSteeringDrive extends DriveSystem {
                 curOpMode.idle();
             }
             stop();
+            setDriveSysMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
+
+        @Override
+        public void driveToMidPosition(DriveSystem.DriveSysPosition driveSysPosition, double speed){
+            DriveSysPosition driveSysPosition1 = (DriveSysPosition)driveSysPosition;
+            long midL1 = (this.encoderCountL1+driveSysPosition1.encoderCountL1)/2;
+            long midL2 = (this.encoderCountL2+driveSysPosition1.encoderCountL2)/2;
+            long midR1 = (this.encoderCountR1+driveSysPosition1.encoderCountR1)/2;
+            long midR2 = (this.encoderCountR2+driveSysPosition1.encoderCountR2)/2;
+
+            DbgLog.msg("ftc9773: position1: L1=%d, L2=%d, R1=%d, R2=%d", this.encoderCountL1,
+                    this.encoderCountL2, this.encoderCountR1, this.encoderCountR2);
+            DbgLog.msg("ftc9773: position2: L1=%d, L2=%d, R1=%d, R2=%d",
+                    driveSysPosition1.encoderCountL1, driveSysPosition1.encoderCountL2,
+                    driveSysPosition1.encoderCountR1, driveSysPosition1.encoderCountR2);
+            DbgLog.msg("ftc9773: mid position: L1=%d, L2=%d, R1=%d, R2=%d", midL1, midL2,
+                    midR1, midR2);
+
+            motorL1.setTargetPosition((int)midL1);
+            motorL2.setTargetPosition((int)midL2);
+            motorR1.setTargetPosition((int)midR1);
+            motorR2.setTargetPosition((int)midR2);
+            setDriveSysMode(DcMotor.RunMode.RUN_TO_POSITION);
+            drive((float) (speed * frictionCoefficient), 0.0f);
+            while (motorL1.isBusy() && motorL2.isBusy() && motorR1.isBusy() && motorR2.isBusy()
+                    && curOpMode.opModeIsActive()) {
+                curOpMode.idle();
+            }
+            stop();
+            setDriveSysMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
     }
 
@@ -142,6 +175,7 @@ public class FourMotorSteeringDrive extends DriveSystem {
         this.motorR2.setDirection(DcMotorSimple.Direction.REVERSE);
         this.motorL1.setDirection(DcMotorSimple.Direction.FORWARD);
         this.motorL2.setDirection(DcMotorSimple.Direction.FORWARD);
+        this.setDriveSysMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // reset the encoders first
         this.setDriveSysMode(DcMotor.RunMode.RUN_USING_ENCODER);
         this.setZeroPowerMode(DcMotor.ZeroPowerBehavior.BRAKE);
         this.frictionCoefficient = frictionCoefficient;

@@ -213,15 +213,38 @@ public class AutonomousActions {
                 break;
             }
             case "DriveAndClaimAllianceBeacon" : {
-                double motorSpeed=0.2;
+                double motorSpeed = 0.0;
+                double degrees=0.0;
+                boolean driveBackwards = false;
+                double additionalDistance = 0.0;
+                String driveToPosition="last";
                 try {
-                    String key = JsonReader.getRealKeyIgnoreCase(actionObj, "motorSpeed");
+                    String key = JsonReader.getRealKeyIgnoreCase(actionObj, "degrees");
+                    degrees = actionObj.getDouble(key);
+                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "motorSpeed");
                     motorSpeed = actionObj.getDouble(key);
+                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "driveBackwards");
+                    driveBackwards = actionObj.getBoolean(key);
+                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "additionalDistance");
+                    additionalDistance = actionObj.getDouble(key);
+                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "driveToPosition");
+                    driveToPosition = actionObj.getString(key);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                DbgLog.msg("ftc9773: motorSpeed: %f", motorSpeed);
-                robot.navigation.driveAndClaimAllianceBeacon(motorSpeed);
+                DbgLog.msg("ftc9773: degrees=%f, motorSpeed=%f, driveBackwards=%b, additionalDistance=%f," +
+                        "driveToPosition=%s", degrees, motorSpeed, driveBackwards,
+                        additionalDistance, driveToPosition);
+                robot.navigation.driveToAllianceBeaconWhileScanning(degrees, (float) motorSpeed,
+                        driveBackwards, additionalDistance, driveToPosition);
+                // Get the range sensor value and pass it on to method
+                double distanceFromWall = robot.navigation.rangeSensor.getDistance(DistanceUnit.CM);
+                while (distanceFromWall >= 255){
+                    curOpMode.sleep(20);
+                    distanceFromWall = robot.navigation.rangeSensor.getDistance(DistanceUnit.CM);
+                }
+                DbgLog.msg("ftc9773: Distance from wall = %f", distanceFromWall);
+                robot.beaconClaimObj.claimABeacon(distanceFromWall);
                 break;
             }
             case "startPartAcc":
@@ -256,6 +279,34 @@ public class AutonomousActions {
                 }
                 break;
             }
+            case "UnfoldWallFollower" : {
+                String key=null;
+                double millis=200;
+                try {
+                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "timeToPowerTheServo");
+                    millis = actionObj.getDouble(key);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                robot.wallFollowObj.activateWallFollwer(millis);
+                break;
+            }
+            case "IdleWallFollower" : {
+                robot.wallFollowObj.idle();
+                break;
+            }
+            case "FoldWallFollower" : {
+                String key=null;
+                double millis=200;
+                try {
+                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "timeToPowerTheServo");
+                    millis = actionObj.getDouble(key);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                robot.wallFollowObj.deactivateWallFollower(millis);
+                break;
+            }
             case "GoStraightToDistance": {
                 double inches = 0.0;
                 double motorSpeed = 0.0;
@@ -278,6 +329,7 @@ public class AutonomousActions {
                 double motorSpeed = 0.0;
                 double degrees=0.0;
                 boolean driveBackwards = false;
+                double additionalDistance = 0.0;
                 try {
                     String key = JsonReader.getRealKeyIgnoreCase(actionObj, "degrees");
                     degrees = actionObj.getDouble(key);
@@ -285,10 +337,14 @@ public class AutonomousActions {
                     motorSpeed = actionObj.getDouble(key);
                     key = JsonReader.getRealKeyIgnoreCase(actionObj, "driveBackwards");
                     driveBackwards = actionObj.getBoolean(key);
+                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "additionalDistance");
+                    additionalDistance = actionObj.getDouble(key);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                robot.navigation.goStraightToWhiteLine(degrees, (float) motorSpeed, driveBackwards);
+                DbgLog.msg("ftc9773: degrees=%f, motorSpeed=%f, driveBackwards=%b, additionalDistance=%f",
+                        degrees, motorSpeed, driveBackwards, additionalDistance);
+                robot.navigation.goStraightToWhiteLine(degrees, (float) motorSpeed, driveBackwards, additionalDistance);
                 break;
             }
             case "GoStriaghtTillGyroIsStable" : {

@@ -1,17 +1,30 @@
 {
+  "test3" : [
+    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0, "inches" : 24.0, "motorSpeed" : 0.75},
+    {"type" : "Programmed", "value" : "UnfoldWallFollower", "timeToPowerTheServo" : "700"},
+    {"type" : "Programmed", "value" : "IdleWallFollower"},
+    {"type" : "Programmed", "value" : "DriveAndClaimAllianceBeacon", "degrees" : 358.0,
+      "driveBackwards" : false, "motorSpeed" : 0.2, "additionalDistance" : 0.0, "driveToPosition" : "last"}
+  ],
   "test1" : [
-    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0, "inches" : 10.0, "motorSpeed" : 0.75},
-    {"type" : "Programmed", "value" : "shiftRobot", "shiftDistance" : -30.0, "moveDistance" : 30.0,
+    {"type" : "Programmed", "value" : "startPartAcc"},
+    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0, "inches" : 30.0, "motorSpeed" : 0.75},
+    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 20.0, "motorSpeed" : 0.3},
+    {"type" : "Programmed", "value" : "shootParticles", "numberOfParticles" : 1},
+    {"type" : "programmed", "value" : "stopPartAcc"},
+    {"type" : "Programmed", "value" : "shiftRobot", "shiftDistance" : -30.0, "moveDistance" : 15.0,
       "motorSpeed" : 0.75, "returnToSamePos" : false, "startingYaw" : 0.0, "endingYaw" : 0.0},
-    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0, "inches" : 12.0, "motorSpeed" : 0.5},
-    {"type" : "Programmed", "value" : "shiftToWall", "targetDistance" : 12.0, "moveDistance" : 12.0,
+    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0, "inches" : 10.0, "motorSpeed" : 0.75},
+    {"type" : "Programmed", "value" : "shiftToWall", "targetDistance" : 11.5, "moveDistance" : 14.0,
       "distTolerance" : 3.0, "motorSpeed" : 0.5, "returnToSamePos" : false},
-    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0, "inches" : 6.0, "motorSpeed" : 0.5},
-    {"type" : "Programmed", "value" : "shiftToWall", "targetDistance" : 10.0, "moveDistance" : 12.0,
-      "distTolerance" : 3.0, "motorSpeed" : 0.3, "returnToSamePos" : false},
-    {"type" : "Programmed", "value" : "GoStraightToWhiteLine", "degrees" : 0.0,
-      "driveBackwards" : false, "motorSpeed" : 0.2},
-    {"type" : "Programmed", "value" : "DriveAndClaimAllianceBeacon"}
+    {"type" : "Programmed", "value" : "UnfoldWallFollower", "timeToPowerTheServo" : "700"},
+    {"type" : "Programmed", "value" : "IdleWallFollower"},
+    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0, "inches" : 6.0, "motorSpeed" : 0.75},
+    {"type" : "Programmed", "value" : "DriveAndClaimAllianceBeacon", "degrees" : 358.0,
+      "driveBackwards" : false, "motorSpeed" : 0.2, "additionalDistance" : 0.0, "driveToPosition" : "last"},
+    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0, "inches" : -35.0, "motorSpeed" : 0.75},
+    {"type" : "Programmed", "value" : "DriveAndClaimAllianceBeacon", "degrees" : 2.0,
+      "driveBackwards" : true, "motorSpeed" : 0.2, "additionalDistance" : -15.0, "driveToPosition" : "last"}
     ],
     "test2" : [
     {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0, "inches" : 30.0, "motorSpeed" : 0.75},
@@ -178,6 +191,13 @@
   ],
   "partAccOnly" :[
     {"type" : "Programmed", "value" : "startPartAcc", "motorSpeed" : 1.0}
+  ],
+  "MechanicalWallFollowerTest" : [
+    {"type" : "Programmed", "value" : "UnfoldWallFollower", "timeToPowerTheServo" : "700"},
+    {"type" : "Programmed", "value" : "IdleWallFollower"},
+    {"type" : "Programmed", "value" : "Sleep","milliSeconds": 2000},
+    {"type" : "Programmed", "value" : "FoldWallFollower", "timeToPowerTheServo" : "1000"},
+    {"type" : "Programmed", "value" : "IdleWallFollower"}
   ],
   "testShiftToWall" : [
     {"type" : "Programmed", "value" : "shiftToWall", "targetDistance" : 24.0, "moveDistance" : 15.0,

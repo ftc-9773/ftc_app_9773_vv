@@ -89,18 +89,18 @@ public class WallFollower implements Attachment {
         wallServoCR.setPower(0.0);
     }
 
-    public void activateWallFollwer() {
+    public void activateWallFollwer(double millis) {
         ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         timer.reset();
-        while ((timer.milliseconds() < timeToUnfold) && curOpMode.opModeIsActive()) {
+        while ((timer.milliseconds() < millis) && curOpMode.opModeIsActive()) {
             unfold();
         }
     }
 
-    public void deactivateWallFollower() {
+    public void deactivateWallFollower(double millis) {
         ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         timer.reset();
-        while ((timer.milliseconds() < timeToUnfold) && curOpMode.opModeIsActive()) {
+        while ((timer.milliseconds() < millis) && curOpMode.opModeIsActive()) {
             fold();
         }
     }

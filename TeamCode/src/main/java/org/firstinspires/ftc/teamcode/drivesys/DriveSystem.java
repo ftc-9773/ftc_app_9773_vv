@@ -36,6 +36,7 @@ public abstract class DriveSystem {
         void savePostion();
         void resetPosition();
         void driveToPosition(double speed);
+        void driveToMidPosition(DriveSysPosition driveSysPosition, double speed);
     }
 
     public DriveSystem() {

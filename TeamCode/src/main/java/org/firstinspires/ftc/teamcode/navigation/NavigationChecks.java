@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.drivesys.DriveSystem;
+import org.firstinspires.ftc.teamcode.util.Instrumentation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
 public class NavigationChecks {
     public enum NavChecksSupported {CHECK_OPMODE_INACTIVE, CHECK_ROBOT_TILTING, CHECK_TIMEOUT,
         CHECK_WHITElINE, CHECK_TARGET_YAW_GYRO, CHECK_DISTANCE_TRAVELLED,
-        CROSSCHECK_GYRO_WITH_ENCODERS, CHECK_GYRO_IS_WORKING
+        CROSSCHECK_GYRO_WITH_ENCODERS, CHECK_GYRO_IS_WORKING, CHECK_BEACON_COLOR
     }
     LinearOpMode curOpMode;
     FTCRobot robot;
@@ -293,6 +294,33 @@ public class NavigationChecks {
             timer.reset();
             elapsedEncoderCounts.reset();
             prev_light = prev_speed = -1.0;
+            return;
+        }
+    }
+
+    public class BeaconColorCheck extends NavCheckBaseClass{
+        Instrumentation.ColorSensorInstr colorSensorInstr;
+        String allianceColor;
+
+        public BeaconColorCheck(Instrumentation.ColorSensorInstr colorSensorInstr, String allianceColor){
+            this.colorSensorInstr = colorSensorInstr;
+            this.allianceColor = allianceColor;
+            navcheck = NavChecksSupported.CHECK_BEACON_COLOR;
+        }
+
+        @Override
+        public boolean stopNavigation(){
+//            if (colorSensorInstr.allianceBeaconFound(allianceColor)){
+            if (colorSensorInstr.allianceBeaconFound("red") &&
+                    colorSensorInstr.allianceBeaconFound("blue")){
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        @Override
+        public void reset(){
             return;
         }
     }

@@ -102,6 +102,24 @@ public class TwoMotorDrive extends DriveSystem{
                 curOpMode.idle();
             }
             stop();
+            setDriveSysMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
+
+        @Override
+        public void driveToMidPosition(DriveSystem.DriveSysPosition driveSysPosition, double speed){
+            DriveSysPosition driveSysPosition1 = (DriveSysPosition) driveSysPosition;
+            long midL = (this.encoderCountL+driveSysPosition1.encoderCountL)/2;
+            long midR = (this.encoderCountR+driveSysPosition1.encoderCountR)/2;
+
+            motorL.setTargetPosition((int)midL);
+            motorR.setTargetPosition((int)midR);
+            setDriveSysMode(DcMotor.RunMode.RUN_TO_POSITION);
+            drive((float) (speed * frictionCoefficient), 0.0f);
+            while (motorL.isBusy() && motorR.isBusy() && curOpMode.opModeIsActive()) {
+                curOpMode.idle();
+            }
+            stop();
+            setDriveSysMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
     }
 

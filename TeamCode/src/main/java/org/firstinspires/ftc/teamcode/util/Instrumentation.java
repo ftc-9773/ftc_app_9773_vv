@@ -126,7 +126,7 @@ public class Instrumentation {
         BeaconClaim beaconClaimObj;
         ElapsedTime timer;
         DriveSystem.ElapsedEncoderCounts elapsedCounts;
-        DriveSystem.DriveSysPosition driveSysPosition, redMaxPostion, blueMaxPosition;
+        DriveSystem.DriveSysPosition driveSysPosition, redMaxPostion, blueMaxPosition, firstRedMaxPosition, firstBlueMaxPosition;
         boolean redBeaconFound, blueBeaconFound;
         int updateCnt, redMaxUpdateCnt, blueMaxUpdateCnt;
         int prevRed, prevBlue;
@@ -142,6 +142,8 @@ public class Instrumentation {
             elapsedCounts = robot.driveSystem.getNewElapsedCountsObj();
             redMaxPostion = robot.driveSystem.getNewDrivesysPositionObj();
             blueMaxPosition = robot.driveSystem.getNewDrivesysPositionObj();
+            firstRedMaxPosition = robot.driveSystem.getNewDrivesysPositionObj();
+            firstBlueMaxPosition = robot.driveSystem.getNewDrivesysPositionObj();
             redBeaconFound = blueBeaconFound = false;
             timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
             timer.reset();
@@ -164,13 +166,16 @@ public class Instrumentation {
             elapsedCounts.reset();
             redMaxPostion.resetPosition();
             blueMaxPosition.resetPosition();
+            firstRedMaxPosition.resetPosition();
+            firstBlueMaxPosition.resetPosition();
             redBeaconFound = blueBeaconFound = false;
             iterationCount = updateCnt = redMaxUpdateCnt = blueMaxUpdateCnt = 0;
             prevRed = prevBlue = maxRed = maxBlue = 0;
             if (printEveryUpdate) {
                 String strToWrite = String.format("method being instrumented=, %s", description);
                 fileObj.fileWrite(strToWrite);
-                strToWrite = String.format("voltage, millis, iteration, updateCnt, red, prevRed, blue, prevBlue, inches, speed");
+                strToWrite = String.format("voltage, millis, iteration, updateCnt, " +
+                        "red, prevRed, maxRed, blue, prevBlue, maxBlue, inches, speed");
                 fileObj.fileWrite(strToWrite);
             }
         }
@@ -187,19 +192,33 @@ public class Instrumentation {
                 double millis = timer.milliseconds();
                 double speed = distanceTravelled / millis;
                 if (red >= maxRed) {
+                    if (redMaxUpdateCnt  == 0){
+                        firstRedMaxPosition.savePostion();
+                    }
                     redMaxUpdateCnt = updateCnt;
                     redMaxPostion.savePostion();
                     maxRed = red;
+                } else {
+                    if (redMaxUpdateCnt !=0){
+                        redBeaconFound = true;
+                    }
                 }
                 if (blue >= maxBlue) {
+                    if (redMaxUpdateCnt == 0){
+                        firstBlueMaxPosition.savePostion();
+                    }
                     blueMaxUpdateCnt = updateCnt;
                     blueMaxPosition.savePostion();
                     maxBlue = blue;
+                } else {
+                    if (blueMaxUpdateCnt != 0){
+                        blueBeaconFound = true;
+                    }
                 }
                 if (printEveryUpdate) {
-                    String strToWrite = String.format("%f, %f, %d, %d, %d, %d, %d, %d, %f, %f", robot.getVoltage(),
-                            timer.milliseconds(), iterationCount, updateCnt, red, prevRed,
-                            blue, prevBlue, distanceTravelled, speed);
+                    String strToWrite = String.format("%f, %f, %d, %d, %d, %d, %d, %d, %d, %d, %f, %f", robot.getVoltage(),
+                            timer.milliseconds(), iterationCount, updateCnt, red, prevRed, maxRed,
+                            blue, prevBlue, maxBlue, distanceTravelled, speed);
                     fileObj.fileWrite(strToWrite);
                 }
                 prevRed = red;
@@ -229,13 +248,39 @@ public class Instrumentation {
             }
         }
 
-        public void driveToColor(String redOrBlue, float speed) {
+        public boolean allianceBeaconFound(String allianceColor){
+            if (allianceColor.equalsIgnoreCase("red")){
+                return redBeaconFound;
+            } else if (allianceColor.equalsIgnoreCase("blue")){
+                return blueBeaconFound;
+            }
+            return false;
+        }
+
+        public void driveToColor(String redOrBlue, float speed, String driveToPosition) {
             if (redOrBlue.equalsIgnoreCase("red")) {
-                if (maxRed > 0)
-                    redMaxPostion.driveToPosition(speed);
+                if (maxRed > 0) {
+                    if (redMaxUpdateCnt > blueMaxUpdateCnt) {
+                        redMaxPostion.driveToPosition(speed);
+                    } else {
+                        redMaxPostion.driveToPosition(speed);
+                    }
+//                    if (driveToPosition.equalsIgnoreCase("middle"))
+//                        redMaxPostion.driveToMidPosition(firstRedMaxPosition, speed);
+//                    else if (driveToPosition.equalsIgnoreCase("first"))
+//                        firstRedMaxPosition.driveToPosition(speed);
+//                    else if (driveToPosition.equalsIgnoreCase("last"))
+//                        redMaxPostion.driveToPosition(speed);
+                }
             } else if (redOrBlue.equalsIgnoreCase("blue")) {
-                if (maxBlue > 0)
-                    blueMaxPosition.driveToPosition(speed);
+                if (maxBlue > 0) {
+                    if (driveToPosition.equalsIgnoreCase("middle"))
+                        blueMaxPosition.driveToMidPosition(firstBlueMaxPosition, speed);
+                    else if (driveToPosition.equalsIgnoreCase("first"))
+                        firstBlueMaxPosition.driveToPosition(speed);
+                    else if (driveToPosition.equalsIgnoreCase("last"))
+                        blueMaxPosition.driveToPosition(speed);
+                }
             }
         }
     }
