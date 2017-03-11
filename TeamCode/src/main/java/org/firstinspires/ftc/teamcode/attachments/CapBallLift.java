@@ -23,7 +23,7 @@ public class CapBallLift implements  Attachment {
     DcMotor liftMotor;
     CRServo liftServoCR = null;
     Servo liftServo = null;
-    boolean runToPosition = false;
+    public boolean runToPosition = false;
     public boolean lockLift = false;
     public  boolean useEncoders = false;
     public int downPosition, midPosition, upPosition;
@@ -77,6 +77,7 @@ public class CapBallLift implements  Attachment {
                 liftServo.setPosition(1);
             }
             liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         } catch (JSONException e) {
@@ -99,7 +100,7 @@ public class CapBallLift implements  Attachment {
         if (!runToPosition){
             liftMotor.setPower(power);
         }
-        else if (runToPosition){
+        else if (runToPosition || lockLift){
             if(liftMotor.getMode() != DcMotor.RunMode.RUN_TO_POSITION) {
                 liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             }
@@ -107,7 +108,6 @@ public class CapBallLift implements  Attachment {
         }
     }
     public void lockLiftMotor(){
-        runToPosition = true;
         lockLift = true;
         liftMotor.setTargetPosition(liftMotor.getCurrentPosition());
         if(liftMotor.getMode() != DcMotor.RunMode.RUN_TO_POSITION) {
@@ -146,6 +146,7 @@ public class CapBallLift implements  Attachment {
             liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
         liftMotor.setPower(1);
+        curOpMode.sleep(500);
     }
     public void goToMidPosition(){
         runToPosition = true;
@@ -154,6 +155,7 @@ public class CapBallLift implements  Attachment {
             liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
         liftMotor.setPower(1);
+        curOpMode.sleep(500);
     }
     public void gotToUpPosition(){
         runToPosition = true;
@@ -162,8 +164,9 @@ public class CapBallLift implements  Attachment {
             liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
         liftMotor.setPower(1);
+        curOpMode.sleep(500);
     }
-    public boolean isAtDownPosition(){
+    public boolean isAtDownRange(){
         int curPosition = liftMotor.getCurrentPosition();
         int lowerBound = downPosition - 1680;
         int upperBound = downPosition + 1680;
@@ -174,7 +177,7 @@ public class CapBallLift implements  Attachment {
             return true;
         }
     }
-    public boolean isAtMidPosition(){
+    public boolean isAtMidRange(){
         int curPosition = liftMotor.getCurrentPosition();
         int lowerBound = downPosition + 1681;
         int upperBound = (upPosition /2) - 1;
@@ -185,10 +188,42 @@ public class CapBallLift implements  Attachment {
             return true;
         }
     }
-    public boolean isAtUpPosition(){
+    public boolean isAtUpRange(){
         int curPosition = liftMotor.getCurrentPosition();
         int lowerBound = upPosition / 2;
-        int upperBound = upPosition + 1680;
+
+        if (curPosition < lowerBound ){
+            return false;
+        } else {
+            return true;
+        }
+    }
+    public boolean reachedDownPosition(){
+        int curPosition = liftMotor.getCurrentPosition();
+        int lowerBound = downPosition - 100;
+        int upperBound = downPosition + 100;
+
+        if (curPosition < lowerBound || curPosition > upperBound){
+            return false;
+        } else {
+            return true;
+        }
+    }
+    public boolean reachedMidPosition(){
+        int curPosition = liftMotor.getCurrentPosition();
+        int lowerBound = midPosition - 100;
+        int upperBound = midPosition + 100;
+
+        if (curPosition < lowerBound || curPosition > upperBound){
+            return false;
+        } else {
+            return true;
+        }
+    }
+    public boolean reachedUpPosition(){
+        int curPosition = liftMotor.getCurrentPosition();
+        int lowerBound = upPosition - 100;
+        int upperBound = upPosition + 100;
 
         if (curPosition < lowerBound || curPosition > upperBound){
             return false;
@@ -197,6 +232,13 @@ public class CapBallLift implements  Attachment {
         }
     }
 
+    public double getCurrentPower(){
+        return liftMotor.getPower();
+    }
+
+    public double getCurrentPosition() {
+        return liftMotor.getCurrentPosition();
+    }
 
 
 }
