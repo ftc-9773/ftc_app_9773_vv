@@ -105,8 +105,4 @@ public class WallFollower implements Attachment {
         }
     }
 
-    @Override
-    public void getAndApplyDScmd() {
-        return;
-    }
 }
