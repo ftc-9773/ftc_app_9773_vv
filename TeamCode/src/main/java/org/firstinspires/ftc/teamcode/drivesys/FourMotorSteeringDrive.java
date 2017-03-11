@@ -41,8 +41,8 @@ public class FourMotorSteeringDrive extends DriveSystem {
             encoderCountL2 = getNonZeroCurrentPos(motorL2);
             encoderCountR1 = getNonZeroCurrentPos(motorR1);
             encoderCountR2 = getNonZeroCurrentPos(motorR2);
-            DbgLog.msg("ftc9773: In reset(): encoder counts: L1=%d, L2=%d, R1=%d, R2=%d", encoderCountL1,
-                    encoderCountL2, encoderCountR1, encoderCountR2);
+//            DbgLog.msg("ftc9773: In reset(): encoder counts: L1=%d, L2=%d, R1=%d, R2=%d", encoderCountL1,
+//                    encoderCountL2, encoderCountR1, encoderCountR2);
         }
 
         public  void printCurrentEncoderCounts() {
@@ -117,6 +117,10 @@ public class FourMotorSteeringDrive extends DriveSystem {
         public void driveToPosition(double speed) {
             DbgLog.msg("ftc9773: drive to a previously saved position");
 
+            motorL1.setTargetPosition((int)encoderCountL1);
+            motorL2.setTargetPosition((int)encoderCountL2);
+            motorR1.setTargetPosition((int)encoderCountR1);
+            motorR2.setTargetPosition((int)encoderCountR2);
             setDriveSysMode(DcMotor.RunMode.RUN_TO_POSITION);
             drive((float) (speed * frictionCoefficient), 0.0f);
             while (motorL1.isBusy() && motorL2.isBusy() && motorR1.isBusy() && motorR2.isBusy()

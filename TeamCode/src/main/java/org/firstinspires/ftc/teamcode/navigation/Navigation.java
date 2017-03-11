@@ -483,6 +483,10 @@ public class Navigation {
         robot.instrumentation.removeAction(rangeInstr);
     }
 
+    public void driveAndClaimAllianceBeacon(double motorSpeed) {
+        colorInstr.driveToColor(robot.autonomousActions.allianceColor, (float)motorSpeed);
+    }
+
     public void setRobotOrientation(double targetYaw, double motorSpeed) {
         String methodSignature = String.format("setRobotOrientation(targetYaw=%f, motorSpeed=%f)", targetYaw, motorSpeed);
         // Create a NavigationChecks object to set the terminating conditions

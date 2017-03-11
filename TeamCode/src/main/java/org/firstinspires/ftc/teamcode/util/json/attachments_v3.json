@@ -57,6 +57,15 @@
       }
     }
   },
+  "WallFollower" : {
+    "motors" : {
+      "wallFollowCR" : {
+        "motorType" : "CRservo",
+        "needReverse" : false,
+        "timeToUnfold" : 500
+      }
+    }
+  },
   "CapBallLift" : {
     "motors" : {
       "liftMotor" : {

@@ -186,13 +186,15 @@ public class Instrumentation {
                 double distanceTravelled = elapsedCounts.getDistanceTravelledInInches();
                 double millis = timer.milliseconds();
                 double speed = distanceTravelled / millis;
-                if (red > maxRed) {
+                if (red >= maxRed) {
                     redMaxUpdateCnt = updateCnt;
                     redMaxPostion.savePostion();
+                    maxRed = red;
                 }
-                if (blue > maxBlue) {
+                if (blue >= maxBlue) {
                     blueMaxUpdateCnt = updateCnt;
                     blueMaxPosition.savePostion();
+                    maxBlue = blue;
                 }
                 if (printEveryUpdate) {
                     String strToWrite = String.format("%f, %f, %d, %d, %d, %d, %d, %d, %f, %f", robot.getVoltage(),
@@ -208,8 +210,8 @@ public class Instrumentation {
 
         @Override
         public void printToConsole() {
-            DbgLog.msg("ftc9773: Starting time=%f, iter_count=%d, updateCnt=%d",
-                    timer.startTime(), iterationCount, updateCnt);
+            DbgLog.msg("ftc9773: Starting time=%f, iter_count=%d, updateCnt=%d, maxRed=%d, maxBlue=%d",
+                    timer.startTime(), iterationCount, updateCnt, maxRed, maxBlue);
         }
 
         @Override
@@ -229,9 +231,11 @@ public class Instrumentation {
 
         public void driveToColor(String redOrBlue, float speed) {
             if (redOrBlue.equalsIgnoreCase("red")) {
-                redMaxPostion.driveToPosition(speed);
+                if (maxRed > 0)
+                    redMaxPostion.driveToPosition(speed);
             } else if (redOrBlue.equalsIgnoreCase("blue")) {
-                blueMaxPosition.driveToPosition(speed);
+                if (maxBlue > 0)
+                    blueMaxPosition.driveToPosition(speed);
             }
         }
     }

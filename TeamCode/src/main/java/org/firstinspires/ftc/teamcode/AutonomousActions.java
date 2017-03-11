@@ -212,6 +212,18 @@ public class AutonomousActions {
                         maxDistance1, maxDistance2);
                 break;
             }
+            case "DriveAndClaimAllianceBeacon" : {
+                double motorSpeed=0.2;
+                try {
+                    String key = JsonReader.getRealKeyIgnoreCase(actionObj, "motorSpeed");
+                    motorSpeed = actionObj.getDouble(key);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                DbgLog.msg("ftc9773: motorSpeed: %f", motorSpeed);
+                robot.navigation.driveAndClaimAllianceBeacon(motorSpeed);
+                break;
+            }
             case "startPartAcc":
                 robot.partAccObj.activateParticleAccelerator();
                 break;

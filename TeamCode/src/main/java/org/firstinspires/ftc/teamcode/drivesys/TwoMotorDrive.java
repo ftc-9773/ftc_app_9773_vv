@@ -94,6 +94,8 @@ public class TwoMotorDrive extends DriveSystem{
         @Override
         public void driveToPosition(double speed) {
             DbgLog.msg("ftc9773: driving to a previously saved position");
+            motorL.setTargetPosition((int)encoderCountL);
+            motorR.setTargetPosition((int)encoderCountR);
             setDriveSysMode(DcMotor.RunMode.RUN_TO_POSITION);
             drive((float) (speed * frictionCoefficient), 0.0f);
             while (motorL.isBusy()  && motorR.isBusy() && curOpMode.opModeIsActive()) {
