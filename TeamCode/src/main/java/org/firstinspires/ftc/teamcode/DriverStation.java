@@ -1,14 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.util.StateMachine;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 
 /**
  * Created by pranavburugula on 3/5/2017.
@@ -26,15 +26,18 @@ public class DriverStation {
     StateMachine partAccStateMachine;
     List<String>partAccStates;
     ElapsedTime timer;
+    double previousLiftGamepadPower = 0.0;
 
     public DriverStation(FTCRobot robot, LinearOpMode curOpMode){
         this.robot = robot;
         this.curOpMode = curOpMode;
         timer = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
+        drvrStationStates = new ArrayList<>();
         drvrStationStates.add("TeleOp");
         drvrStationStates.add("EndGame");
         drvrStationStateMachine = new StateMachine(drvrStationStates);
-        driveSysStateMachine.switchState("TeleOp");
+        drvrStationStateMachine.switchState("TeleOp");
+        liftStates = new ArrayList<>();
         liftStates.add("Closed");
         liftStates.add("Down");
         liftStates.add("Mid");
@@ -42,10 +45,12 @@ public class DriverStation {
         liftStates.add("Lifting");
         liftStateMachine = new StateMachine(liftStates);
         liftStateMachine.switchState("Closed");
+        driveSysStates = new ArrayList<>();
         driveSysStates.add("Idle");
         driveSysStates.add("Driving");
         driveSysStateMachine = new StateMachine(driveSysStates);
         driveSysStateMachine.switchState("Idle");
+        partAccStates = new ArrayList<>();
         partAccStates.add("Off");
         partAccStates.add("On");
         partAccStateMachine = new StateMachine(partAccStates);
@@ -53,9 +58,13 @@ public class DriverStation {
     }
 
     public void getNextCmd(){
-        if (timer.seconds() >= 90){
+        DbgLog.msg("ftc9773: getNextCmd: current states: driverstation = %s, lift = %s," +
+                "particle Acc = %s, drivesys= %s",
+                drvrStationStateMachine.getCurState(), liftStateMachine.getCurState(),
+                partAccStateMachine.getCurState(), driveSysStateMachine.getCurState());
+        if (timer.seconds() >= 10){
             drvrStationStateMachine.switchState("EndGame");
-        } else if (timer.seconds() < 90){
+        } else if (timer.seconds() < 10){
             drvrStationStateMachine.switchState("TeleOp");
         }
 
@@ -97,7 +106,7 @@ public class DriverStation {
                         if ((curOpMode.gamepad1.left_stick_y != 0.0) || (curOpMode.gamepad1.right_stick_x != 0.0)) {
                             robot.driveSystem.drive(Range.clip(curOpMode.gamepad1.left_stick_y, -1, 1),
                                     Range.clip(curOpMode.gamepad1.right_stick_x, -1, 1));
-                            driveSysStateMachine.nextState();
+                            driveSysStateMachine.switchState("Driving");
                         } else {
                             robot.driveSystem.drive(0.0f, 0.0f);
                         }
@@ -108,7 +117,7 @@ public class DriverStation {
                                     Range.clip(curOpMode.gamepad1.right_stick_x, -1, 1));
                         } else {
                             robot.driveSystem.drive(0.0f, 0.0f);
-                            driveSysStateMachine.prevState();
+                            driveSysStateMachine.switchState("Idle");
                         }
                         break;
                 }
@@ -116,7 +125,7 @@ public class DriverStation {
                     case "Off":
                         if (curOpMode.gamepad1.dpad_up) {
                             robot.partAccObj.activateParticleAccelerator();
-                            partAccStateMachine.nextState();
+                            partAccStateMachine.switchState("On");
                         }
                         if (curOpMode.gamepad1.y) {
                             robot.particleObj.keepParticles();
@@ -125,7 +134,7 @@ public class DriverStation {
                     case "On":
                         if (curOpMode.gamepad1.dpad_down) {
                             robot.partAccObj.deactivateParticleAccelerator();
-                            partAccStateMachine.prevState();
+                            partAccStateMachine.switchState("Off");
                         }
                         if (curOpMode.gamepad1.a) {
                             robot.particleObj.releaseParticles();
@@ -156,8 +165,12 @@ public class DriverStation {
                 }
                 break;
             case "EndGame":
+                DbgLog.msg("ftc9773:  lift motor current position = %f", robot.capBallLiftObj.getCurrentPosition());
                 switch (liftStateMachine.getCurState()) {
                     case "Closed":
+                        if (robot.driveSystem.getScaleMultiplier() != 1.0){
+                            robot.driveSystem.scalePower(1.0);
+                        }
                         if (curOpMode.gamepad2.a) {
                             robot.capBallLiftObj.autoPlacement();
                             liftStateMachine.switchState("Down");
@@ -168,6 +181,9 @@ public class DriverStation {
                         }
                         break;
                     case "Down":
+                        if (robot.driveSystem.getScaleMultiplier() != 1.0){
+                            robot.driveSystem.scalePower(1.0);
+                        }
                         if (curOpMode.gamepad2.y) {
                             robot.capBallLiftObj.foldFork();
                             liftStateMachine.switchState("Closed");
@@ -186,7 +202,7 @@ public class DriverStation {
                         }
                         if (robot.capBallLiftObj.useEncoders && curOpMode.gamepad2.right_bumper){
                             robot.capBallLiftObj.goToMidPosition();
-                            liftStateMachine.switchState("Mid");
+                            liftStateMachine.switchState("Lifting");
                         }
                         break;
                     case "Lifting":
@@ -196,23 +212,33 @@ public class DriverStation {
                         if (robot.capBallLiftObj.lockLift) {
                             robot.capBallLiftObj.unlockLiftMotor();
                         }
-                        robot.capBallLiftObj.applyPower(-curOpMode.gamepad2.right_stick_y);
-                        if (-curOpMode.gamepad2.right_stick_y == 0.0){
+                        if (curOpMode.gamepad2.right_stick_y != 0.0) {
+                            robot.capBallLiftObj.applyPower(-curOpMode.gamepad2.right_stick_y);
+                            previousLiftGamepadPower = -curOpMode.gamepad2.right_stick_y;
+                        } else if (previousLiftGamepadPower != 0.0){
+                            robot.capBallLiftObj.applyPower(-curOpMode.gamepad2.right_stick_y);
+                        }
+                        if (!robot.capBallLiftObj.runToPosition && curOpMode.gamepad2.right_stick_y == 0.0){
                             if (!robot.capBallLiftObj.lockLift) {
                                 robot.capBallLiftObj.lockLiftMotor();
                             }
-                            if (robot.capBallLiftObj.isAtDownPosition()){
+                            if (robot.capBallLiftObj.isAtDownRange()){
                                 liftStateMachine.switchState("Down");
-                            } else if (robot.capBallLiftObj.isAtMidPosition()){
+                            } else if (robot.capBallLiftObj.isAtMidRange()){
                                 liftStateMachine.switchState("Mid");
-                            } else if (robot.capBallLiftObj.isAtUpPosition()){
+                            } else if (robot.capBallLiftObj.isAtUpRange()){
                                 liftStateMachine.switchState("Up");
+                            }
+                        }   else if (robot.capBallLiftObj.runToPosition){
+                            if (robot.capBallLiftObj.reachedDownPosition() || robot.capBallLiftObj.reachedMidPosition() ||
+                                    robot.capBallLiftObj.reachedUpPosition()){
+                                robot.capBallLiftObj.runToPosition = false;
                             }
                         }
                         break;
                     case "Mid":
-                        if (robot.driveSystem.getScaleMultiplier() != 0.5){
-                            robot.driveSystem.scalePower(0.5);
+                        if (robot.driveSystem.getScaleMultiplier() != 0.25){
+                            robot.driveSystem.scalePower(0.25);
                         }
                         if (!robot.capBallLiftObj.lockLift) {
                             robot.capBallLiftObj.lockLiftMotor();
@@ -226,16 +252,16 @@ public class DriverStation {
                         }
                         if (robot.capBallLiftObj.useEncoders && curOpMode.gamepad2.left_bumper){
                         robot.capBallLiftObj.goToDownPosition();
-                        liftStateMachine.switchState("Down");
+                        liftStateMachine.switchState("Lifting");
                     }
                         if (robot.capBallLiftObj.useEncoders && curOpMode.gamepad2.right_bumper){
                             robot.capBallLiftObj.gotToUpPosition();
-                            liftStateMachine.switchState("Up");
+                            liftStateMachine.switchState("Lifting");
                         }
                         break;
                     case "Up":
-                        if (robot.driveSystem.getScaleMultiplier() != 0.2){
-                            robot.driveSystem.scalePower(0.2);
+                        if (robot.driveSystem.getScaleMultiplier() != 0.1){
+                            robot.driveSystem.scalePower(0.1);
                         }
                         if (!robot.capBallLiftObj.lockLift) {
                             robot.capBallLiftObj.lockLiftMotor();
@@ -249,7 +275,7 @@ public class DriverStation {
                         }
                         if (robot.capBallLiftObj.useEncoders && curOpMode.gamepad2.left_bumper){
                             robot.capBallLiftObj.goToMidPosition();
-                            liftStateMachine.switchState("Mid");
+                            liftStateMachine.switchState("Lifting");
                         }
                         break;
                 }
@@ -258,7 +284,7 @@ public class DriverStation {
                         if ((curOpMode.gamepad1.left_stick_y != 0.0) || (curOpMode.gamepad1.right_stick_x != 0.0)) {
                             robot.driveSystem.drive(Range.clip(curOpMode.gamepad1.left_stick_y, -1, 1),
                                     Range.clip(curOpMode.gamepad1.right_stick_x, -1, 1));
-                            driveSysStateMachine.nextState();
+                            driveSysStateMachine.switchState("Driving");
                         } else {
                             robot.driveSystem.drive(0.0f, 0.0f);
                         }
@@ -269,7 +295,7 @@ public class DriverStation {
                                     Range.clip(curOpMode.gamepad1.right_stick_x, -1, 1));
                         } else {
                             robot.driveSystem.drive(0.0f, 0.0f);
-                            driveSysStateMachine.prevState();
+                            driveSysStateMachine.switchState("Idle");
                         }
                         break;
                 }
@@ -277,7 +303,7 @@ public class DriverStation {
                     case "Off":
                         if (curOpMode.gamepad1.dpad_up) {
                             robot.partAccObj.activateParticleAccelerator();
-                            partAccStateMachine.nextState();
+                            partAccStateMachine.switchState("On");
                         }
                         if (curOpMode.gamepad1.y) {
                             robot.particleObj.keepParticles();
@@ -286,7 +312,7 @@ public class DriverStation {
                     case "On":
                         if (curOpMode.gamepad1.dpad_down) {
                             robot.partAccObj.deactivateParticleAccelerator();
-                            partAccStateMachine.prevState();
+                            partAccStateMachine.switchState("Off");
                         }
                         if (curOpMode.gamepad1.a) {
                             robot.particleObj.releaseParticles();

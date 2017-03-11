@@ -23,6 +23,8 @@ public class TwoMotorDrive extends DriveSystem{
     double distBetweenWheels;
     boolean LisZero, RisZero;
     ElapsedTime Ltimer, Rtimer;
+    double scaleMultiplier = 1.0;
+    int reverseMultiplier = 1;
 
     public class ElapsedEncoderCounts implements DriveSystem.ElapsedEncoderCounts {
         double encoderCountL;
@@ -372,6 +374,17 @@ public class TwoMotorDrive extends DriveSystem{
 //        DbgLog.msg("ftc9773: Motor = %s, curPos = %d, isZeroPos = %b", motor.toString(), curPos, motor==motorL1 ? LisZero : motor==motorR1 ? RisZero : motor==motorL2 ? L2IsZero : R2IsZero);
         return curPos;
     }
+    @Override
+    public void scalePower(double scaleMultiplier){
+        this.scaleMultiplier = scaleMultiplier;
+    }
 
+    @Override
+    public double getScaleMultiplier(){ return scaleMultiplier;}
+
+    @Override
+    public void reverseTeleop(){
+        reverseMultiplier *= -1;
+    }
 
 }
