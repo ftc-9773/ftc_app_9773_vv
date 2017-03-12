@@ -212,7 +212,7 @@ public class DriverStation {
                         }
                         if (robot.capBallLiftObj.useEncoders && curOpMode.gamepad2.right_bumper){
                             robot.capBallLiftObj.goToMidPosition();
-                            liftStateMachine.switchState("Lifting");
+                            liftStateMachine.switchState("Mid");
                         }
                         break;
                     case "Lifting":
@@ -222,13 +222,7 @@ public class DriverStation {
                         if (robot.capBallLiftObj.lockLift) {
                             robot.capBallLiftObj.unlockLiftMotor();
                         }
-                        if (curOpMode.gamepad2.right_stick_y != 0.0) {
-                            robot.capBallLiftObj.applyPower(-curOpMode.gamepad2.right_stick_y);
-                            previousLiftGamepadPower = -curOpMode.gamepad2.right_stick_y;
-                        } else if (previousLiftGamepadPower != 0.0){
-                            robot.capBallLiftObj.applyPower(-curOpMode.gamepad2.right_stick_y);
-                        }
-                        if (!robot.capBallLiftObj.runToPosition && curOpMode.gamepad2.right_stick_y == 0.0){
+                        if (curOpMode.gamepad2.right_stick_y == 0.0){
                             if (!robot.capBallLiftObj.lockLift) {
                                 robot.capBallLiftObj.lockLiftMotor();
                             }
@@ -238,11 +232,6 @@ public class DriverStation {
                                 liftStateMachine.switchState("Mid");
                             } else if (robot.capBallLiftObj.isAtUpRange()){
                                 liftStateMachine.switchState("Up");
-                            }
-                        }   else if (robot.capBallLiftObj.runToPosition){
-                            if (robot.capBallLiftObj.reachedDownPosition() || robot.capBallLiftObj.reachedMidPosition() ||
-                                    robot.capBallLiftObj.reachedUpPosition()){
-                                robot.capBallLiftObj.runToPosition = false;
                             }
                         }
                         break;
@@ -262,11 +251,11 @@ public class DriverStation {
                         }
                         if (robot.capBallLiftObj.useEncoders && curOpMode.gamepad2.left_bumper){
                         robot.capBallLiftObj.goToDownPosition();
-                        liftStateMachine.switchState("Lifting");
+                        liftStateMachine.switchState("Down");
                     }
                         if (robot.capBallLiftObj.useEncoders && curOpMode.gamepad2.right_bumper){
                             robot.capBallLiftObj.gotToUpPosition();
-                            liftStateMachine.switchState("Lifting");
+                            liftStateMachine.switchState("Up");
                         }
                         break;
                     case "Up":
@@ -285,7 +274,7 @@ public class DriverStation {
                         }
                         if (robot.capBallLiftObj.useEncoders && curOpMode.gamepad2.left_bumper){
                             robot.capBallLiftObj.goToMidPosition();
-                            liftStateMachine.switchState("Lifting");
+                            liftStateMachine.switchState("Mid");
                         }
                         break;
                 }
