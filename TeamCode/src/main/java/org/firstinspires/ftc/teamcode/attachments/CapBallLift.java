@@ -155,7 +155,9 @@ public class CapBallLift implements  Attachment {
             liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
         liftMotor.setPower(1);
-        curOpMode.sleep(500);
+        while (liftMotor.isBusy()){
+            curOpMode.idle();
+        }
     }
     public void gotToUpPosition(){
         runToPosition = true;
