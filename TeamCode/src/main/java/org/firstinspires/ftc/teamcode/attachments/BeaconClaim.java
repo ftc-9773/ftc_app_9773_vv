@@ -272,6 +272,9 @@ public class BeaconClaim implements Attachment {
                 timeToExtend, lengthToExtend);
         activateButtonServo(timeToExtend + 200, lengthToExtend);
         curOpMode.sleep(100);
+        deactivateButtonServo(timeToExtend/2, 5);
+        activateButtonServo(timeToExtend/2, 5);
+        curOpMode.sleep(100);
         deactivateButtonServo(timeToExtend, lengthToExtend);
     }
 

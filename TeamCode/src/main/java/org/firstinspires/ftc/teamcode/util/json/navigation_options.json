@@ -8,7 +8,7 @@
       },
       "LightSensorBack": {
         "name": "odsback",
-        "type": "OpticalDistanceSensor"
+        "type": "OpticalDistanceSensor",
         "portnum" : 6
       },
       "lineFollowVariables": {
