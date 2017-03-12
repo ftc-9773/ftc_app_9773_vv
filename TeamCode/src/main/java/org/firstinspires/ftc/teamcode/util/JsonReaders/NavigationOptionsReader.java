@@ -59,14 +59,30 @@ public class NavigationOptionsReader extends JsonReader {
 
     public String getLightSensorName() {
         String lightSensorName = null;
+        String key=null, value1=null, value2=null;
         JSONObject lightSensorObj;
         try {
-            String key = JsonReader.getRealKeyIgnoreCase(lfObj, "LightSensor");
+            key = JsonReader.getRealKeyIgnoreCase(lfObj, "LightSensor");
             lightSensorObj = lfObj.getJSONObject(key);
             key = JsonReader.getRealKeyIgnoreCase(lightSensorObj, "name");
             lightSensorName = lightSensorObj.getString(key);
         } catch (JSONException e) {
             e.printStackTrace();
+            DbgLog.msg("Single Light sensor not found; trying 2 light sensors");
+            try {
+                key = JsonReader.getRealKeyIgnoreCase(lfObj, "LightSensorFront");
+                lightSensorObj = lfObj.getJSONObject(key);
+                key = JsonReader.getRealKeyIgnoreCase(lightSensorObj, "name");
+                value1 = lightSensorObj.getString(key);
+                key = JsonReader.getRealKeyIgnoreCase(lfObj, "LightSensorBack");
+                lightSensorObj = lfObj.getJSONObject(key);
+                key = JsonReader.getRealKeyIgnoreCase(lightSensorObj, "name");
+                value2 = lightSensorObj.getString(key);
+                lightSensorName = String.format("%s,%s", value1, value2);
+            } catch (JSONException e1) {
+                DbgLog.msg("Neight single nor 2 light sensors found");
+                e1.printStackTrace();
+            }
         }
         return (lightSensorName);
     }

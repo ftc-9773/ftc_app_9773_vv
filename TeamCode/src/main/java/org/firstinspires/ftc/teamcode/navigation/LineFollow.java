@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.drivesys.DriveSystem;
 
 public class LineFollow{
 
-    OpticalDistanceSensor lightSensor;
+    OpticalDistanceSensor lightSensorFront, lightSensorBack;
     double white, black, mid;
     double lowSpeed, highSpeed;
     double odsOffset;
@@ -33,7 +33,6 @@ public class LineFollow{
                       double white, double black) {
         this.robot = robot;
         this.driveSystem = robot.driveSystem;
-        this.lightSensor = robot.curOpMode.hardwareMap.opticalDistanceSensor.get(lightSensorName);
         this.lowSpeed = lowSpeed;
         this.highSpeed = highSpeed;
         this.basePower = (lowSpeed+highSpeed)/2;
@@ -44,6 +43,14 @@ public class LineFollow{
         this.Kp = 0.5;
         this.odsOffset = robot.distanceLeft / (robot.distanceLeft + robot.distanceRight);
         this.timoutNanoSec = (long) (lineFollowTimeOut * 1000000000L);
+        if (lightSensorName.contains(",")) {
+            // 2 ODS sensors
+            String[] sensorNames = lightSensorName.split(",");
+            this.lightSensorFront = robot.curOpMode.hardwareMap.opticalDistanceSensor.get(sensorNames[0]);
+            this.lightSensorBack = robot.curOpMode.hardwareMap.opticalDistanceSensor.get(sensorNames[1]);
+        } else {
+            this.lightSensorBack = robot.curOpMode.hardwareMap.opticalDistanceSensor.get(lightSensorName);
+        }
         DbgLog.msg("ftc9773: sensorName=%s, lowSpeed=%f, highSpeed=%f, timeoutNanoSec=%d",
                 lightSensorName, lowSpeed, highSpeed, this.timoutNanoSec);
         DbgLog.msg("ftc9773: Kp = %f, odsOffset=%f", this.Kp, this.odsOffset);
@@ -62,7 +69,7 @@ public class LineFollow{
             leftInitialPower = -0.3;
             rightInitialPower = -leftInitialPower;
         }
-        while ((lightSensor.getLightDetected()<this.mid) && robot.curOpMode.opModeIsActive()) {
+        while ((lightSensorBack.getLightDetected()<this.mid) && robot.curOpMode.opModeIsActive()) {
             driveSystem.turnOrSpin(leftInitialPower,rightInitialPower);
 //            if (lightSensor.getLightDetected()<this.mid)
 //                break;
@@ -79,7 +86,7 @@ public class LineFollow{
         double initialYaw = robot.navigation.gyro.getYaw();
         double diffYaw=0.0;
         while ((diffYaw < 45.0) && robot.curOpMode.opModeIsActive()) {
-            curLight = robot.navigation.lf.lightSensor.getLightDetected();
+            curLight = robot.navigation.lf.lightSensorBack.getLightDetected();
             if (minLight > curLight) minLight = curLight;
             if (maxLight < curLight) maxLight = curLight;
             diffYaw = Math.abs(robot.navigation.gyro.getYaw() - initialYaw);
@@ -93,14 +100,17 @@ public class LineFollow{
     }
 
     public double getLightDetected() {
-        if (lightSensor != null) {
-            return (lightSensor.getLightDetected());
+        if (lightSensorBack != null) {
+            return (lightSensorBack.getLightDetected());
         } else {
             return (0.0);
         }
     }
 
-    public boolean onWhiteLine() {
-        return (lightSensor.getLightDetected() >= this.mid);
+    public boolean FrontODSonWhiteLine() {
+        return (lightSensorFront.getLightDetected() >= this.mid);
+    }
+    public boolean BackODSonWhiteLine() {
+        return (lightSensorBack.getLightDetected() >= this.mid);
     }
 }

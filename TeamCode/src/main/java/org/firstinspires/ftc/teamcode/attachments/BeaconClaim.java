@@ -334,6 +334,15 @@ public class BeaconClaim implements Attachment {
         return (beaconColor);
     }
 
+    public String getBeaconColorString() {
+        if (beaconColor == BeaconColor.RED)
+            return "red";
+        else if (beaconColor == BeaconColor.BLUE)
+            return "blue";
+        else
+            return "none";
+    }
+
     public double getStrokeLength() {
         return strokeLength;
     }

@@ -131,7 +131,7 @@ public class Navigation {
     public void printNavigationValues() {
         DbgLog.msg("ftc9773: encoderYaw=%f, gyroYaw=%f", encoderNav.getCurrentYaw(), gyro.getYaw());
         DbgLog.msg("ftc9773: gyroPitch=%f, RangeSensor value cm = %f, ods light detected=%f", gyro.getPitch(),
-                rangeSensor.getDistance(DistanceUnit.CM), lf.lightSensor.getLightDetected());
+                rangeSensor.getDistance(DistanceUnit.CM), lf.lightSensorBack.getLightDetected());
         DbgLog.msg("ftc9773: Drive system Encoder values:");
         robot.driveSystem.printCurrentPosition();
     }
@@ -359,11 +359,12 @@ public class Navigation {
 //        robot.instrumentation.removeAction(driveToDistInstr);
     }
 
-    public void goStraightToWhiteLine(double degrees, float motorSpeed, boolean driveBackwards, double additionalDistance) {
+    public void goStraightToWhiteLine(double degrees, float motorSpeed, boolean driveBackwards,
+                                      double additionalDistance, String frontOrBackODS) {
         String methodSignature = String.format("goStraightToWhiteLine(degrees=%f, motorSpeed=%f, driveBackwards=%b)",
                 degrees, motorSpeed, driveBackwards);
         NavigationChecks navChecks = new NavigationChecks(robot, curOpMode, this);
-        NavigationChecks.CheckForWhiteLine check1 = navChecks.new CheckForWhiteLine(this.lf);
+        NavigationChecks.CheckForWhiteLine check1 = navChecks.new CheckForWhiteLine(this.lf, frontOrBackODS);
         NavigationChecks.OpmodeInactiveCheck check2 = navChecks.new OpmodeInactiveCheck();
         navChecks.addNewCheck(check1);
         navChecks.addNewCheck(check2);
@@ -494,13 +495,13 @@ public class Navigation {
 
     public void driveToAllianceBeaconWhileScanning(double degrees, float motorSpeed,
                                                    boolean driveBackwards, double additionalDistance,
-                                                   String driveToPosition) {
+                                                   String driveToPosition, String frontOrBackODS) {
         String methodSignature = String.format("driveAndClaimAllianceBeacon(degrees=%f, motorSpeed=%f, driveBackwards=%b," +
                 "additionalDistance=%f, driveToPosition=%s)",
                 degrees, motorSpeed, driveBackwards, additionalDistance, driveToPosition);
         //colorInstr.driveToColor(robot.autonomousActions.allianceColor, (float)motorSpeed);
         NavigationChecks navChecks = new NavigationChecks(robot, curOpMode, this);
-        NavigationChecks.CheckForWhiteLine check1 = navChecks.new CheckForWhiteLine(this.lf);
+        NavigationChecks.CheckForWhiteLine check1 = navChecks.new CheckForWhiteLine(this.lf, frontOrBackODS);
         NavigationChecks.OpmodeInactiveCheck check2 = navChecks.new OpmodeInactiveCheck();
         NavigationChecks.BeaconColorCheck beaconColorCheck = navChecks.new BeaconColorCheck(colorInstr, robot.autonomousActions.allianceColor);
         navChecks.addNewCheck(check1);

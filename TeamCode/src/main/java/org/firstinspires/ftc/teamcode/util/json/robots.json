@@ -78,7 +78,7 @@
     "driveSystem": "4Motor6WDSteering",
     "autonomous_attachments": ["BeaconClaim", "ParticleRelease", "Harvester", "ParticleAccelerator", "WallFollwer"],
     "teleop_attachments": ["CapBallLift", "ParticleRelease", "Harvester", "ParticleAccelerator", "BeaconClaim", "WallFollwer"],
-    "autonomous_navigation": "LineFollow_IMU_DriveSysEncoders",
+    "autonomous_navigation": "2ODS_IMU_DriveSysEncoders",
     "teleop_navigation": "none",
     "distanceBetweenLeftAndODS":11,
     "distanceBetweenRightAndODS":4,
