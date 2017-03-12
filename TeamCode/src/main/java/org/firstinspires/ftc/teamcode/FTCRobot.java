@@ -171,6 +171,7 @@ public class FTCRobot {
     }
 
     public void runTeleOp(String allianceColor) {
+        curOpMode.waitForStart();
         while (curOpMode.opModeIsActive()) {
             driverStation.getNextCmd();
             curOpMode.idle();
