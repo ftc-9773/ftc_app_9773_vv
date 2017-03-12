@@ -283,6 +283,15 @@ public class Instrumentation {
                 }
             }
         }
+
+        public DriveSystem.DriveSysPosition getAllianceColorPosition(String redOrBlue) {
+            if (redOrBlue.equalsIgnoreCase("red") && maxRed >= 2)
+                return (redMaxPostion);
+            else if (redOrBlue.equalsIgnoreCase("blue") && maxBlue >= 2)
+                return (blueMaxPosition);
+            else
+                return null;
+        }
     }
 
     public class ODSlightDetected extends  InstrBaseClass {

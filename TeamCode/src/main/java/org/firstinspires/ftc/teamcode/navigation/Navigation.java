@@ -535,7 +535,8 @@ public class Navigation {
             robot.instrumentation.writeToFile();
             // Update the encoderNav's current yaw with that of gyro
             encoderNav.setCurrentYaw(gyro.getYaw());
-            colorInstr.driveToColor(robot.autonomousActions.allianceColor, motorSpeed, driveToPosition);
+
+//            colorInstr.driveToColor(robot.autonomousActions.allianceColor, motorSpeed, driveToPosition);
         } else {
             // Use purely encoder based navigation
             if (driveBackwards) {
@@ -555,9 +556,20 @@ public class Navigation {
             }
         }
 //        robot.instrumentation.removeAction(driveTillWhitelineInstr);
+
+        DriveSystem.DriveSysPosition driveSysPosition =
+                colorInstr.getAllianceColorPosition(robot.autonomousActions.allianceColor);
         robot.instrumentation.removeAction(gyroDegreesInstr);
         robot.instrumentation.removeAction(odsInstr);
         robot.instrumentation.removeAction(colorInstr);
+        if (driveSysPosition != null) {
+            double distanceInInches = driveSysPosition.getDistanceFromCurPosition();
+            distanceInInches = (driveBackwards ? distanceInInches : -distanceInInches);
+            DbgLog.msg("ftc9773: distance to go back from current position = %f", distanceInInches);
+            // In red alliance, we have to move at 0 degrees whereas is blue alliance we have to move at 180 degrees.
+            double degreesToUse = (robot.autonomousActions.allianceColor.equalsIgnoreCase("red") ? 0 : 180);
+            goStraightToDistance(distanceInInches, degreesToUse, motorSpeed);
+        }
     }
 
     public void setRobotOrientation(double targetYaw, double motorSpeed) {

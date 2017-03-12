@@ -162,6 +162,20 @@ public class FourMotorSteeringDrive extends DriveSystem {
             stop();
             setDriveSysMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
+
+        @Override
+        public double getDistanceFromCurPosition() {
+            double avgEncoderCounts = 0.0;
+            double distanceTravelled = 0.0;
+
+            avgEncoderCounts = (Math.abs(motorL1.getCurrentPosition() - encoderCountL1) +
+                    Math.abs(getNonZeroCurrentPos(motorL2) - encoderCountL2) +
+                    Math.abs(getNonZeroCurrentPos(motorR1) - encoderCountR1) +
+                    Math.abs(getNonZeroCurrentPos(motorR2) - encoderCountR2)) / 4;
+
+            distanceTravelled = (avgEncoderCounts / motorCPR) * wheel.getCircumference();
+            return (distanceTravelled);
+        }
     }
 
     public FourMotorSteeringDrive(DcMotor motorL1, DcMotor motorL2, DcMotor motorR1, DcMotor motorR2,

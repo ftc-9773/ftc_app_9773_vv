@@ -121,6 +121,18 @@ public class TwoMotorDrive extends DriveSystem{
             stop();
             setDriveSysMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
+
+        @Override
+        public double getDistanceFromCurPosition() {
+            double avgEncoderCounts = 0.0;
+            double distanceTravelled = 0.0;
+
+            avgEncoderCounts = (Math.abs(motorL.getCurrentPosition() - encoderCountL) +
+                    Math.abs(motorR.getCurrentPosition() - encoderCountR)) / 2;
+
+            distanceTravelled = (avgEncoderCounts / motorCPR) * wheel.getCircumference();
+            return (distanceTravelled);
+        }
     }
 
     public TwoMotorDrive(DcMotor motorL, DcMotor motorR, int maxSpeedCPS,
