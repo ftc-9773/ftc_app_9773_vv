@@ -27,7 +27,58 @@ public class BeaconClaim implements Attachment {
     private Servo buttonServoStandard=null;
     private ModernRoboticsI2cColorSensor colorSensor1=null;
     public enum BeaconColor {RED, BLUE, NONE}
+    public enum IndexType {REDMAX_FIRST, BLUEMAX_FIRST, REDMAX_LAST, BLUEMAX_LAST, CURRENT}
     public BeaconColor beaconColor;
+
+    public class BeaconScanData {
+        int[] redValues;
+        int[] blueValues;
+        long[] elapsedMillis; // elapsed time in milliseconds from the beginning
+        double[] distFromStart; // distance in inches from the beginning
+        int firstRedMaxIndex, firstBlueMaxIndex, lastRedMaxIndex, lastBlueMaxIndex;
+        int lastValidIndex;
+        boolean redBeaconFound, blueBeaconFound;
+        String allianceColor;
+        BeaconColor myAllianceColor, otherAllianceColor;
+        int numEntries;
+
+        public BeaconScanData(int numEntries, String allianceColor) {
+            this.numEntries = numEntries;
+            this.allianceColor = allianceColor;
+            myAllianceColor = (allianceColor.equalsIgnoreCase("red")) ? BeaconColor.RED : BeaconColor.BLUE;
+            otherAllianceColor = (myAllianceColor == BeaconColor.RED) ? BeaconColor.BLUE : BeaconColor.RED;
+            redValues = new int[numEntries];
+            blueValues = new int[numEntries];
+            elapsedMillis = new long[numEntries];
+            distFromStart = new double[numEntries];
+            firstRedMaxIndex = firstBlueMaxIndex = lastRedMaxIndex = lastBlueMaxIndex = -1;
+            lastValidIndex = -1;
+            for (int i=0; i<numEntries; i++) {
+                redValues[i] = blueValues[i] = 0;
+                elapsedMillis[i] = 0;
+                distFromStart[i] = 0.0;
+            }
+            redBeaconFound = blueBeaconFound = false;
+        }
+
+        public void addAnEntry(int redValue, int blueValue, long millis, double distTravelled) {
+            lastValidIndex++;
+            if (lastValidIndex <0 || lastValidIndex>numEntries) {
+                curOpMode.telemetry.addData("BeaconClaimScanData:", "Error! Too many values");
+                curOpMode.telemetry.update();
+                DbgLog.error("ftc9773: BeaconClaimScanData: Error! array size exceeded!");
+            }
+            return;
+        }
+
+        public double distanceToMyAllianceColor() {
+            return (0);
+        }
+
+        public double distanceToOtherAllianceColor() {
+            return (0);
+        }
+    }
 
     private double curLength;
     double buttonServoSpeed; // units: cm per second
@@ -265,17 +316,16 @@ public class BeaconClaim implements Attachment {
 
     public void claimABeacon(double distanceFromWall) {
         double lengthToExtend = distanceFromWall - curLength;
-        lengthToExtend =  (lengthToExtend < 0) ? 2 : lengthToExtend;
+        // lengthToExtend should be between 2 and strokeLength
+        lengthToExtend =  Math.max(lengthToExtend, 2.0);
+        lengthToExtend = Math.min(lengthToExtend, strokeLength);
 
         double timeToExtend = lengthToExtend * (1000 / buttonServoSpeed);
         DbgLog.msg("ftc9773: timeToExtend=%f millis, lengthToExtend=%f cm",
                 timeToExtend, lengthToExtend);
         activateButtonServo(timeToExtend + 200, lengthToExtend);
         curOpMode.sleep(100);
-        deactivateButtonServo(timeToExtend/2, 5);
-        activateButtonServo(timeToExtend/2, 5);
-        curOpMode.sleep(100);
-        deactivateButtonServo(timeToExtend, lengthToExtend);
+        deactivateButtonServo(timeToExtend, 5);
     }
 
     public void verifyBeaconColor(){

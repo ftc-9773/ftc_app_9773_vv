@@ -303,6 +303,48 @@ public class Navigation {
         }
     }
 
+    public void goStraightAlongTheWall(double inches, double degrees, float speed, double targetDistFromWall,
+                                       double wallKp) {
+        String methodSignature = String.format("goStraightAlongTheWall(inches=%f, degrees=%f, speed=%f," +
+                " targetDistFromWall=%f, wallKp=%f)", inches, degrees, speed, targetDistFromWall, wallKp);
+        // If gyro is working, using gyro's goStraightPID() method, else use driveSystem's
+        // driveToDistance method
+        NavigationChecks navChecks = new NavigationChecks(robot, curOpMode, this);
+        NavigationChecks.EncoderCheckForDistance encodercheck = navChecks.new EncoderCheckForDistance(inches);
+        NavigationChecks.OpmodeInactiveCheck opmodeCheck = navChecks.new OpmodeInactiveCheck();
+        navChecks.addNewCheck(opmodeCheck);
+        navChecks.addNewCheck(encodercheck);
+        robot.instrumentation.addAction(rangeInstr);
+        boolean driveBackwards = inches < 0 ? true : false;
+        double curDistFromWall, angleToMaintain, error, correction;
+        if (gyro.isGyroWorking()) {
+            DbgLog.msg("ftc9773: Gyro is working");
+            NavigationChecks.CheckRobotTilting tiltingCheck = navChecks.new CheckRobotTilting(10);
+            navChecks.addNewCheck(tiltingCheck);
+            robot.instrumentation.addAction(gyroDegreesInstr);
+            robot.instrumentation.reset(methodSignature);
+            while (!navChecks.stopNavigation()) {
+                curDistFromWall = rangeSensor.getDistance(DistanceUnit.CM);
+                error = targetDistFromWall - curDistFromWall;
+                correction = wallKp * error;
+                angleToMaintain = getTargetYaw(degrees, correction);
+                gyro.goStraightPID(driveBackwards, angleToMaintain, speed);
+                robot.instrumentation.addInstrData();
+                if (tiltingCheck.stopNavigation()) {
+                    DbgLog.msg("ftc9773: tilting detected");
+                    this.untiltRobot(driveBackwards, degrees, speed);
+                }
+            }
+            robot.driveSystem.stop();
+            robot.instrumentation.addInstrData();
+            robot.instrumentation.printToConsole();
+            robot.instrumentation.writeToFile();
+            robot.instrumentation.removeAction(gyroDegreesInstr);
+            // Update the encoderNav's current yaw with that of gyro
+            encoderNav.setCurrentYaw(gyro.getYaw());
+        }
+    }
+
     public void goStraightToDistance(double inches, double degrees, float speed) {
         String methodSignature = String.format("goStraightToDistance(inches=%f, degrees=%f, speed=%f)",
                 inches, degrees, speed);
@@ -360,7 +402,7 @@ public class Navigation {
     }
 
     public void goStraightToWhiteLine(double degrees, float motorSpeed, boolean driveBackwards,
-                                      double additionalDistance, String frontOrBackODS) {
+                                      double distCorrection, String frontOrBackODS) {
         String methodSignature = String.format("goStraightToWhiteLine(degrees=%f, motorSpeed=%f, driveBackwards=%b)",
                 degrees, motorSpeed, driveBackwards);
         NavigationChecks navChecks = new NavigationChecks(robot, curOpMode, this);
@@ -389,12 +431,13 @@ public class Navigation {
                 robot.instrumentation.addInstrData();
                 beaconServoExtender.continueTask();
             }
-            if (additionalDistance != 0){
+            if (distCorrection != 0){
                 navChecks.removeCheck(check1);
-                NavigationChecks.EncoderCheckForDistance encodercheck = navChecks.new EncoderCheckForDistance(additionalDistance);
+                NavigationChecks.EncoderCheckForDistance encodercheck = navChecks.new EncoderCheckForDistance(distCorrection);
+                boolean distCorrctnDrvBack = (distCorrection < 0) ? true : false;
                 navChecks.addNewCheck(encodercheck);
                 while (!navChecks.stopNavigation()) {
-                    gyro.goStraightPID(driveBackwards, degrees, motorSpeed);
+                    gyro.goStraightPID(distCorrctnDrvBack, degrees, motorSpeed);
                     robot.instrumentation.addInstrData();
                 }
             }
@@ -494,11 +537,11 @@ public class Navigation {
     }
 
     public void driveToAllianceBeaconWhileScanning(double degrees, float motorSpeed,
-                                                   boolean driveBackwards, double additionalDistance,
+                                                   boolean driveBackwards, double distCorrection,
                                                    String driveToPosition, String frontOrBackODS) {
         String methodSignature = String.format("driveAndClaimAllianceBeacon(degrees=%f, motorSpeed=%f, driveBackwards=%b," +
-                "additionalDistance=%f, driveToPosition=%s)",
-                degrees, motorSpeed, driveBackwards, additionalDistance, driveToPosition);
+                "distCorrection=%f, driveToPosition=%s)",
+                degrees, motorSpeed, driveBackwards, distCorrection, driveToPosition);
         //colorInstr.driveToColor(robot.autonomousActions.allianceColor, (float)motorSpeed);
         NavigationChecks navChecks = new NavigationChecks(robot, curOpMode, this);
         NavigationChecks.CheckForWhiteLine check1 = navChecks.new CheckForWhiteLine(this.lf, frontOrBackODS);
@@ -520,12 +563,13 @@ public class Navigation {
                 robot.instrumentation.addInstrData();
             }
             if (navChecks.stopNavCriterion == check1){
-                if (additionalDistance != 0) {
+                if (distCorrection != 0) {
                     navChecks.removeCheck(check1);
-                    NavigationChecks.EncoderCheckForDistance encodercheck = navChecks.new EncoderCheckForDistance(additionalDistance);
+                    NavigationChecks.EncoderCheckForDistance encodercheck = navChecks.new EncoderCheckForDistance(distCorrection);
                     navChecks.addNewCheck(encodercheck);
+                    boolean distCorrctnDrvBack = (distCorrection < 0) ? true : false;
                     while (!navChecks.stopNavigation()) {
-                        gyro.goStraightPID(driveBackwards, degrees, motorSpeed);
+                        gyro.goStraightPID(distCorrctnDrvBack, degrees, motorSpeed);
                         robot.instrumentation.addInstrData();
                     }
                 }
@@ -701,7 +745,7 @@ public class Navigation {
             this.setRobotOrientation(startingYaw, turnMaxSpeed);
         // Step 4:  return to the same position is specified
         if (returnToSamePos) {
-            this.goStraightToDistance(moveDistance, startingYaw, (float)speed);
+            this.goStraightToDistance(-moveDistance, startingYaw, (float)speed);
         }
     }
 }

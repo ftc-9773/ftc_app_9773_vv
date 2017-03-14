@@ -29,7 +29,7 @@
         "__comment_speed" : "speed is in the units of centimeters per second",
         "speed" : 10.0,
         "__comment_strokeLength" : "strokeLength is in the units of cm",
-        "strokeLength" : 13.9,
+        "strokeLength" : 16,
         "minButton" : "gamepad1.a",
         "maxButton" : "gamepad1.y"
       },
