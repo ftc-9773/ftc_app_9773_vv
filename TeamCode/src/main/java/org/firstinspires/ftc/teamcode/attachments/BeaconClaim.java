@@ -88,7 +88,7 @@ public class BeaconClaim implements Attachment {
     private BeaconClaimOperation lastOp;
     private ElapsedTime lastOpTimer;
 
-    public BeaconClaim(FTCRobot robot, LinearOpMode curOpMode, JSONObject rootObj) {
+    public BeaconClaim(FTCRobot robot, LinearOpMode curOpMode, JSONObject rootObj, String beaconClaimStrToRead) {
         this.curOpMode = curOpMode;
         this.robot = robot;
         String key=null;
@@ -97,13 +97,14 @@ public class BeaconClaim implements Attachment {
         JSONObject sensorsObj = null,coloSensor1Obj=null;
 
         try {
-            key = JsonReader.getRealKeyIgnoreCase(rootObj, "BeaconClaim");
+            key = JsonReader.getRealKeyIgnoreCase(rootObj, beaconClaimStrToRead);
             beaconJsonObj = rootObj.getJSONObject(key);
             key = JsonReader.getRealKeyIgnoreCase(beaconJsonObj, "motors");
             motorsObj = beaconJsonObj.getJSONObject(key);
             key = JsonReader.getRealKeyIgnoreCase(beaconJsonObj, "sensors");
             sensorsObj = beaconJsonObj.getJSONObject(key);
         } catch (JSONException e) {
+            DbgLog.error("ft9773: Caanot read json object %s", key);
             e.printStackTrace();
         }
 

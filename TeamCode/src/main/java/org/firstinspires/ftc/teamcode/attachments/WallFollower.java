@@ -107,6 +107,21 @@ public class WallFollower implements Attachment {
 
     @Override
     public void getAndApplyDScmd() {
+        if (curOpMode.gamepad1.right_bumper){
+            ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+            timer.reset();
+            while ((timer.milliseconds() < 600) && curOpMode.opModeIsActive()) {
+                unfold();
+            }
+        } else if (curOpMode.gamepad1.left_bumper){
+            ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+            timer.reset();
+            while ((timer.milliseconds() < 600) && curOpMode.opModeIsActive()) {
+                fold();
+            }
+        } else {
+            idle();
+        }
         return;
     }
 }

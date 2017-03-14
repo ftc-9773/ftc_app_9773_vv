@@ -1,34 +1,19 @@
 {
-  "test2" : [
+  "ScrantonRed" : [
     {"type" : "Programmed", "value" : "startPartAcc"},
     {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0, "inches" : 30.0, "motorSpeed" : 0.75},
     {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 20.0, "motorSpeed" : 0.3},
     {"type" : "Programmed", "value" : "shootParticles", "numberOfParticles" : 1},
     {"type" : "programmed", "value" : "stopPartAcc"},
-    {"type" : "Programmed", "value" : "shiftRobot", "shiftDistance" : -30.0, "moveDistance" : 15.0,
+    {"type" : "Programmed", "value" : "shiftRobot", "shiftDistance" : -35.0, "moveDistance" : 20.0,
       "motorSpeed" : 0.75, "returnToSamePos" : false, "startingYaw" : 0.0, "endingYaw" : 355.0},
-    {"type" : "Programmed", "value" : "UnfoldWallFollower", "timeToPowerTheServo" : "700"},
-    {"type" : "Programmed", "value" : "IdleWallFollower"},
-    {"type" : "Programmed", "value" : "GoStraightAlongWall", "degrees" : 355, "inches" : 30.0, "motorSpeed" : 0.75,
-      "targetDistance" : 14, "wallKp" : 0.5},
-    {"type" : "Programmed", "value" : "GoStraightToWhiteLine", "odsPosition" : "front", "degrees" : 355.0,
-      "driveBackwards" : false, "motorSpeed" : 0.2, "additionalDistance": 0.0}
-  ],
-  "test1" : [
-    {"type" : "Programmed", "value" : "startPartAcc"},
-    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0, "inches" : 30.0, "motorSpeed" : 0.75},
-    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 20.0, "motorSpeed" : 0.3},
-    {"type" : "Programmed", "value" : "shootParticles", "numberOfParticles" : 1},
-    {"type" : "programmed", "value" : "stopPartAcc"},
-    {"type" : "Programmed", "value" : "shiftRobot", "shiftDistance" : -30.0, "moveDistance" : 15.0,
-      "motorSpeed" : 0.75, "returnToSamePos" : false, "startingYaw" : 0.0, "endingYaw" : 355.0},
-    {"type" : "Programmed", "value" : "UnfoldWallFollower", "timeToPowerTheServo" : "700"},
+    {"type" : "Programmed", "value" : "UnfoldWallFollower", "timeToPowerTheServo" : "600"},
     {"type" : "Programmed", "value" : "IdleWallFollower"},
     {"type" : "Programmed", "value" : "GoStraightAlongWall", "degrees" : 355, "inches" : 30.0, "motorSpeed" : 0.75,
       "targetDistance" : 15, "wallKp" : 0.5},
     {"type" : "Programmed", "value" : "GoStraightToWhiteLine", "odsPosition" : "front", "degrees" : 355.0,
       "driveBackwards" : false, "motorSpeed" : 0.2, "additionalDistance": 0.0},
-    {"type" : "Programmed", "value" : "Sleep","milliSeconds": 10000},
+    {"type" : "Programmed", "value" : "Sleep","milliSeconds": 100},
     {"type" : "Programmed", "value" : "setBeaconStatus"},
     {"type" : "Programmed", "value" : "GoStraightToWhiteLineIfNeeded", "odsPosition" : "back", "degrees" : 355.0,
       "driveBackwards" : false, "motorSpeed" : 0.2, "additionalDistance": 0.55},
@@ -42,37 +27,7 @@
       "driveBackwards" : true, "motorSpeed" : 0.2, "additionalDistance": 0.0},
     {"type" : "Programmed", "value" : "claimAbeacon"}
   ],
-  "ScrantonRed" : [
-    {"type" : "Programmed", "value" : "startPartAcc"},
-    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0, "inches" : 30.0, "motorSpeed" : 0.75},
-    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 20.0, "motorSpeed" : 0.3},
-    {"type" : "Programmed", "value" : "shootParticles", "numberOfParticles" : 1},
-    {"type" : "programmed", "value" : "stopPartAcc"},
-    {"type" : "Programmed", "value" : "shiftRobot", "shiftDistance" : -30.0, "moveDistance" : 15.0,
-      "motorSpeed" : 0.75, "returnToSamePos" : false, "startingYaw" : 0.0, "endingYaw" : 0.0},
-    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0, "inches" : 10.0, "motorSpeed" : 0.75},
-    {"type" : "Programmed", "value" : "shiftToWall", "targetDistance" : 12, "moveDistance" : 14.0,
-      "distTolerance" : 3.0, "motorSpeed" : 0.5, "returnToSamePos" : false},
-    {"type" : "Programmed", "value" : "UnfoldWallFollower", "timeToPowerTheServo" : "700"},
-    {"type" : "Programmed", "value" : "IdleWallFollower"},
-    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 355, "inches" : 6.0, "motorSpeed" : 0.75},
-    {"type" : "Programmed", "value" : "GoStraightToWhiteLine", "odsPosition" : "front", "degrees" : 355.0,
-      "driveBackwards" : false, "motorSpeed" : 0.2, "additionalDistance": 0.0},
-    {"type" : "Programmed", "value" : "Sleep","milliSeconds": 100},
-    {"type" : "Programmed", "value" : "setBeaconStatus"},
-    {"type" : "Programmed", "value" : "GoStraightToWhiteLineIfNeeded", "odsPosition" : "back", "degrees" : 355.0,
-      "driveBackwards" : false, "motorSpeed" : 0.2, "additionalDistance": 0.55},
-    {"type" : "Programmed", "value" : "claimAbeacon"},
-    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0, "inches" : -35.0, "motorSpeed" : 0.75},
-    {"type" : "Programmed", "value" : "GoStraightToWhiteLine", "odsPosition" : "back", "degrees" : 0.0,
-      "driveBackwards" : true, "motorSpeed" : 0.2, "additionalDistance": 0.0},
-    {"type" : "Programmed", "value" : "Sleep","milliSeconds": 100},
-    {"type" : "Programmed", "value" : "setBeaconStatus"},
-    {"type" : "Programmed", "value" : "GoStraightToWhiteLineIfNeeded", "odsPosition" : "front", "degrees" : 0.0,
-      "driveBackwards" : true, "motorSpeed" : 0.2, "additionalDistance": 0.0},
-    {"type" : "Programmed", "value" : "claimAbeacon"}
-  ],
-  "test3" : [
+  "ScrantonBlue" : [
     {"type" : "Programmed", "value" : "startPartAcc"},
     {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0, "inches" : 30.0, "motorSpeed" : 0.75},
     {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 340.0, "motorSpeed" : 0.4},
@@ -80,20 +35,18 @@
     {"type" : "programmed", "value" : "stopPartAcc"},
     {"type" : "Programmed", "value" : "shiftRobot", "shiftDistance" : 28.0, "moveDistance" : 15.0,
       "motorSpeed" : 0.75, "returnToSamePos" : false, "startingYaw" : 0.0, "endingYaw" : 180.0},
-    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 180.0, "inches" : -10.0, "motorSpeed" : 0.75},
-    {"type" : "Programmed", "value" : "shiftToWall", "targetDistance" : 15, "moveDistance" : -10.0,
-      "distTolerance" : 3.0, "motorSpeed" : 0.65, "returnToSamePos" : false},
-    {"type" : "Programmed", "value" : "UnfoldWallFollower", "timeToPowerTheServo" : "700"},
+    {"type" : "Programmed", "value" : "UnfoldWallFollower", "timeToPowerTheServo" : "600"},
     {"type" : "Programmed", "value" : "IdleWallFollower"},
-    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 180, "inches" : -6.0, "motorSpeed" : 0.75},
-    {"type" : "Programmed", "value" : "GoStraightToWhiteLine", "odsPosition" : "back", "degrees" : 180.0,
-      "driveBackwards" : true, "motorSpeed" : 0.2, "additionalDistance": 0.0},
+    {"type" : "Programmed", "value" : "GoStraightAlongWall", "degrees" : 182, "inches" : -35.0, "motorSpeed" : 0.75,
+      "targetDistance" : 15, "wallKp" : 0.5},
+    {"type" : "Programmed", "value" : "GoStraightToWhiteLine", "odsPosition" : "back", "degrees" : 182.0,
+      "driveBackwards" : true, "motorSpeed" : 0.2, "additionalDistance": 0.5},
     {"type" : "Programmed", "value" : "Sleep","milliSeconds": 100},
     {"type" : "Programmed", "value" : "setBeaconStatus"},
     {"type" : "Programmed", "value" : "GoStraightToWhiteLineIfNeeded", "odsPosition" : "front", "degrees" : 180.0,
       "driveBackwards" : true, "motorSpeed" : 0.2, "additionalDistance": 0.0},
     {"type" : "Programmed", "value" : "claimAbeacon"},
-    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 180, "inches" : 30.0, "motorSpeed" : 0.75},
+    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 175, "inches" : 35.0, "motorSpeed" : 0.75},
     {"type" : "Programmed", "value" : "GoStraightToWhiteLine", "odsPosition" : "front", "degrees" : 175.0,
       "driveBackwards" : false, "motorSpeed" : 0.2, "additionalDistance": 0.0},
     {"type" : "Programmed", "value" : "Sleep","milliSeconds": 100},
@@ -101,27 +54,130 @@
     {"type" : "Programmed", "value" : "GoStraightToWhiteLineIfNeeded", "odsPosition" : "back", "degrees" : 175.0,
       "driveBackwards" : false, "motorSpeed" : 0.2, "additionalDistance": 0.55},
     {"type" : "Programmed", "value" : "claimAbeacon"}
-    ],
-    "ScrantonBlue" : [
-      {"type" : "Programmed", "value" : "startPartAcc"},
-      {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0, "inches" : 30.0, "motorSpeed" : 0.75},
-      {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 340.0, "motorSpeed" : 0.4},
-      {"type" : "Programmed", "value" : "shootParticles", "numberOfParticles" : 1},
-      {"type" : "programmed", "value" : "stopPartAcc"},
-      {"type" : "Programmed", "value" : "shiftRobot", "shiftDistance" : 28.0, "moveDistance" : 15.0,
-        "motorSpeed" : 0.75, "returnToSamePos" : false, "startingYaw" : 0.0, "endingYaw" : 180.0},
-      {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 180.0, "inches" : -10.0, "motorSpeed" : 0.75},
-      {"type" : "Programmed", "value" : "shiftToWall", "targetDistance" : 14, "moveDistance" : -10.0,
-        "distTolerance" : 3.0, "motorSpeed" : 0.65, "returnToSamePos" : false},
-      {"type" : "Programmed", "value" : "UnfoldWallFollower", "timeToPowerTheServo" : "700"},
-      {"type" : "Programmed", "value" : "IdleWallFollower"},
-      {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 180, "inches" : -6.0, "motorSpeed" : 0.75},
-      {"type" : "Programmed", "value" : "DriveAndClaimAllianceBeacon", "degrees" : 180.0,
-        "driveBackwards" : true, "motorSpeed" : 0.2, "additionalDistance" : 15.0, "driveToPosition" : "last"},
-      {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 180, "inches" : 35.0, "motorSpeed" : 0.75},
-      {"type" : "Programmed", "value" : "DriveAndClaimAllianceBeacon", "degrees" : 178.0,
-        "driveBackwards" : false, "motorSpeed" : 0.2, "additionalDistance" : 0.0, "driveToPosition" : "last"}
-    ],
+  ],
+  "test4" : [
+    {
+      "type": "Programmed",
+      "value": "GoStraight_Claim",
+      "odsPosition": "front",
+      "degrees": 355.0,
+      "driveBackwards": false,
+      "firstBeaconIsAllianceColor": [
+        {
+          "action": "claimABeacon"
+        }
+      ],
+      "firstBeaconIsOppositeColor": [
+        {
+          "action" : "drive",
+          "odsPosition": "back",
+          "driveBackwards": false,
+          "degrees": 355.0,
+          "additionalDistance": 0.55
+        },
+        {
+          "action" : "claimABeacon"
+        }
+      ]
+    },
+    {
+      "type" : "Programmed",
+      "value" : "GoStraight_Claim_Verify_Claim",
+      "odsPosition": "front",
+      "degrees": 355.0,
+      "driveBackwards": false,
+      "firstBeaconIsAllianceColor": [
+        { "action": "claimABeacon" },
+        { "action" : "drive",
+          "odsPosition": "back",
+          "driveBackwards": false,
+          "degrees": 355.0,
+          "additionalDistance": 0.55
+        },
+        { "action" : "VerifyColor"  },
+        { "action" : "drive",
+          "odsPosition": "front",
+          "driveBackwards": true,
+          "degrees": 0.0,
+          "additionalDistance": 0
+        },
+        { "action" : "claimIfNecessary" }
+      ],
+      "firstBeaconIsOppositeColor" : [
+        { "action" : "drive",
+          "odsPosition": "back",
+          "driveBackwards": false,
+          "degrees": 355.0,
+          "additionalDistance": 0.55
+        },
+        { "action": "claimABeacon" },
+        { "action" : "drive",
+          "odsPosition": "front",
+          "driveBackwards": true,
+          "degrees": 0.0,
+          "additionalDistance": 0
+        },
+        { "action" : "VerifyColor" },
+        {
+          "action" : "drive",
+          "odsPosition": "back",
+          "driveBackwards": false,
+          "degrees": 355.0,
+          "additionalDistance": 0.55
+        },
+        { "action" : "claimIfNecessary" }
+      ]
+    },
+    {
+      "type": "Programmed",
+      "value": "GoStraight_Verify_Claim_Verify_Claim",
+      "odsPosition": "front",
+      "degrees": 355.0,
+      "driveBackwards": false,
+      "firstBeaconIsAllianceColor": [
+        {
+          "action" : "drive",
+          "odsPosition": "back",
+          "driveBackwards": false,
+          "degrees": 355.0,
+          "additionalDistance": 0.55
+        },
+        { "action" : "VerifyColor"},
+        { "action" : "drive",
+          "odsPosition": "front",
+          "driveBackwards": true,
+          "degrees": 0.0,
+          "additionalDistance": 0
+        },
+        { "action" : "claimIfNecessary" }
+      ],
+      "firstBeaconIsOppositeColor" : [
+        {
+          "action" : "drive",
+          "odsPosition": "back",
+          "driveBackwards": false,
+          "degrees": 355.0,
+          "additionalDistance": 0.55
+        },
+        { "action": "claimABeacon" },
+        { "action" : "drive",
+          "odsPosition": "front",
+          "driveBackwards": true,
+          "degrees": 0.0,
+          "additionalDistance": 0
+        },
+        { "action" : "VerifyColor"},
+        {
+          "action" : "drive",
+          "odsPosition": "back",
+          "driveBackwards": false,
+          "degrees": 355.0,
+          "additionalDistance": 0.55
+        },
+        { "action" : "claimIfNecessary" }
+      ]
+    }
+  ],
   "TownsendHarrisRed" : [
     {"type" : "Programmed", "value" : "startPartAcc"},
     {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0, "inches" : 30.0, "motorSpeed" : 0.75},

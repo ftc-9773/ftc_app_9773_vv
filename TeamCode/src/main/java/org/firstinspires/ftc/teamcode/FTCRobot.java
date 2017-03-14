@@ -128,11 +128,16 @@ public class FTCRobot {
         for (int i=0; i<attachments.length; i++) {
             switch (attachments[i]) {
                 case "BeaconClaim":
-                    attachmentsArr[i] = new BeaconClaim(this, curOpMode, rootObj);
+                    attachmentsArr[i] = new BeaconClaim(this, curOpMode, rootObj, attachments[i]);
                     beaconClaimObj = (BeaconClaim) attachmentsArr[i];
-                    DbgLog.msg("ftc9773: beaconClaimObj created");
+                    DbgLog.msg("ftc9773: beaconClaimObj created for Autonomous");
                     break;
-                case "WallFollwer" :
+                case "BeaconClaimTeleOp":
+                    attachmentsArr[i] = new BeaconClaim(this, curOpMode, rootObj, attachments[i]);
+                    beaconClaimObj = (BeaconClaim) attachmentsArr[i];
+                    DbgLog.msg("ftc9773: beaconClaimObj created for TeleOp");
+                    break;
+                case "WallFollower" :
                     attachmentsArr[i] = new WallFollower(this, curOpMode, rootObj);
                     wallFollowObj = (WallFollower) attachmentsArr[i];
                     DbgLog.msg("ftc9773: wallFollowObj created");
@@ -188,7 +193,8 @@ public class FTCRobot {
                 isReverse = false;
             }
             for (Attachment anAttachment : attachmentsArr) {
-                anAttachment.getAndApplyDScmd();
+                if (anAttachment != null)
+                    anAttachment.getAndApplyDScmd();
             }
 
             curOpMode.idle();

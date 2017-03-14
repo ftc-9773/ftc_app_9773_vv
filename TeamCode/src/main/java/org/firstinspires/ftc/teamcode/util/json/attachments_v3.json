@@ -1,6 +1,25 @@
 {
   "__comment1" : "all servos will be set to position 1 in the constructor.  This may require the ",
   "__comment2" : "direction to be set to REVERSE, depending on how the servo is mounted",
+  "BeaconClaimTeleOp" : {
+    "motors" : {
+      "buttonServoCR" : {
+        "motorType" : "CRservo",
+        "motor" : "Tetrix-HS755-HB",
+        "__comment" : "The following 2 values have to be changed",
+        "__scaleRangeMin" : 0.15,
+        "__scaleRangeMax" : 0.549,
+        "needReverse" : false,
+        "__fixedPositions" : true,
+        "__comment_speed" : "speed is in the units of centimeters per second",
+        "speed" : 10.0,
+        "__comment_strokeLength" : "strokeLength is in the units of cm",
+        "strokeLength" : 16,
+        "minButton" : "gamepad1.a",
+        "maxButton" : "gamepad1.y"
+      }
+    }
+  },
   "BeaconClaim" : {
     "motors" : {
       "__buttonServo_standard" : {

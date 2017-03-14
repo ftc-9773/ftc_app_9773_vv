@@ -327,6 +327,8 @@ public class Navigation {
                 curDistFromWall = rangeSensor.getDistance(DistanceUnit.CM);
                 error = targetDistFromWall - curDistFromWall;
                 correction = wallKp * error;
+                if (driveBackwards)
+                    correction = -correction;
                 angleToMaintain = getTargetYaw(degrees, correction);
                 gyro.goStraightPID(driveBackwards, angleToMaintain, speed);
                 robot.instrumentation.addInstrData();

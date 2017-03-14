@@ -76,8 +76,8 @@
   },
   "2017_3_17-19_Scranton_Robot" : {
     "driveSystem": "4Motor6WDSteering",
-    "autonomous_attachments": ["BeaconClaim", "ParticleRelease", "Harvester", "ParticleAccelerator", "WallFollwer"],
-    "teleop_attachments": ["CapBallLift", "ParticleRelease", "Harvester", "ParticleAccelerator", "BeaconClaim", "WallFollwer"],
+    "autonomous_attachments": ["BeaconClaim", "ParticleRelease", "Harvester", "ParticleAccelerator", "WallFollower"],
+    "teleop_attachments": ["CapBallLift", "ParticleRelease", "Harvester", "ParticleAccelerator", "BeaconClaimTeleOp", "WallFollower"],
     "autonomous_navigation": "2ODS_IMU_DriveSysEncoders",
     "teleop_navigation": "none",
     "distanceBetweenLeftAndODS":11,
