@@ -73,6 +73,30 @@
       "ODSbackExtraDistFw" : 0.55, "ODSfrontExtraDistBw": 0.0, "ODSBackExtraDistBw": 0.5
     }
   ],
+  "test4" : [
+    {"type" : "Programmed", "value" : "startPartAcc"},
+    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0, "inches" : 9.0, "motorSpeed" : 0.5},
+    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 320.0, "motorSpeed" : 0.4},
+    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 320.0, "inches" : 27.0, "motorSpeed" : 0.5},
+    {"type" : "Programmed", "value" : "Sleep","milliSeconds": 100},
+    {"type" : "Programmed", "value" : "shootParticles", "numberOfParticles" : 2},
+    {"type" : "programmed", "value" : "stopPartAcc"},
+    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 320.0, "inches" : -10.0, "motorSpeed" : 0.5},
+    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 0.0, "motorSpeed" : 0.4},
+    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0, "inches" : -5.0, "motorSpeed" : 0.5},
+    {"type" : "Programmed", "value" : "shiftRobot", "shiftDistance" : -63.0, "moveDistance" : 20.0,
+      "motorSpeed" : 0.75, "returnToSamePos" : false, "startingYaw" : 0.0, "endingYaw" : 0.0},
+    {"type" : "Programmed", "value" : "UnfoldWallFollower", "timeToPowerTheServo" : "600"},
+    {"type" : "Programmed", "value" : "IdleWallFollower"},
+    {"type" : "Programmed", "value" : "GoStraightAlongWall", "degrees" : 350, "inches" : 30.0, "motorSpeed" : 0.75,
+      "targetDistance" : 15, "wallKp" : 0.5},
+    {"type" : "Programmed", "value" : "GoStraightToWhiteLine", "odsPosition" : "back", "degrees" : 0.0,
+      "driveBackwards" : true, "motorSpeed" : 0.2, "additionalDistance": 0.0},
+    {"type" : "Programmed", "value" : "Sleep","milliSeconds": 100},
+    {"type" : "Programmed", "value" : "setBeaconStatus"},
+    {"type" : "Programmed", "value" : "GoStraightToWhiteLineIfNeeded", "odsPosition" : "front", "degrees" : 0.0,
+      "driveBackwards" : true, "motorSpeed" : 0.2, "additionalDistance": 0.55}
+  ],
   "TownsendHarrisRed" : [
     {"type" : "Programmed", "value" : "startPartAcc"},
     {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0, "inches" : 30.0, "motorSpeed" : 0.75},

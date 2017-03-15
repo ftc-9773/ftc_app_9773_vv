@@ -624,31 +624,7 @@ public class AutonomousActions {
                 }
                 break;
             }
-            case "GoStriaghtTillGyroIsStable" : {
-                double inches = 0.0;
-                double motorSpeed = 0.0;
-                double degrees=0.0;
-                double degreeTolerance=2.0;
-                int numUpdatesToSettle = 5;
-                try {
-                    String key = JsonReader.getRealKeyIgnoreCase(actionObj, "degrees");
-                    degrees = actionObj.getDouble(key);
-                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "degreeTolerance");
-                    degreeTolerance = actionObj.getDouble(key);
-                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "inches");
-                    inches = actionObj.getDouble(key);
-                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "motorSpeed");
-                    motorSpeed = actionObj.getDouble(key);
-                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "numUpdatesToSettle");
-                    numUpdatesToSettle = actionObj.getInt(key);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                DbgLog.msg("ftc9773: Degrees: %f, inches: %f, motorSpeed: %f", degrees, inches, motorSpeed);
-                robot.navigation.goStraightTillGyroIsStable(inches, degrees, (float)degreeTolerance,
-                        (float) motorSpeed, numUpdatesToSettle);
-                break;
-            }
+
             case "GoStraightAlongWall" : {
                 double inches = 0.0;
                 double motorSpeed = 0.0;
