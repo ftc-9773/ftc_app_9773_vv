@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 public class AutonomousActions {
     FTCRobot robot;
     LinearOpMode curOpMode;
-    public String allianceColor;
+    public String allianceColor, otherColor;
     AutonomousOptionsReader autoCfg;
     String replayFilesDir;
     DriveSystem driveSystem;
@@ -38,6 +38,10 @@ public class AutonomousActions {
         this.curOpMode = curOpMode;
         this.driveSystem = robot.driveSystem;
         this.allianceColor = allianceColor;
+        if (allianceColor.equalsIgnoreCase("red"))
+            this.otherColor = "blue";
+        else if (allianceColor.equalsIgnoreCase("blue"))
+            this.otherColor = "red";
         autoCfg = new AutonomousOptionsReader(JsonReader.autonomousOptFile, autoOption);
         if (allianceColor.equalsIgnoreCase("Blue"))
             this.replayFilesDir = JsonReader.autonomousBlueDir;
@@ -122,6 +126,105 @@ public class AutonomousActions {
             e.printStackTrace();
         }
         return (value);
+    }
+
+    private void
+    gotoFirstHalfBeacon(double fwDegrees, double bwDegrees, double motorSpeed, String robotDirection,
+                        double ODSfrontExtraDistFw, double ODSbackExtraDistFw,
+                        double ODSfrontExtraDistBw, double ODSbackExtraDistBw) {
+        DbgLog.msg("ftc9773: gotoFirstHalfBeacon(): fwDegrees=%f, bwDegrees=%f, motorSpeed=%f, robotDirection=%s, " +
+                        "ODSfrontExtraDistFw=%f, ODSbackExtraDistFw=%f, ODSfrontExtraDistBw=%f, " +
+                        "ODSbackExtraDistBw=%f",
+                fwDegrees, bwDegrees, motorSpeed, robotDirection,
+                ODSfrontExtraDistFw, ODSbackExtraDistFw, ODSfrontExtraDistBw, ODSbackExtraDistBw);
+        // 1: Go to till the first ODS hits the white line
+        double degrees=0;
+        double additionalDistance=0;
+        String odsPosition = null;
+        boolean driveBackwards = false;
+        if (robotDirection.equalsIgnoreCase("forward")) {
+            degrees = fwDegrees;
+            driveBackwards = false;
+            odsPosition = "front";
+            additionalDistance = ODSfrontExtraDistFw;
+        } else {
+            degrees = bwDegrees;
+            driveBackwards = true;
+            odsPosition = "back";
+            additionalDistance = ODSbackExtraDistBw;
+        }
+        DbgLog.msg("ftc9773: degrees=%f, driveBackwards=%b, odsPosition=%s, additionalDistance=%f",
+                degrees, driveBackwards, odsPosition, additionalDistance);
+        robot.navigation.goStraightToWhiteLine(degrees, (float) motorSpeed, driveBackwards,
+                additionalDistance, odsPosition);
+
+        return;
+    }
+
+    private void
+    goFrom1stHalfTo2ndHalfBeacon(double fwDegrees, double bwDegrees, double motorSpeed, String robotDirection,
+                                 double ODSfrontExtraDistFw, double ODSbackExtraDistFw,
+                                 double ODSfrontExtraDistBw, double ODSbackExtraDistBw) {
+        DbgLog.msg("ftc9773: goFrom1stHalfTo2ndHalfBeacon(): fwDegrees=%f, bwDegrees=%f, motorSpeed=%f, robotDirection=%s, " +
+                        "ODSfrontExtraDistFw=%f, ODSbackExtraDistFw=%f, ODSfrontExtraDistBw=%f, " +
+                        "ODSbackExtraDistBw=%f",
+                fwDegrees, bwDegrees, motorSpeed, robotDirection,
+                ODSfrontExtraDistFw, ODSbackExtraDistFw, ODSfrontExtraDistBw, ODSbackExtraDistBw);
+        double degrees=0;
+        double additionalDistance=0;
+        String odsPosition = null;
+        boolean driveBackwards = false;
+
+        // other color
+        if (robotDirection.equalsIgnoreCase("forward")) {
+            degrees = fwDegrees;
+            driveBackwards = false;
+            odsPosition = "back";
+            additionalDistance = ODSbackExtraDistFw;
+        } else {
+            degrees = bwDegrees;
+            driveBackwards = true;
+            odsPosition = "front";
+            additionalDistance = ODSfrontExtraDistBw;
+        }
+        DbgLog.msg("ftc9773: degrees=%f, driveBackwards=%b, odsPosition=%s, additionalDistance=%f",
+                degrees, driveBackwards, odsPosition, additionalDistance);
+        robot.navigation.goStraightToWhiteLine(degrees, (float) motorSpeed, driveBackwards,
+                additionalDistance, odsPosition);
+
+        return;
+    }
+
+    private void
+    goFrom2ndtHalfTo1stHalfBeacon(double fwDegrees, double bwDegrees, double motorSpeed, String robotDirection,
+                                 double ODSfrontExtraDistFw, double ODSbackExtraDistFw,
+                                 double ODSfrontExtraDistBw, double ODSbackExtraDistBw) {
+        DbgLog.msg("ftc9773: goFrom2ndtHalfTo1stHalfBeacon(): fwDegrees=%f, bwDegrees=%f, " +
+                "motorSpeed=%f, robotDirection=%s, ODSfrontExtraDistFw=%f, ODSbackExtraDistFw=%f, " +
+                "ODSfrontExtraDistBw=%f, ODSbackExtraDistBw=%f",
+                fwDegrees, bwDegrees, motorSpeed, robotDirection,
+                ODSfrontExtraDistFw, ODSbackExtraDistFw, ODSfrontExtraDistBw, ODSbackExtraDistBw);
+        double degrees=0;
+        double additionalDistance=0;
+        String odsPosition = null;
+        boolean driveBackwards = false;
+        if (robotDirection.equalsIgnoreCase("forward")) {
+            odsPosition = "front";
+            additionalDistance = ODSfrontExtraDistBw;
+            driveBackwards = true;
+            degrees = bwDegrees;
+        } else {
+            odsPosition = "back";
+            additionalDistance = ODSbackExtraDistFw;
+            driveBackwards = false;
+            degrees = fwDegrees;
+        }
+        DbgLog.msg("ftc9773: degrees=%f, driveBackwards=%b, odsPosition=%s, additionalDistance=%f",
+                degrees, driveBackwards, odsPosition, additionalDistance);
+        robot.navigation.goStraightToWhiteLine(degrees, (float) motorSpeed, driveBackwards,
+                additionalDistance, odsPosition);
+
+        return;
     }
 
     public void invokeMethod(String methodName, JSONObject actionObj) {
@@ -423,31 +526,14 @@ public class AutonomousActions {
                 double ODSbackExtraDistFw=getDoubleFromActionObj(actionObj, "ODSbackExtraDistFw");
                 double ODSfrontExtraDistBw=getDoubleFromActionObj(actionObj, "ODSfrontExtraDistBw");
                 double ODSbackExtraDistBw=getDoubleFromActionObj(actionObj, "ODSbackExtraDistBw");
-                DbgLog.msg("ftc9773: fwDegrees=%f, bwDegrees=%f, motorSpeed=%f, robotDirection=%s, " +
+                DbgLog.msg("ftc9773: invokeMethod(): fwDegrees=%f, bwDegrees=%f, motorSpeed=%f, robotDirection=%s, " +
                         "ODSfrontExtraDistFw=%f, ODSbackExtraDistFw=%f, ODSfrontExtraDistBw=%f, " +
                         "ODSbackExtraDistBw=%f",
                         fwDegrees, bwDegrees, motorSpeed, robotDirection,
                         ODSfrontExtraDistFw, ODSbackExtraDistFw, ODSfrontExtraDistBw, ODSbackExtraDistBw);
-                // 1: Go to till the first ODS hits the white line
-                double degrees=0;
-                double additionalDistance=0;
-                String odsPosition = null;
-                boolean driveBackwards = false;
-                if (robotDirection.equalsIgnoreCase("forward")) {
-                    degrees = fwDegrees;
-                    driveBackwards = false;
-                    odsPosition = "front";
-                    additionalDistance = ODSfrontExtraDistFw;
-                } else {
-                    degrees = bwDegrees;
-                    driveBackwards = true;
-                    odsPosition = "back";
-                    additionalDistance = ODSbackExtraDistBw;
-                }
-                DbgLog.msg("ftc9773: degrees=%f, driveBackwards=%b, odsPosition=%s, additionalDistance=%f",
-                        degrees, driveBackwards, odsPosition, additionalDistance);
-                robot.navigation.goStraightToWhiteLine(degrees, (float) motorSpeed, driveBackwards,
-                        additionalDistance, odsPosition);
+
+                gotoFirstHalfBeacon(fwDegrees, bwDegrees, motorSpeed, robotDirection,
+                        ODSfrontExtraDistFw, ODSbackExtraDistFw, ODSfrontExtraDistBw, ODSbackExtraDistBw);
                 // 2. Sleep for 100 millis
                 curOpMode.sleep(100);
                 // 3. Set the beacon color
@@ -457,24 +543,14 @@ public class AutonomousActions {
                     // claim the beacon
                     claimCurrentBeacon();
                 } else if (!robot.beaconClaimObj.getBeaconColorString().equalsIgnoreCase("none")) {
-                    // other color
-                    if (robotDirection.equalsIgnoreCase("forward")) {
-                        odsPosition = "back";
-                        additionalDistance = ODSbackExtraDistFw;
-                    } else {
-                        odsPosition = "front";
-                        additionalDistance = ODSfrontExtraDistBw;
-                    }
-                    DbgLog.msg("ftc9773: degrees=%f, driveBackwards=%b, odsPosition=%s, additionalDistance=%f",
-                            degrees, driveBackwards, odsPosition, additionalDistance);
-                    robot.navigation.goStraightToWhiteLine(degrees, (float) motorSpeed, driveBackwards,
-                            additionalDistance, odsPosition);
+                    goFrom1stHalfTo2ndHalfBeacon(fwDegrees, bwDegrees, motorSpeed, robotDirection,
+                            ODSfrontExtraDistFw, ODSbackExtraDistFw, ODSfrontExtraDistBw, ODSbackExtraDistBw);
                     // Sleep for 100 millis
                     curOpMode.sleep(100);
                     // Set the beacon color
                     robot.beaconClaimObj.setBeaconStatus();
-                    // claim the beacon
-                    claimCurrentBeacon();
+                    if (robot.beaconClaimObj.getBeaconColorString().equalsIgnoreCase(allianceColor))
+                        claimCurrentBeacon();
                 }
                 break;
             }
@@ -487,32 +563,14 @@ public class AutonomousActions {
                 double ODSbackExtraDistFw=getDoubleFromActionObj(actionObj, "ODSbackExtraDistFw");
                 double ODSfrontExtraDistBw=getDoubleFromActionObj(actionObj, "ODSfrontExtraDistBw");
                 double ODSbackExtraDistBw=getDoubleFromActionObj(actionObj, "ODSbackExtraDistBw");
-                DbgLog.msg("ftc9773: fwDegrees=%f, bwDegrees=%f, motorSpeed=%f, robotDirection=%s, " +
+                DbgLog.msg("ftc9773: invokeMethod(): fwDegrees=%f, bwDegrees=%f, motorSpeed=%f, robotDirection=%s, " +
                                 "ODSfrontExtraDistFw=%f, ODSbackExtraDistFw=%f, ODSfrontExtraDistBw=%f, " +
                                 "ODSbackExtraDistBw=%f",
                         fwDegrees, bwDegrees, motorSpeed, robotDirection,
                         ODSfrontExtraDistFw, ODSbackExtraDistFw, ODSfrontExtraDistBw, ODSbackExtraDistBw);
-                // 1: Go to till the first ODS hits the white line
-                double degrees=0;
-                double additionalDistance=0;
-                String odsPosition = null;
-                boolean driveBackwards = false;
                 int beaconHalfClaimed = 1; // 1 for 1st half 2 for 2nd half
-                if (robotDirection.equalsIgnoreCase("forward")) {
-                    degrees = fwDegrees;
-                    driveBackwards = false;
-                    odsPosition = "front";
-                    additionalDistance = ODSfrontExtraDistFw;
-                } else {
-                    degrees = bwDegrees;
-                    driveBackwards = true;
-                    odsPosition = "back";
-                    additionalDistance = ODSbackExtraDistBw;
-                }
-                DbgLog.msg("ftc9773: degrees=%f, driveBackwards=%b, odsPosition=%s, additionalDistance=%f",
-                        degrees, driveBackwards, odsPosition, additionalDistance);
-                robot.navigation.goStraightToWhiteLine(degrees, (float) motorSpeed, driveBackwards,
-                        additionalDistance, odsPosition);
+                gotoFirstHalfBeacon(fwDegrees, bwDegrees, motorSpeed, robotDirection,
+                        ODSfrontExtraDistFw, ODSbackExtraDistFw, ODSfrontExtraDistBw, ODSbackExtraDistBw);
                 // 2. Sleep for 100 millis
                 curOpMode.sleep(100);
                 // 3. Set the beacon color
@@ -523,18 +581,9 @@ public class AutonomousActions {
                     claimCurrentBeacon();
                     beaconHalfClaimed = 1;
                 } else if (!robot.beaconClaimObj.getBeaconColorString().equalsIgnoreCase("none")) {
-                    // other color
-                    if (robotDirection.equalsIgnoreCase("forward")) {
-                        odsPosition = "back";
-                        additionalDistance = ODSbackExtraDistFw;
-                    } else {
-                        odsPosition = "front";
-                        additionalDistance = ODSfrontExtraDistBw;
-                    }
-                    DbgLog.msg("ftc9773: degrees=%f, driveBackwards=%b, odsPosition=%s, additionalDistance=%f",
-                            degrees, driveBackwards, odsPosition, additionalDistance);
-                    robot.navigation.goStraightToWhiteLine(degrees, (float) motorSpeed, driveBackwards,
-                            additionalDistance, odsPosition);
+                    // go to the 2nd half
+                    goFrom1stHalfTo2ndHalfBeacon(fwDegrees, bwDegrees, motorSpeed, robotDirection,
+                            ODSfrontExtraDistFw, ODSbackExtraDistFw, ODSfrontExtraDistBw, ODSbackExtraDistBw);
                     // claim the beacon
                     claimCurrentBeacon();
                     beaconHalfClaimed = 2;
@@ -542,33 +591,13 @@ public class AutonomousActions {
 
                 // B. Verify
                 if (beaconHalfClaimed == 1) {
-                    // Go to 2nd half
-                    if (robotDirection.equalsIgnoreCase("forward")) {
-                        odsPosition = "back";
-                        additionalDistance = ODSbackExtraDistFw;
-                    } else {
-                        odsPosition = "front";
-                        additionalDistance = ODSfrontExtraDistBw;
-                    }
+                    // go to the 2nd half
+                    goFrom1stHalfTo2ndHalfBeacon(fwDegrees, bwDegrees, motorSpeed, robotDirection,
+                            ODSfrontExtraDistFw, ODSbackExtraDistFw, ODSfrontExtraDistBw, ODSbackExtraDistBw);
                 } else if (beaconHalfClaimed == 2) {
-                    // Go back to 1st half
-                    if (robotDirection.equalsIgnoreCase("forward")) {
-                        odsPosition = "front";
-                        additionalDistance = ODSfrontExtraDistBw;
-                        driveBackwards = true;
-                        degrees = bwDegrees;
-                    } else {
-                        odsPosition = "back";
-                        additionalDistance = ODSbackExtraDistFw;
-                        driveBackwards = false;
-                        degrees = fwDegrees;
-                    }
+                    goFrom2ndtHalfTo1stHalfBeacon(fwDegrees, bwDegrees, motorSpeed, robotDirection,
+                            ODSfrontExtraDistFw, ODSbackExtraDistFw, ODSfrontExtraDistBw, ODSbackExtraDistBw);
                 }
-                DbgLog.msg("ftc9773: degrees=%f, driveBackwards=%b, odsPosition=%s, additionalDistance=%f",
-                        degrees, driveBackwards, odsPosition, additionalDistance);
-                // now do the verification
-                robot.navigation.goStraightToWhiteLine(degrees, (float) motorSpeed, driveBackwards,
-                        additionalDistance, odsPosition);
                 // Sleep for 100 millis
                 curOpMode.sleep(100);
                 // Set the beacon color
@@ -583,35 +612,13 @@ public class AutonomousActions {
                 if (reclaimNeeded) {
                     if (beaconHalfClaimed == 1) {
                         // Originally 1st half was claimed; we are now at 2nd half; so go back to 1st half
-                        if (robotDirection.equalsIgnoreCase("forward")) {
-                            odsPosition = "front";
-                            additionalDistance = ODSfrontExtraDistBw;
-                            driveBackwards = true;
-                            degrees = bwDegrees;
-                        } else {
-                            odsPosition = "back";
-                            additionalDistance = ODSbackExtraDistFw;
-                            driveBackwards = false;
-                            degrees = fwDegrees;
-                        }
+                        goFrom2ndtHalfTo1stHalfBeacon(fwDegrees, bwDegrees, motorSpeed, robotDirection,
+                                ODSfrontExtraDistFw, ODSbackExtraDistFw, ODSfrontExtraDistBw, ODSbackExtraDistBw);
                     } else if (beaconHalfClaimed == 2) {
                         // Originally 2nd half was claimed; we are now at 1st half; so go to the 2nd half
-                        if (robotDirection.equalsIgnoreCase("forward")) {
-                            odsPosition = "back";
-                            additionalDistance = ODSbackExtraDistFw;
-                            driveBackwards = false;
-                            degrees = fwDegrees;
-                        } else {
-                            odsPosition = "front";
-                            additionalDistance = ODSfrontExtraDistBw;
-                            driveBackwards = true;
-                            degrees = bwDegrees;
-                        }
+                        goFrom1stHalfTo2ndHalfBeacon(fwDegrees, bwDegrees, motorSpeed, robotDirection,
+                                ODSfrontExtraDistFw, ODSbackExtraDistFw, ODSfrontExtraDistBw, ODSbackExtraDistBw);
                     }
-                    DbgLog.msg("ftc9773: degrees=%f, driveBackwards=%b, odsPosition=%s, additionalDistance=%f",
-                            degrees, driveBackwards, odsPosition, additionalDistance);
-                    robot.navigation.goStraightToWhiteLine(degrees, (float) motorSpeed, driveBackwards,
-                            additionalDistance, odsPosition);
                     // claim the beacon
                     claimCurrentBeacon();
                 }
