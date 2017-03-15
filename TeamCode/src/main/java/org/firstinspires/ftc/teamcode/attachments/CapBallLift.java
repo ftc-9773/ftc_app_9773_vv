@@ -21,15 +21,15 @@ public class CapBallLift implements  Attachment {
     FTCRobot robot;
     LinearOpMode curOpMode;
     DcMotor liftMotor;
-    CRServo liftServoCR = null;
-    Servo liftServo = null;
+    CRServo liftServoCR = null,crownServoCR=null;
+    Servo liftServo = null, crownServo= null;
     boolean lockLift = false;
 
 
     public CapBallLift(FTCRobot robot, LinearOpMode curOpMode, JSONObject rootObj) {
         String key;
         JSONObject liftObj = null;
-        JSONObject motorsObj = null, liftMotorObj = null, liftServoObj=null;
+        JSONObject motorsObj = null, liftMotorObj = null, liftServoObj=null, crownServoObj=null;
 
         this.robot = robot;
         this.curOpMode = curOpMode;
@@ -69,6 +69,26 @@ public class CapBallLift implements  Attachment {
                 }
                 liftServo.setPosition(1);
             }
+            key = JsonReader.getRealKeyIgnoreCase(motorsObj, "crownServo");
+            crownServoObj = motorsObj.getJSONObject(key);
+            key = JsonReader.getRealKeyIgnoreCase(crownServoObj,"motorType");
+            String crownMotorType = crownServoObj.getString(key);
+            if (crownMotorType.equalsIgnoreCase("CRServo")){
+                crownServoCR = curOpMode.hardwareMap.crservo.get("crownServo");
+                if (crownServoObj.getBoolean("needReverse")){
+                    DbgLog.msg("ftc9773: Reversing the crown servo");
+                    crownServoCR.setDirection(CRServo.Direction.REVERSE);
+                }
+            } else {
+                crownServo = curOpMode.hardwareMap.servo.get("crownServo");
+                crownServo.scaleRange(crownServoObj.getDouble("scaleRangeMin"), crownServoObj.getDouble("scaleRangeMax"));
+                if (crownServoObj.getBoolean("needReverse")){
+                    DbgLog.msg("ftc9773: Reversing the crown servo");
+                    crownServo.setDirection(Servo.Direction.REVERSE);
+                }
+                crownServo.setPosition(1);
+            }
+
             liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
@@ -80,15 +100,15 @@ public class CapBallLift implements  Attachment {
     public void autoPlacement(){
         //Unfolding
         unfoldFork();
-        curOpMode.sleep(1000);
+        curOpMode.sleep(700);
         idleFork();
         //raising
         applyPower(1);
-        curOpMode.sleep(900);
+        curOpMode.sleep(500);
         applyPower(0);
         //lowering
         applyPower(-1);
-        curOpMode.sleep(900);
+        curOpMode.sleep(500);
         applyPower(0);
     }
 
@@ -121,6 +141,26 @@ public class CapBallLift implements  Attachment {
         liftServoCR.setPower(0);
     }
 
+    public void activateCrown(){
+        if (crownServo != null){
+            crownServo.setPosition(0);
+        } else if (crownServoCR != null){
+            crownServoCR.setPower(1);
+        }
+    }
+    public void deactivateCrown(){
+        if (crownServo != null){
+            crownServo.setPosition(1);
+        } else if (crownServoCR != null){
+            crownServoCR.setPower(-1);
+        }
+    }
+    public void idleCrown(){
+        if (crownServoCR != null){
+            crownServoCR.setPower(0);
+        }
+    }
+
     @Override
     public void getAndApplyDScmd() {
         float power;
@@ -142,9 +182,19 @@ public class CapBallLift implements  Attachment {
                 autoPlacement();
             } else if (liftServoCR !=null && curOpMode.gamepad2.y) {
                 foldFork();
+            } else if (liftServoCR != null && curOpMode.gamepad2.a && (curOpMode.gamepad2.left_trigger != 0.0)) {
+                unfoldFork();
             } else {
                 idleFork();
             }
+        }
+
+        if (curOpMode.gamepad2.dpad_left){
+            activateCrown();
+        } else if (curOpMode.gamepad2.dpad_right){
+            deactivateCrown();
+        } else {
+            idleCrown();
         }
     }
 }

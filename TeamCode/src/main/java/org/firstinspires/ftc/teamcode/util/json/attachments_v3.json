@@ -106,6 +106,17 @@
         "fixedPositions" : true,
         "minButton" : "gamepad1.left_bumper",
         "maxButton" : "gamepad1.right_bumper"
+      },
+      "crownServo":{
+        "motorType" : "Servo",
+        "motor" : "Tetrix-HS755-HB",
+        "__scaleRange" : "upright:120, expand: 230",
+        "scaleRangeMin" : 0.0,
+        "scaleRangeMax" : 1.0,
+        "needReverse" : true,
+        "fixedPositions" : true,
+        "minButton" : "gamepad1.left_bumper",
+        "maxButton" : "gamepad1.right_bumper"
       }
     }
   },
