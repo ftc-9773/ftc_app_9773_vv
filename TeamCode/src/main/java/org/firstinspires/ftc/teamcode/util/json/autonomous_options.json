@@ -55,127 +55,22 @@
       "driveBackwards" : false, "motorSpeed" : 0.2, "additionalDistance": 0.55},
     {"type" : "Programmed", "value" : "claimAbeacon"}
   ],
-  "test4" : [
-    {
-      "type": "Programmed",
-      "value": "GoStraight_Claim",
-      "odsPosition": "front",
-      "degrees": 355.0,
-      "driveBackwards": false,
-      "firstBeaconIsAllianceColor": [
-        {
-          "action": "claimABeacon"
-        }
-      ],
-      "firstBeaconIsOppositeColor": [
-        {
-          "action" : "drive",
-          "odsPosition": "back",
-          "driveBackwards": false,
-          "degrees": 355.0,
-          "additionalDistance": 0.55
-        },
-        {
-          "action" : "claimABeacon"
-        }
-      ]
-    },
-    {
-      "type" : "Programmed",
-      "value" : "GoStraight_Claim_Verify_Claim",
-      "odsPosition": "front",
-      "degrees": 355.0,
-      "driveBackwards": false,
-      "firstBeaconIsAllianceColor": [
-        { "action": "claimABeacon" },
-        { "action" : "drive",
-          "odsPosition": "back",
-          "driveBackwards": false,
-          "degrees": 355.0,
-          "additionalDistance": 0.55
-        },
-        { "action" : "VerifyColor"  },
-        { "action" : "drive",
-          "odsPosition": "front",
-          "driveBackwards": true,
-          "degrees": 0.0,
-          "additionalDistance": 0
-        },
-        { "action" : "claimIfNecessary" }
-      ],
-      "firstBeaconIsOppositeColor" : [
-        { "action" : "drive",
-          "odsPosition": "back",
-          "driveBackwards": false,
-          "degrees": 355.0,
-          "additionalDistance": 0.55
-        },
-        { "action": "claimABeacon" },
-        { "action" : "drive",
-          "odsPosition": "front",
-          "driveBackwards": true,
-          "degrees": 0.0,
-          "additionalDistance": 0
-        },
-        { "action" : "VerifyColor" },
-        {
-          "action" : "drive",
-          "odsPosition": "back",
-          "driveBackwards": false,
-          "degrees": 355.0,
-          "additionalDistance": 0.55
-        },
-        { "action" : "claimIfNecessary" }
-      ]
-    },
-    {
-      "type": "Programmed",
-      "value": "GoStraight_Verify_Claim_Verify_Claim",
-      "odsPosition": "front",
-      "degrees": 355.0,
-      "driveBackwards": false,
-      "firstBeaconIsAllianceColor": [
-        {
-          "action" : "drive",
-          "odsPosition": "back",
-          "driveBackwards": false,
-          "degrees": 355.0,
-          "additionalDistance": 0.55
-        },
-        { "action" : "VerifyColor"},
-        { "action" : "drive",
-          "odsPosition": "front",
-          "driveBackwards": true,
-          "degrees": 0.0,
-          "additionalDistance": 0
-        },
-        { "action" : "claimIfNecessary" }
-      ],
-      "firstBeaconIsOppositeColor" : [
-        {
-          "action" : "drive",
-          "odsPosition": "back",
-          "driveBackwards": false,
-          "degrees": 355.0,
-          "additionalDistance": 0.55
-        },
-        { "action": "claimABeacon" },
-        { "action" : "drive",
-          "odsPosition": "front",
-          "driveBackwards": true,
-          "degrees": 0.0,
-          "additionalDistance": 0
-        },
-        { "action" : "VerifyColor"},
-        {
-          "action" : "drive",
-          "odsPosition": "back",
-          "driveBackwards": false,
-          "degrees": 355.0,
-          "additionalDistance": 0.55
-        },
-        { "action" : "claimIfNecessary" }
-      ]
+  "test1" : [
+    {"type": "Programmed", "value": "GoStraight_Claim", "robotDirection" : "forward", "fwDegrees": 355.0,
+        "bwDegrees" : 0, "motorSpeed" : 0.2, "ODSfrontExtraDistFw": 0.0, "ODSbackExtraDistFw" : 0.55,
+        "ODSfrontExtraDistBw": 0.0, "ODSBackExtraDistBw": 0.5
+    }
+  ],
+  "test2" : [
+    {"type": "Programmed", "value": "GoStraight_Claim_Verify_Claim", "robotDirection" : "forward", "fwDegrees": 355.0,
+      "bwDegrees" : 0, "motorSpeed" : 0.2, "ODSfrontExtraDistFw": 0.0, "ODSbackExtraDistFw" : 0.55,
+      "ODSfrontExtraDistBw": 0.0, "ODSBackExtraDistBw": 0.5
+    }
+  ],
+  "test3" : [
+    {"type": "Programmed", "value": "GoStraight_Verify_Claim_Verify_Claim", "robotDirection" : "forward",
+      "fwDegrees": 355.0, "bwDegrees" : 0, "motorSpeed" : 0.2, "ODSfrontExtraDistFw": 0.0,
+      "ODSbackExtraDistFw" : 0.55, "ODSfrontExtraDistBw": 0.0, "ODSBackExtraDistBw": 0.5
     }
   ],
   "TownsendHarrisRed" : [
