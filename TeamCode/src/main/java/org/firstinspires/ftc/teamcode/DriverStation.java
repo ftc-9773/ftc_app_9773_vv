@@ -107,6 +107,14 @@ public class DriverStation {
                                 robot.capBallLiftObj.lockLiftMotor();
                             }
                         }
+
+                        if (curOpMode.gamepad2.dpad_left){
+                            robot.capBallLiftObj.activateCrown();
+                        } else if (curOpMode.gamepad2.dpad_right){
+                            robot.capBallLiftObj.deactivateCrown();
+                        } else {
+                            robot.capBallLiftObj.idleCrown();
+                        }
                         break;
                 }
 
@@ -214,6 +222,13 @@ public class DriverStation {
                             robot.capBallLiftObj.goToMidPosition();
                             liftStateMachine.switchState("Mid");
                         }
+                        if (curOpMode.gamepad2.dpad_left){
+                            robot.capBallLiftObj.activateCrown();
+                        } else if (curOpMode.gamepad2.dpad_right){
+                            robot.capBallLiftObj.deactivateCrown();
+                        } else {
+                            robot.capBallLiftObj.idleCrown();
+                        }
                         break;
                     case "Lifting":
                         if (robot.driveSystem.getScaleMultiplier() != 0.0){
@@ -234,6 +249,13 @@ public class DriverStation {
                                 liftStateMachine.switchState("Up");
                             }
                         }
+                        if (curOpMode.gamepad2.dpad_left){
+                            robot.capBallLiftObj.activateCrown();
+                        } else if (curOpMode.gamepad2.dpad_right){
+                            robot.capBallLiftObj.deactivateCrown();
+                        } else {
+                            robot.capBallLiftObj.idleCrown();
+                        }
                         break;
                     case "Mid":
                         if (robot.driveSystem.getScaleMultiplier() != 0.25){
@@ -250,12 +272,19 @@ public class DriverStation {
                             liftStateMachine.switchState("Lifting");
                         }
                         if (robot.capBallLiftObj.useEncoders && curOpMode.gamepad2.left_bumper){
-                        robot.capBallLiftObj.goToDownPosition();
-                        liftStateMachine.switchState("Down");
-                    }
+                            robot.capBallLiftObj.goToDownPosition();
+                            liftStateMachine.switchState("Down");
+                        }
                         if (robot.capBallLiftObj.useEncoders && curOpMode.gamepad2.right_bumper){
                             robot.capBallLiftObj.gotToUpPosition();
                             liftStateMachine.switchState("Up");
+                        }
+                        if (curOpMode.gamepad2.dpad_left){
+                            robot.capBallLiftObj.activateCrown();
+                        } else if (curOpMode.gamepad2.dpad_right){
+                            robot.capBallLiftObj.deactivateCrown();
+                        } else {
+                            robot.capBallLiftObj.idleCrown();
                         }
                         break;
                     case "Up":
@@ -275,6 +304,13 @@ public class DriverStation {
                         if (robot.capBallLiftObj.useEncoders && curOpMode.gamepad2.left_bumper){
                             robot.capBallLiftObj.goToMidPosition();
                             liftStateMachine.switchState("Mid");
+                        }
+                        if (curOpMode.gamepad2.dpad_left){
+                            robot.capBallLiftObj.activateCrown();
+                        } else if (curOpMode.gamepad2.dpad_right){
+                            robot.capBallLiftObj.deactivateCrown();
+                        } else {
+                            robot.capBallLiftObj.idleCrown();
                         }
                         break;
                 }
