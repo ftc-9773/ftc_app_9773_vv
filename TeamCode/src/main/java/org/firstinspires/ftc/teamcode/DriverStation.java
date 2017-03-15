@@ -178,6 +178,14 @@ public class DriverStation {
                 if (curOpMode.gamepad1.x){
                     robot.driveSystem.reverseTeleop();
                 }
+
+                if (curOpMode.gamepad1.dpad_left){
+                    robot.wallFollowObj.activateWallFollwer(600);
+                } else if (curOpMode.gamepad1.dpad_right){
+                    robot.wallFollowObj.deactivateWallFollower(600);
+                }else {
+                    robot.wallFollowObj.idle();
+                }
                 break;
             case "EndGame":
                 //DbgLog.msg("ftc9773:  lift motor current position = %f", robot.capBallLiftObj.getCurrentPosition());
@@ -372,6 +380,13 @@ public class DriverStation {
 
                 if (curOpMode.gamepad1.x){
                     robot.driveSystem.reverseTeleop();
+                }
+                if (curOpMode.gamepad1.dpad_left){
+                    robot.wallFollowObj.activateWallFollwer(600);
+                } else if (curOpMode.gamepad1.dpad_right){
+                    robot.wallFollowObj.deactivateWallFollower(600);
+                }else {
+                    robot.wallFollowObj.idle();
                 }
                 break;
         }

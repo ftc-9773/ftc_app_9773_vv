@@ -77,11 +77,11 @@ public class WallFollower implements Attachment {
         }
     }
 
-    public void unfold() {
+    private void unfold() {
         wallServoCR.setPower(1.0);
     }
 
-    public void fold() {
+    private void fold() {
         wallServoCR.setPower(-1.0);
     }
 
