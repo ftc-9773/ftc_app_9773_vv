@@ -99,7 +99,15 @@ public class LineFollow{
         robot.curOpMode.telemetry.update();
     }
 
-    public double getLightDetected() {
+    public double getLightDetectedFront() {
+        if (lightSensorFront != null) {
+            return (lightSensorFront.getLightDetected());
+        } else {
+            return (0.0);
+        }
+    }
+
+    public double getLightDetectedBack() {
         if (lightSensorBack != null) {
             return (lightSensorBack.getLightDetected());
         } else {

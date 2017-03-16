@@ -277,7 +277,7 @@ public class NavigationChecks {
 
         @Override
         public boolean stopNavigation() {
-            double cur_light = lfObj.getLightDetected();
+            double cur_light = lfObj.getLightDetectedBack();
             if (cur_light != prev_light) {
                 prev_light = cur_light;
                 prev_speed = elapsedEncoderCounts.getDistanceTravelledInInches() / timer.milliseconds();

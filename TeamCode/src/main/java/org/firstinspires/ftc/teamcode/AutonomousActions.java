@@ -9,7 +9,6 @@ import org.firstinspires.ftc.teamcode.drivesys.DriveSystem;
 import org.firstinspires.ftc.teamcode.util.FileRW;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.AutonomousOptionsReader;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -129,10 +128,10 @@ public class AutonomousActions {
     }
 
     private void
-    gotoFirstHalfBeacon(double fwDegrees, double bwDegrees, double motorSpeed, String robotDirection,
-                        double ODSfrontExtraDistFw, double ODSbackExtraDistFw,
-                        double ODSfrontExtraDistBw, double ODSbackExtraDistBw) {
-        DbgLog.msg("ftc9773: gotoFirstHalfBeacon(): fwDegrees=%f, bwDegrees=%f, motorSpeed=%f, robotDirection=%s, " +
+    gotoBeaconSide1(double fwDegrees, double bwDegrees, double motorSpeed, String robotDirection,
+                    double ODSfrontExtraDistFw, double ODSbackExtraDistFw,
+                    double ODSfrontExtraDistBw, double ODSbackExtraDistBw) {
+        DbgLog.msg("ftc9773: gotoBeaconSide1(): fwDegrees=%f, bwDegrees=%f, motorSpeed=%f, robotDirection=%s, " +
                         "ODSfrontExtraDistFw=%f, ODSbackExtraDistFw=%f, ODSfrontExtraDistBw=%f, " +
                         "ODSbackExtraDistBw=%f",
                 fwDegrees, bwDegrees, motorSpeed, robotDirection,
@@ -162,10 +161,10 @@ public class AutonomousActions {
     }
 
     private void
-    goFrom1stHalfTo2ndHalfBeacon(double fwDegrees, double bwDegrees, double motorSpeed, String robotDirection,
-                                 double ODSfrontExtraDistFw, double ODSbackExtraDistFw,
-                                 double ODSfrontExtraDistBw, double ODSbackExtraDistBw) {
-        DbgLog.msg("ftc9773: goFrom1stHalfTo2ndHalfBeacon(): fwDegrees=%f, bwDegrees=%f, motorSpeed=%f, robotDirection=%s, " +
+    goFromSide1ToSide2(double fwDegrees, double bwDegrees, double motorSpeed, String robotDirection,
+                       double ODSfrontExtraDistFw, double ODSbackExtraDistFw,
+                       double ODSfrontExtraDistBw, double ODSbackExtraDistBw) {
+        DbgLog.msg("ftc9773: goFromSide1ToSide2(): fwDegrees=%f, bwDegrees=%f, motorSpeed=%f, robotDirection=%s, " +
                         "ODSfrontExtraDistFw=%f, ODSbackExtraDistFw=%f, ODSfrontExtraDistBw=%f, " +
                         "ODSbackExtraDistBw=%f",
                 fwDegrees, bwDegrees, motorSpeed, robotDirection,
@@ -196,10 +195,10 @@ public class AutonomousActions {
     }
 
     private void
-    goFrom2ndtHalfTo1stHalfBeacon(double fwDegrees, double bwDegrees, double motorSpeed, String robotDirection,
-                                 double ODSfrontExtraDistFw, double ODSbackExtraDistFw,
-                                 double ODSfrontExtraDistBw, double ODSbackExtraDistBw) {
-        DbgLog.msg("ftc9773: goFrom2ndtHalfTo1stHalfBeacon(): fwDegrees=%f, bwDegrees=%f, " +
+    goFromSide2ToSide1(double fwDegrees, double bwDegrees, double motorSpeed, String robotDirection,
+                       double ODSfrontExtraDistFw, double ODSbackExtraDistFw,
+                       double ODSfrontExtraDistBw, double ODSbackExtraDistBw) {
+        DbgLog.msg("ftc9773: goFromSide2ToSide1(): fwDegrees=%f, bwDegrees=%f, " +
                 "motorSpeed=%f, robotDirection=%s, ODSfrontExtraDistFw=%f, ODSbackExtraDistFw=%f, " +
                 "ODSfrontExtraDistBw=%f, ODSbackExtraDistBw=%f",
                 fwDegrees, bwDegrees, motorSpeed, robotDirection,
@@ -532,7 +531,7 @@ public class AutonomousActions {
                         fwDegrees, bwDegrees, motorSpeed, robotDirection,
                         ODSfrontExtraDistFw, ODSbackExtraDistFw, ODSfrontExtraDistBw, ODSbackExtraDistBw);
 
-                gotoFirstHalfBeacon(fwDegrees, bwDegrees, motorSpeed, robotDirection,
+                gotoBeaconSide1(fwDegrees, bwDegrees, motorSpeed, robotDirection,
                         ODSfrontExtraDistFw, ODSbackExtraDistFw, ODSfrontExtraDistBw, ODSbackExtraDistBw);
                 // 2. Sleep for 100 millis
                 curOpMode.sleep(100);
@@ -543,7 +542,7 @@ public class AutonomousActions {
                     // claim the beacon
                     claimCurrentBeacon();
                 } else if (!robot.beaconClaimObj.getBeaconColorString().equalsIgnoreCase("none")) {
-                    goFrom1stHalfTo2ndHalfBeacon(fwDegrees, bwDegrees, motorSpeed, robotDirection,
+                    goFromSide1ToSide2(fwDegrees, bwDegrees, motorSpeed, robotDirection,
                             ODSfrontExtraDistFw, ODSbackExtraDistFw, ODSfrontExtraDistBw, ODSbackExtraDistBw);
                     // Sleep for 100 millis
                     curOpMode.sleep(100);
@@ -569,7 +568,7 @@ public class AutonomousActions {
                         fwDegrees, bwDegrees, motorSpeed, robotDirection,
                         ODSfrontExtraDistFw, ODSbackExtraDistFw, ODSfrontExtraDistBw, ODSbackExtraDistBw);
                 int beaconHalfClaimed = 1; // 1 for 1st half 2 for 2nd half
-                gotoFirstHalfBeacon(fwDegrees, bwDegrees, motorSpeed, robotDirection,
+                gotoBeaconSide1(fwDegrees, bwDegrees, motorSpeed, robotDirection,
                         ODSfrontExtraDistFw, ODSbackExtraDistFw, ODSfrontExtraDistBw, ODSbackExtraDistBw);
                 // 2. Sleep for 100 millis
                 curOpMode.sleep(100);
@@ -582,7 +581,7 @@ public class AutonomousActions {
                     beaconHalfClaimed = 1;
                 } else if (!robot.beaconClaimObj.getBeaconColorString().equalsIgnoreCase("none")) {
                     // go to the 2nd half
-                    goFrom1stHalfTo2ndHalfBeacon(fwDegrees, bwDegrees, motorSpeed, robotDirection,
+                    goFromSide1ToSide2(fwDegrees, bwDegrees, motorSpeed, robotDirection,
                             ODSfrontExtraDistFw, ODSbackExtraDistFw, ODSfrontExtraDistBw, ODSbackExtraDistBw);
                     // claim the beacon
                     claimCurrentBeacon();
@@ -592,10 +591,10 @@ public class AutonomousActions {
                 // B. Verify
                 if (beaconHalfClaimed == 1) {
                     // go to the 2nd half
-                    goFrom1stHalfTo2ndHalfBeacon(fwDegrees, bwDegrees, motorSpeed, robotDirection,
+                    goFromSide1ToSide2(fwDegrees, bwDegrees, motorSpeed, robotDirection,
                             ODSfrontExtraDistFw, ODSbackExtraDistFw, ODSfrontExtraDistBw, ODSbackExtraDistBw);
                 } else if (beaconHalfClaimed == 2) {
-                    goFrom2ndtHalfTo1stHalfBeacon(fwDegrees, bwDegrees, motorSpeed, robotDirection,
+                    goFromSide2ToSide1(fwDegrees, bwDegrees, motorSpeed, robotDirection,
                             ODSfrontExtraDistFw, ODSbackExtraDistFw, ODSfrontExtraDistBw, ODSbackExtraDistBw);
                 }
                 // Sleep for 100 millis
@@ -612,16 +611,128 @@ public class AutonomousActions {
                 if (reclaimNeeded) {
                     if (beaconHalfClaimed == 1) {
                         // Originally 1st half was claimed; we are now at 2nd half; so go back to 1st half
-                        goFrom2ndtHalfTo1stHalfBeacon(fwDegrees, bwDegrees, motorSpeed, robotDirection,
+                        goFromSide2ToSide1(fwDegrees, bwDegrees, motorSpeed, robotDirection,
                                 ODSfrontExtraDistFw, ODSbackExtraDistFw, ODSfrontExtraDistBw, ODSbackExtraDistBw);
                     } else if (beaconHalfClaimed == 2) {
                         // Originally 2nd half was claimed; we are now at 1st half; so go to the 2nd half
-                        goFrom1stHalfTo2ndHalfBeacon(fwDegrees, bwDegrees, motorSpeed, robotDirection,
+                        goFromSide1ToSide2(fwDegrees, bwDegrees, motorSpeed, robotDirection,
                                 ODSfrontExtraDistFw, ODSbackExtraDistFw, ODSfrontExtraDistBw, ODSbackExtraDistBw);
                     }
                     // claim the beacon
                     claimCurrentBeacon();
                 }
+                break;
+            }
+            case "GoStraight_V_C_V_C" : {
+                double motorSpeed = getDoubleFromActionObj(actionObj, "motorSpeed");
+                double fwDegrees=getDoubleFromActionObj(actionObj, "fwDegrees");
+                double bwDegrees=getDoubleFromActionObj(actionObj, "bwDegrees");
+                String robotDirection=getStrFromActionObj(actionObj, "robotDirection");
+                double ODSfrontExtraDistFw = getDoubleFromActionObj(actionObj, "ODSfrontExtraDistFw");
+                double ODSbackExtraDistFw=getDoubleFromActionObj(actionObj, "ODSbackExtraDistFw");
+                double ODSfrontExtraDistBw=getDoubleFromActionObj(actionObj, "ODSfrontExtraDistBw");
+                double ODSbackExtraDistBw=getDoubleFromActionObj(actionObj, "ODSbackExtraDistBw");
+                DbgLog.msg("ftc9773: invokeMethod(): fwDegrees=%f, bwDegrees=%f, motorSpeed=%f, robotDirection=%s, " +
+                                "ODSfrontExtraDistFw=%f, ODSbackExtraDistFw=%f, ODSfrontExtraDistBw=%f, " +
+                                "ODSbackExtraDistBw=%f",
+                        fwDegrees, bwDegrees, motorSpeed, robotDirection,
+                        ODSfrontExtraDistFw, ODSbackExtraDistFw, ODSfrontExtraDistBw, ODSbackExtraDistBw);
+
+                boolean side1IsOurColor=false, side2IsOurColor=false;
+                int currentSide=0;
+
+                // 1. Verify
+                gotoBeaconSide1(fwDegrees, bwDegrees, motorSpeed, robotDirection,
+                        ODSfrontExtraDistFw, ODSbackExtraDistFw, ODSfrontExtraDistBw, ODSbackExtraDistBw);
+                currentSide = 1;
+                curOpMode.sleep(100);
+                robot.beaconClaimObj.setBeaconStatus();
+                if (robot.beaconClaimObj.getBeaconColorString().equalsIgnoreCase(allianceColor))
+                    side1IsOurColor = true;
+                else
+                    side1IsOurColor = false;
+                // go from side 1 to side2
+                goFromSide1ToSide2(fwDegrees, bwDegrees, motorSpeed, robotDirection,
+                        ODSfrontExtraDistFw, ODSbackExtraDistFw, ODSfrontExtraDistBw, ODSbackExtraDistBw);
+                currentSide = 2;
+                curOpMode.sleep(100);
+                robot.beaconClaimObj.setBeaconStatus();
+                if (robot.beaconClaimObj.getBeaconColorString().equalsIgnoreCase(allianceColor))
+                    side2IsOurColor = true;
+                else
+                    side2IsOurColor = false;
+
+                // 2. Claim if necessary
+                if (side1IsOurColor && side2IsOurColor) {
+                    return; // No more work to do
+                } else if (!side1IsOurColor && !side2IsOurColor) {
+                    // Both sides are of other alliance's color; in this case,
+                    // pressing any side will turn the beacon to our color.
+                    // So no need to move the robot to claim the beacon
+                    claimCurrentBeacon();
+                } else {
+                    // We are currently at side 2.
+                    if (side1IsOurColor) {
+                        goFromSide2ToSide1(fwDegrees, bwDegrees, motorSpeed, robotDirection,
+                                ODSfrontExtraDistFw, ODSbackExtraDistFw, ODSfrontExtraDistBw, ODSbackExtraDistBw);
+                        currentSide = 1;
+                        // claim the beacon
+                        claimCurrentBeacon();
+                    } else if (side2IsOurColor) {
+                        // claim the beacon
+                        claimCurrentBeacon();
+                    }
+                }
+
+                // 3. Verify again
+                if (currentSide == 1) {
+                    curOpMode.sleep(100);
+                    robot.beaconClaimObj.setBeaconStatus();
+                    side1IsOurColor = (robot.beaconClaimObj.getBeaconColorString().equalsIgnoreCase(allianceColor)) ?
+                            true : false;
+                    goFromSide1ToSide2(fwDegrees, bwDegrees, motorSpeed, robotDirection,
+                            ODSfrontExtraDistFw, ODSbackExtraDistFw, ODSfrontExtraDistBw, ODSbackExtraDistBw);
+                    currentSide = 2;
+                    curOpMode.sleep(100);
+                    robot.beaconClaimObj.setBeaconStatus();
+                    side2IsOurColor = (robot.beaconClaimObj.getBeaconColorString().equalsIgnoreCase(allianceColor)) ?
+                            true : false;
+                } else if (currentSide == 2) {
+                    curOpMode.sleep(100);
+                    robot.beaconClaimObj.setBeaconStatus();
+                    side2IsOurColor = (robot.beaconClaimObj.getBeaconColorString().equalsIgnoreCase(allianceColor)) ?
+                            true : false;
+                    goFromSide2ToSide1(fwDegrees, bwDegrees, motorSpeed, robotDirection,
+                            ODSfrontExtraDistFw, ODSbackExtraDistFw, ODSfrontExtraDistBw, ODSbackExtraDistBw);
+                    currentSide = 1;
+                    curOpMode.sleep(100);
+                    robot.beaconClaimObj.setBeaconStatus();
+                    side1IsOurColor = (robot.beaconClaimObj.getBeaconColorString().equalsIgnoreCase(allianceColor)) ?
+                            true : false;
+                }
+                // 4. Reclaim if necessary
+                if (side1IsOurColor && side2IsOurColor) {
+                    return; // No more work to do
+                } else {
+                    if ((currentSide == 1 && side1IsOurColor) || (currentSide == 2 && side2IsOurColor)) {
+                        claimCurrentBeacon();
+                    } else if (currentSide == 1) {
+                        // The robot is currently at side 1
+                        goFromSide1ToSide2(fwDegrees, bwDegrees, motorSpeed, robotDirection,
+                                ODSfrontExtraDistFw, ODSbackExtraDistFw, ODSfrontExtraDistBw, ODSbackExtraDistBw);
+                        currentSide = 2;
+                        claimCurrentBeacon();
+
+                    } else {
+                        // The robot is currently at side 2.
+                        goFromSide2ToSide1(fwDegrees, bwDegrees, motorSpeed, robotDirection,
+                                ODSfrontExtraDistFw, ODSbackExtraDistFw, ODSfrontExtraDistBw, ODSbackExtraDistBw);
+                        currentSide = 1;
+                        // claim the beacon
+                        claimCurrentBeacon();
+                    }
+                }
+
                 break;
             }
 
