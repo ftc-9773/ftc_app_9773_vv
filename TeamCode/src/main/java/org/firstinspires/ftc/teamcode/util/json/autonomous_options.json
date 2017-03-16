@@ -5,7 +5,7 @@
     {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 20.0, "motorSpeed" : 0.3},
     {"type" : "Programmed", "value" : "shootParticles", "numberOfParticles" : 1},
     {"type" : "programmed", "value" : "stopPartAcc"},
-    {"type" : "Programmed", "value" : "shiftRobot", "shiftDistance" : -35.0, "moveDistance" : 20.0,
+    {"type" : "Programmed", "value" : "shiftRobot", "shiftDistance" : -30.0, "moveDistance" : 20.0,
       "motorSpeed" : 0.75, "returnToSamePos" : false, "startingYaw" : 0.0, "endingYaw" : 355.0},
     {"type" : "Programmed", "value" : "UnfoldWallFollower", "timeToPowerTheServo" : "600"},
     {"type" : "Programmed", "value" : "IdleWallFollower"},
@@ -56,19 +56,34 @@
     {"type" : "Programmed", "value" : "claimAbeacon"}
   ],
   "test1" : [
+    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0, "inches" : 5.0, "motorSpeed" : 0.75},
+    {"type" : "Programmed", "value" : "UnfoldWallFollower", "timeToPowerTheServo" : "600"},
+    {"type" : "Programmed", "value" : "IdleWallFollower"},
+    {"type" : "Programmed", "value" : "GoStraightAlongWall", "degrees" : 355, "inches" : 15.0, "motorSpeed" : 0.75,
+      "targetDistance" : 15, "wallKp" : 0.5},
     {"type": "Programmed", "value": "GoStraight_Claim", "robotDirection" : "forward", "fwDegrees": 355.0,
         "bwDegrees" : 0, "motorSpeed" : 0.2, "ODSfrontExtraDistFw": 0.0, "ODSbackExtraDistFw" : 0.55,
         "ODSfrontExtraDistBw": 0.0, "ODSBackExtraDistBw": 0.5
     }
   ],
   "test2" : [
+    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0, "inches" : 5.0, "motorSpeed" : 0.75},
+    {"type" : "Programmed", "value" : "UnfoldWallFollower", "timeToPowerTheServo" : "600"},
+    {"type" : "Programmed", "value" : "IdleWallFollower"},
+    {"type" : "Programmed", "value" : "GoStraightAlongWall", "degrees" : 355, "inches" : 15.0, "motorSpeed" : 0.75,
+      "targetDistance" : 15, "wallKp" : 0.5},
     {"type": "Programmed", "value": "GoStraight_Claim_Verify_Claim", "robotDirection" : "forward", "fwDegrees": 355.0,
       "bwDegrees" : 0, "motorSpeed" : 0.2, "ODSfrontExtraDistFw": 0.0, "ODSbackExtraDistFw" : 0.55,
       "ODSfrontExtraDistBw": 0.0, "ODSBackExtraDistBw": 0.5
     }
   ],
   "test3" : [
-    {"type": "Programmed", "value": "GoStraight_Verify_Claim_Verify_Claim", "robotDirection" : "forward",
+    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0, "inches" : 5.0, "motorSpeed" : 0.75},
+    {"type" : "Programmed", "value" : "UnfoldWallFollower", "timeToPowerTheServo" : "600"},
+    {"type" : "Programmed", "value" : "IdleWallFollower"},
+    {"type" : "Programmed", "value" : "GoStraightAlongWall", "degrees" : 355, "inches" : 15.0, "motorSpeed" : 0.75,
+      "targetDistance" : 15, "wallKp" : 0.5},
+    {"type": "Programmed", "value": "GoStraight_V_C_V_C", "robotDirection" : "forward",
       "fwDegrees": 355.0, "bwDegrees" : 0, "motorSpeed" : 0.2, "ODSfrontExtraDistFw": 0.0,
       "ODSbackExtraDistFw" : 0.55, "ODSfrontExtraDistBw": 0.0, "ODSBackExtraDistBw": 0.5
     }
