@@ -108,7 +108,7 @@
         "maxButton" : "gamepad1.right_bumper"
       },
       "crownServo":{
-        "motorType" : "Servo",
+        "motorType" : "CRservo",
         "motor" : "Tetrix-HS755-HB",
         "__scaleRange" : "upright:120, expand: 230",
         "scaleRangeMin" : 0.0,

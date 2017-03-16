@@ -73,6 +73,7 @@ public class CapBallLift implements  Attachment {
             crownServoObj = motorsObj.getJSONObject(key);
             key = JsonReader.getRealKeyIgnoreCase(crownServoObj,"motorType");
             String crownMotorType = crownServoObj.getString(key);
+            DbgLog.msg("ftc9773: crownServoType: %s", crownMotorType);
             if (crownMotorType.equalsIgnoreCase("CRServo")){
                 crownServoCR = curOpMode.hardwareMap.crservo.get("crownServo");
                 if (crownServoObj.getBoolean("needReverse")){

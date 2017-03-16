@@ -335,7 +335,7 @@ public class Instrumentation {
             if (printEveryUpdate) {
                 String strToWrite = String.format("method being instrumented=, %s", description);
                 fileObj.fileWrite(strToWrite);
-                strToWrite = String.format("voltage, millis, iteration, updateCnt, curLight, prevLight, inches, speed");
+                strToWrite = String.format("voltage, millis, iteration, updateCnt, curLightF, curLightB, inches, speed");
                 fileObj.fileWrite(strToWrite);
             }
         }
@@ -343,22 +343,23 @@ public class Instrumentation {
         @Override
         public void addInstrData() {
             iterationCount++;
-            double curLightDetected = lfObj.getLightDetected();
-            minLight = (curLightDetected < minLight) ? curLightDetected : minLight;
-            maxLight = (curLightDetected > maxLight) ? curLightDetected : maxLight;
-            if ((curLightDetected != prevLightDetected)) {
-                totalLight += curLightDetected;
+            double curLightDetectedF = lfObj.getLightDetectedFront();
+            double curLightDetectedB = lfObj.getLightDetectedBack();
+            minLight = (curLightDetectedB < minLight) ? curLightDetectedB : minLight;
+            maxLight = (curLightDetectedB > maxLight) ? curLightDetectedB : maxLight;
+            if ((curLightDetectedB != prevLightDetected)) {
+                totalLight += curLightDetectedB;
                 updateCnt++;
                 double distanceTravelled = elapsedCounts.getDistanceTravelledInInches();
                 double millis = timer.milliseconds();
                 double speed = distanceTravelled / millis;
                 if (printEveryUpdate) {
                     String strToWrite = String.format("%f, %f, %d, %d, %f, %f, %f, %f", robot.getVoltage(),
-                            timer.milliseconds(), iterationCount, updateCnt, curLightDetected,
-                            prevLightDetected, distanceTravelled, speed);
+                            timer.milliseconds(), iterationCount, updateCnt, curLightDetectedF,
+                            curLightDetectedB, distanceTravelled, speed);
                     fileObj.fileWrite(strToWrite);
                 }
-                prevLightDetected = curLightDetected;
+                prevLightDetected = curLightDetectedB;
                 elapsedCounts.reset();
                 timer.reset();
             }
