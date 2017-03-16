@@ -107,14 +107,6 @@ public class DriverStation {
                                 robot.capBallLiftObj.lockLiftMotor();
                             }
                         }
-
-                        if (curOpMode.gamepad2.dpad_left){
-                            robot.capBallLiftObj.activateCrown();
-                        } else if (curOpMode.gamepad2.dpad_right){
-                            robot.capBallLiftObj.deactivateCrown();
-                        } else {
-                            robot.capBallLiftObj.idleCrown();
-                        }
                         break;
                 }
 
@@ -179,12 +171,20 @@ public class DriverStation {
                     robot.driveSystem.reverseTeleop();
                 }
 
-                if (curOpMode.gamepad1.dpad_left){
+                if (curOpMode.gamepad1.left_bumper){
                     robot.wallFollowObj.activateWallFollwer(600);
-                } else if (curOpMode.gamepad1.dpad_right){
+                } else if (curOpMode.gamepad1.right_bumper){
                     robot.wallFollowObj.deactivateWallFollower(600);
                 }else {
                     robot.wallFollowObj.idle();
+                }
+
+                if (curOpMode.gamepad2.dpad_left){
+                    robot.capBallLiftObj.activateCrown();
+                } else if (curOpMode.gamepad2.dpad_right){
+                    robot.capBallLiftObj.deactivateCrown();
+                } else {
+                    robot.capBallLiftObj.idleCrown();
                 }
                 break;
             case "EndGame":
@@ -230,13 +230,7 @@ public class DriverStation {
                             robot.capBallLiftObj.goToMidPosition();
                             liftStateMachine.switchState("Mid");
                         }
-                        if (curOpMode.gamepad2.dpad_left){
-                            robot.capBallLiftObj.activateCrown();
-                        } else if (curOpMode.gamepad2.dpad_right){
-                            robot.capBallLiftObj.deactivateCrown();
-                        } else {
-                            robot.capBallLiftObj.idleCrown();
-                        }
+
                         break;
                     case "Lifting":
                         if (robot.driveSystem.getScaleMultiplier() != 0.0){
@@ -257,13 +251,7 @@ public class DriverStation {
                                 liftStateMachine.switchState("Up");
                             }
                         }
-                        if (curOpMode.gamepad2.dpad_left){
-                            robot.capBallLiftObj.activateCrown();
-                        } else if (curOpMode.gamepad2.dpad_right){
-                            robot.capBallLiftObj.deactivateCrown();
-                        } else {
-                            robot.capBallLiftObj.idleCrown();
-                        }
+
                         break;
                     case "Mid":
                         if (robot.driveSystem.getScaleMultiplier() != 0.25){
@@ -287,13 +275,7 @@ public class DriverStation {
                             robot.capBallLiftObj.gotToUpPosition();
                             liftStateMachine.switchState("Up");
                         }
-                        if (curOpMode.gamepad2.dpad_left){
-                            robot.capBallLiftObj.activateCrown();
-                        } else if (curOpMode.gamepad2.dpad_right){
-                            robot.capBallLiftObj.deactivateCrown();
-                        } else {
-                            robot.capBallLiftObj.idleCrown();
-                        }
+
                         break;
                     case "Up":
                         if (robot.driveSystem.getScaleMultiplier() != 0.1){
@@ -313,13 +295,7 @@ public class DriverStation {
                             robot.capBallLiftObj.goToMidPosition();
                             liftStateMachine.switchState("Mid");
                         }
-                        if (curOpMode.gamepad2.dpad_left){
-                            robot.capBallLiftObj.activateCrown();
-                        } else if (curOpMode.gamepad2.dpad_right){
-                            robot.capBallLiftObj.deactivateCrown();
-                        } else {
-                            robot.capBallLiftObj.idleCrown();
-                        }
+
                         break;
                 }
                 switch (driveSysStateMachine.getCurState()) {
@@ -381,12 +357,20 @@ public class DriverStation {
                 if (curOpMode.gamepad1.x){
                     robot.driveSystem.reverseTeleop();
                 }
-                if (curOpMode.gamepad1.dpad_left){
+                if (curOpMode.gamepad1.left_bumper){
                     robot.wallFollowObj.activateWallFollwer(600);
-                } else if (curOpMode.gamepad1.dpad_right){
+                } else if (curOpMode.gamepad1.right_bumper){
                     robot.wallFollowObj.deactivateWallFollower(600);
                 }else {
                     robot.wallFollowObj.idle();
+                }
+
+                if (curOpMode.gamepad2.dpad_left){
+                    robot.capBallLiftObj.activateCrown();
+                } else if (curOpMode.gamepad2.dpad_right){
+                    robot.capBallLiftObj.deactivateCrown();
+                } else {
+                    robot.capBallLiftObj.idleCrown();
                 }
                 break;
         }

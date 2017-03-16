@@ -5,7 +5,7 @@
     {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 20.0, "motorSpeed" : 0.3},
     {"type" : "Programmed", "value" : "shootParticles", "numberOfParticles" : 1},
     {"type" : "programmed", "value" : "stopPartAcc"},
-    {"type" : "Programmed", "value" : "shiftRobot", "shiftDistance" : -35.0, "moveDistance" : 20.0,
+    {"type" : "Programmed", "value" : "shiftRobot", "shiftDistance" : -32.0, "moveDistance" : 20.0,
       "motorSpeed" : 0.75, "returnToSamePos" : false, "startingYaw" : 0.0, "endingYaw" : 355.0},
     {"type" : "Programmed", "value" : "UnfoldWallFollower", "timeToPowerTheServo" : "600"},
     {"type" : "Programmed", "value" : "IdleWallFollower"},
