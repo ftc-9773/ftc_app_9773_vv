@@ -97,7 +97,7 @@
         "maxButton" : "gamepad1.right_trigger",
         "useEncoders" : true,
         "downPosition" : -300,
-        "midPosition" : 2500,
+        "midPosition" : 1000,
         "upPosition" : 9000
       },
       "liftServo":{

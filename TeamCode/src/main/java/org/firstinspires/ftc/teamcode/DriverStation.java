@@ -222,8 +222,8 @@ public class DriverStation {
                         }
                         break;
                     case "Down":
-                        if (robot.driveSystem.getScaleMultiplier() != 1.0){
-                            robot.driveSystem.scalePower(1.0);
+                        if (robot.driveSystem.getScaleMultiplier() != 0.5){
+                            robot.driveSystem.scalePower(0.5);
                         }
                         if (curOpMode.gamepad2.y) {
                             robot.capBallLiftObj.foldFork();
@@ -248,8 +248,8 @@ public class DriverStation {
 
                         break;
                     case "Lifting":
-                        if (robot.driveSystem.getScaleMultiplier() != 0.0){
-                            robot.driveSystem.scalePower(0.0);
+                        if (robot.driveSystem.getScaleMultiplier() != 0.2){
+                            robot.driveSystem.scalePower(0.2);
                         }
                         if (robot.capBallLiftObj.lockLift) {
                             robot.capBallLiftObj.unlockLiftMotor();
@@ -304,8 +304,8 @@ public class DriverStation {
 
                         break;
                     case "Up":
-                        if (robot.driveSystem.getScaleMultiplier() != 0.3){
-                            robot.driveSystem.scalePower(0.3);
+                        if (robot.driveSystem.getScaleMultiplier() != 0.35){
+                            robot.driveSystem.scalePower(0.35);
                         }
                         if (!robot.capBallLiftObj.lockLift) {
                             robot.capBallLiftObj.lockLiftMotor();
