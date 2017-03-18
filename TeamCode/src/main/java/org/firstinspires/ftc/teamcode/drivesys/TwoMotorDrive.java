@@ -384,7 +384,9 @@ public class TwoMotorDrive extends DriveSystem{
 
     @Override
     public void reverseTeleop(){
-        reverseMultiplier *= -1;
+        reverseMultiplier = 1;
     }
+    @Override
+    public void unreverseTeleop(){ reverseMultiplier = 1;}
 
 }

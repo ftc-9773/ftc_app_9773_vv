@@ -107,12 +107,12 @@ public class CapBallLift implements  Attachment {
     }
 
     public void autoPlacement(){
-        //Unfolding
-        unfoldFork();
-        curOpMode.sleep(700);
-        idleFork();
         //raising
         goToMidPosition();
+        //Unfolding
+        unfoldFork();
+        curOpMode.sleep(1000);
+        idleFork();
         //lowering
         goToDownPosition();
     }

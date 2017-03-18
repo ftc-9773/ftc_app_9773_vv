@@ -28,6 +28,7 @@ public class DriverStation {
     StateMachine partAccStateMachine;
     List<String>partAccStates;
     ElapsedTime timer;
+    boolean endGameTimer = true;
     double previousLiftGamepadPower = 0.0;
 
     public DriverStation(FTCRobot robot, LinearOpMode curOpMode){
@@ -65,12 +66,19 @@ public class DriverStation {
 //                "particle Acc = %s, drivesys= %s",
 //                drvrStationStateMachine.getCurState(), liftStateMachine.getCurState(),
 //                partAccStateMachine.getCurState(), driveSysStateMachine.getCurState());
-        if (timer.seconds() >= 10){
-            drvrStationStateMachine.switchState("EndGame");
-        } else if (timer.seconds() < 10){
-            drvrStationStateMachine.switchState("TeleOp");
-        }
+        if (endGameTimer) {
+            if (timer.seconds() >= 90) {
+                drvrStationStateMachine.switchState("EndGame");
+            } else if (timer.seconds() < 90) {
+                drvrStationStateMachine.switchState("TeleOp");
+            }
 
+            if (curOpMode.gamepad2.left_trigger != 0.0) {
+                endGameTimer = false;
+            }
+        } else if (!endGameTimer){
+            drvrStationStateMachine.switchState("EndGame");
+        }
         switch (drvrStationStateMachine.getCurState()) {
             case "TeleOp":
                 switch (liftStateMachine.getCurState()) {
@@ -113,7 +121,7 @@ public class DriverStation {
                 switch (driveSysStateMachine.getCurState()) {
                     case "Idle":
                         if ((curOpMode.gamepad1.left_stick_y != 0.0) || (curOpMode.gamepad1.right_stick_x != 0.0)) {
-                            robot.driveSystem.drive(Range.clip(curOpMode.gamepad1.left_stick_y, -1, 1),
+                            robot.driveSystem.drive(Range.clip(-curOpMode.gamepad1.left_stick_y, -1, 1),
                                     Range.clip(curOpMode.gamepad1.right_stick_x, -1, 1));
                             driveSysStateMachine.switchState("Driving");
                         } else {
@@ -122,7 +130,7 @@ public class DriverStation {
                         break;
                     case "Driving":
                         if ((curOpMode.gamepad1.left_stick_y != 0.0) || (curOpMode.gamepad1.right_stick_x != 0.0)) {
-                            robot.driveSystem.drive(Range.clip(curOpMode.gamepad1.left_stick_y, -1, 1),
+                            robot.driveSystem.drive(Range.clip(-curOpMode.gamepad1.left_stick_y, -1, 1),
                                     Range.clip(curOpMode.gamepad1.right_stick_x, -1, 1));
                         } else {
                             robot.driveSystem.drive(0.0f, 0.0f);
@@ -205,6 +213,13 @@ public class DriverStation {
                         } else{
                             robot.capBallLiftObj.idleFork();
                         }
+                        if (-curOpMode.gamepad2.right_stick_y != 0.0) {
+                            if (robot.capBallLiftObj.lockLift) {
+                                robot.capBallLiftObj.unlockLiftMotor();
+                            }
+                            robot.capBallLiftObj.applyPower(-curOpMode.gamepad2.right_stick_y);
+                            liftStateMachine.switchState("Lifting");
+                        }
                         break;
                     case "Down":
                         if (robot.driveSystem.getScaleMultiplier() != 1.0){
@@ -239,7 +254,13 @@ public class DriverStation {
                         if (robot.capBallLiftObj.lockLift) {
                             robot.capBallLiftObj.unlockLiftMotor();
                         }
-                        if (curOpMode.gamepad2.right_stick_y == 0.0){
+                        if (curOpMode.gamepad2.right_stick_y != 0.0) {
+                            robot.capBallLiftObj.applyPower(-curOpMode.gamepad2.right_stick_y);
+                            previousLiftGamepadPower = -curOpMode.gamepad2.right_stick_y;
+                        } else if (previousLiftGamepadPower != 0.0){
+                            robot.capBallLiftObj.applyPower(-curOpMode.gamepad2.right_stick_y);
+                        }
+                        if (!robot.capBallLiftObj.runToPosition && curOpMode.gamepad2.right_stick_y == 0.0){
                             if (!robot.capBallLiftObj.lockLift) {
                                 robot.capBallLiftObj.lockLiftMotor();
                             }
@@ -250,12 +271,17 @@ public class DriverStation {
                             } else if (robot.capBallLiftObj.isAtUpRange()){
                                 liftStateMachine.switchState("Up");
                             }
+                        }   else if (robot.capBallLiftObj.runToPosition) {
+                            if (robot.capBallLiftObj.reachedDownPosition() || robot.capBallLiftObj.reachedMidPosition() ||
+                                    robot.capBallLiftObj.reachedUpPosition()) {
+                                robot.capBallLiftObj.runToPosition = false;
+                            }
                         }
 
                         break;
                     case "Mid":
-                        if (robot.driveSystem.getScaleMultiplier() != 0.25){
-                            robot.driveSystem.scalePower(0.25);
+                        if (robot.driveSystem.getScaleMultiplier() != 1.0){
+                            robot.driveSystem.scalePower(1.0);
                         }
                         if (!robot.capBallLiftObj.lockLift) {
                             robot.capBallLiftObj.lockLiftMotor();
@@ -278,8 +304,8 @@ public class DriverStation {
 
                         break;
                     case "Up":
-                        if (robot.driveSystem.getScaleMultiplier() != 0.1){
-                            robot.driveSystem.scalePower(0.1);
+                        if (robot.driveSystem.getScaleMultiplier() != 0.3){
+                            robot.driveSystem.scalePower(0.3);
                         }
                         if (!robot.capBallLiftObj.lockLift) {
                             robot.capBallLiftObj.lockLiftMotor();
@@ -301,7 +327,7 @@ public class DriverStation {
                 switch (driveSysStateMachine.getCurState()) {
                     case "Idle":
                         if ((curOpMode.gamepad1.left_stick_y != 0.0) || (curOpMode.gamepad1.right_stick_x != 0.0)) {
-                            robot.driveSystem.drive(Range.clip(curOpMode.gamepad1.left_stick_y, -1, 1),
+                            robot.driveSystem.drive(Range.clip(-curOpMode.gamepad1.left_stick_y, -1, 1),
                                     Range.clip(curOpMode.gamepad1.right_stick_x, -1, 1));
                             driveSysStateMachine.switchState("Driving");
                         } else {
@@ -310,7 +336,7 @@ public class DriverStation {
                         break;
                     case "Driving":
                         if ((curOpMode.gamepad1.left_stick_y != 0.0) || (curOpMode.gamepad1.right_stick_x != 0.0)) {
-                            robot.driveSystem.drive(Range.clip(curOpMode.gamepad1.left_stick_y, -1, 1),
+                            robot.driveSystem.drive(Range.clip(-curOpMode.gamepad1.left_stick_y, -1, 1),
                                     Range.clip(curOpMode.gamepad1.right_stick_x, -1, 1));
                         } else {
                             robot.driveSystem.drive(0.0f, 0.0f);
@@ -356,6 +382,8 @@ public class DriverStation {
 
                 if (curOpMode.gamepad1.x){
                     robot.driveSystem.reverseTeleop();
+                } else if (curOpMode.gamepad1.b){
+                    robot.driveSystem.unreverseTeleop();
                 }
                 if (curOpMode.gamepad1.left_bumper){
                     robot.wallFollowObj.activateWallFollwer(600);
@@ -371,6 +399,10 @@ public class DriverStation {
                     robot.capBallLiftObj.deactivateCrown();
                 } else {
                     robot.capBallLiftObj.idleCrown();
+                }
+
+                if (curOpMode.gamepad2.right_trigger != 0.0){
+                    robot.capBallLiftObj.unfoldFork();
                 }
                 break;
         }
