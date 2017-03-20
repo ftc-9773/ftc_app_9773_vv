@@ -210,6 +210,8 @@ public class DriverStation {
                             liftStateMachine.switchState("Down");
                         } else if (curOpMode.gamepad2.y) {
                             robot.capBallLiftObj.foldFork();
+                        } else if (curOpMode.gamepad2.right_trigger != 0.0){
+                            robot.capBallLiftObj.unfoldFork();
                         } else{
                             robot.capBallLiftObj.idleFork();
                         }
@@ -228,6 +230,8 @@ public class DriverStation {
                         if (curOpMode.gamepad2.y) {
                             robot.capBallLiftObj.foldFork();
                             liftStateMachine.switchState("Closed");
+                        } else if (curOpMode.gamepad2.right_trigger != 0.0){
+                            robot.capBallLiftObj.unfoldFork();
                         } else{
                             robot.capBallLiftObj.idleFork();
                         }
@@ -304,8 +308,8 @@ public class DriverStation {
 
                         break;
                     case "Up":
-                        if (robot.driveSystem.getScaleMultiplier() != 0.35){
-                            robot.driveSystem.scalePower(0.35);
+                        if (robot.driveSystem.getScaleMultiplier() != 0.2){
+                            robot.driveSystem.scalePower(0.2);
                         }
                         if (!robot.capBallLiftObj.lockLift) {
                             robot.capBallLiftObj.lockLiftMotor();
