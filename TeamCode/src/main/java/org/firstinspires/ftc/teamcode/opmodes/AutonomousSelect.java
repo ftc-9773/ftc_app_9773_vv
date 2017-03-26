@@ -73,7 +73,7 @@ public class AutonomousSelect extends LinearOpMode {
     public void allOptions() throws JSONException {
         DbgLog.msg("ftc9773: Reached here 0!");
         int index = 0;
-        jsonReader = new JsonReader(JsonReader.autonomousOptFile);
+        jsonReader = new JsonReader(JsonReader.autonomousOptFile);//TODO: Figure out why JsonReader is not reading the options correctly
         DbgLog.msg("ftc9773: Reached here 1!");
         autonomousOptions = filtered(jsonReader.jsonRootNames, alliance);
         DbgLog.msg("ftc9773: Reached here 2!");
