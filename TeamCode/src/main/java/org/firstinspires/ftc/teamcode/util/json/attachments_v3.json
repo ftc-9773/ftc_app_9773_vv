@@ -148,6 +148,7 @@
         "maxSpeed" : 4000,
         "__comment1" : "ramUpTime is in milli seconds",
         "rampUpTime" : 2000,
+        "motorPower" : 0.5,
         "minButton" : "gamepad1.dpad_down",
         "maxButton" : "gamepad1.dpad_up"
       },
@@ -160,6 +161,7 @@
         "maxSpeed" : 4000,
         "__comment1" : "ramUpTime is in milli seconds",
         "rampUpTime" : 2000,
+        "motorPower" : 0.5,
         "minButton" : "gamepad1.dpad_down",
         "maxButton" : "gamepad1.dpad_up"
       }

@@ -24,6 +24,7 @@ public class ParticleAccelerator implements Attachment{
     FTCRobot robot;
     LinearOpMode curOpMode;
     DcMotor launcherMotor1=null, launcherMotor2=null;
+    double motorPower1=0.0, motorPower2=0.0;
     long rampUpTime = 2000; // default value in milli seconds
 
     public ParticleAccelerator(FTCRobot robot, LinearOpMode curOpMode, JSONObject rootObj) {
@@ -51,6 +52,8 @@ public class ParticleAccelerator implements Attachment{
             }
             key = JsonReader.getRealKeyIgnoreCase(launcherMotorObj1, "rampUpTime");
             rampUpTime = launcherMotorObj1.getLong(key);
+            key = JsonReader.getRealKeyIgnoreCase(launcherMotorObj1, "motorPower");
+            motorPower1 = launcherMotorObj1.getDouble(key);
             launcherMotor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 //            int maxSpeed = launcherMotorObj.getInt("maxSpeed");
 //            launcherMotor.setMaxSpeed(maxSpeed);
@@ -70,6 +73,8 @@ public class ParticleAccelerator implements Attachment{
             }
             key = JsonReader.getRealKeyIgnoreCase(launcherMotorObj2, "rampUpTime");
             rampUpTime = launcherMotorObj2.getLong(key);
+            key = JsonReader.getRealKeyIgnoreCase(launcherMotorObj2, "motorPower");
+            motorPower2 = launcherMotorObj2.getDouble(key);
             launcherMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 //            int maxSpeed = launcherMotorObj.getInt("maxSpeed");
 //            launcherMotor.setMaxSpeed(maxSpeed);
@@ -89,8 +94,8 @@ public class ParticleAccelerator implements Attachment{
 //        while ((rampUpTimer.milliseconds() < rampUpTime) && curOpMode.opModeIsActive()) {
 //            launcherMotor.setPower(1 - (rampUpTimer.milliseconds() / rampUpTime));
 //        }
-        if (launcherMotor1 != null) {  launcherMotor1.setPower(1.0); }
-        if (launcherMotor2 != null) { launcherMotor2.setPower(1.0); }
+        if (launcherMotor1 != null) {  launcherMotor1.setPower(motorPower1); }
+        if (launcherMotor2 != null) { launcherMotor2.setPower(motorPower2); }
     }
 
     public void deactivateParticleAccelerator() {
