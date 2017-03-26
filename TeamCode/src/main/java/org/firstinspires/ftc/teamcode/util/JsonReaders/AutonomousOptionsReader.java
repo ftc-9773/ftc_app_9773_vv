@@ -8,6 +8,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class AutonomousOptionsReader extends JsonReader {
     public JSONArray actions;
@@ -78,4 +81,8 @@ public class AutonomousOptionsReader extends JsonReader {
         }
         return (methodName);
     }
+    public List<String> names(){
+        return jsonRootNames;
+    }
+
 }
