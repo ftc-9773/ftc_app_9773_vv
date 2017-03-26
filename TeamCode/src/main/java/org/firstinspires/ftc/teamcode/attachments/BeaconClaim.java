@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2017 Robocracy 9773
+ */
+
 package org.firstinspires.ftc.teamcode.attachments;
 
 import com.qualcomm.ftccommon.DbgLog;
@@ -14,10 +18,6 @@ import org.firstinspires.ftc.teamcode.navigation.Navigation;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-
-/*
- * Copyright (c) 2016 Robocracy 9773
- */
 
 public class BeaconClaim implements Attachment {
     private FTCRobot robot;

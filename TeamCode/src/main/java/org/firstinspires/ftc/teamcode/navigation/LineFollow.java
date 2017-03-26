@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2017 Robocracy 9773
+ */
+
 package org.firstinspires.ftc.teamcode.navigation;
 
 import com.qualcomm.ftccommon.DbgLog;
@@ -10,10 +14,6 @@ import org.firstinspires.ftc.teamcode.drivesys.DriveSystem;
 
 /**
  * Created by Luke on 10/15/2016.
- */
-
-/*
- * Copyright (c) 2016 Robocracy 9773
  */
 
 public class LineFollow{

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2017 Robocracy 9773
+ */
+
 package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.qualcomm.ftccommon.DbgLog;
@@ -7,10 +11,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.json.JSONException;
-
-/*
- * Copyright (c) 2016 Robocracy 9773
- */
 
 @Autonomous(name = "AutonomousBlueRecord", group = "TeleOp")
 public class AutonomousBlueRecord extends LinearOpMode {

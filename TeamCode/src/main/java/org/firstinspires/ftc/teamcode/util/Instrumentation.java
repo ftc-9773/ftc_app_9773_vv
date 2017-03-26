@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2017 Robocracy 9773
+ */
+
 package org.firstinspires.ftc.teamcode.util;
 
 import com.qualcomm.ftccommon.DbgLog;

@@ -1,13 +1,13 @@
+/*
+ * Copyright (c) 2017 Robocracy 9773
+ */
+
 package org.firstinspires.ftc.teamcode.util.JsonReaders;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-
-/*
- * Copyright (c) 2016 Robocracy 9773
- */
 
 public class AutonomousOptionsReader extends JsonReader {
     public JSONArray actions;

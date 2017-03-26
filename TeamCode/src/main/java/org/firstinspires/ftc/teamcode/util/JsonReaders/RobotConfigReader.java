@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2017 Robocracy 9773
+ */
+
 package org.firstinspires.ftc.teamcode.util.JsonReaders;
 
 import com.google.gson.JsonObject;
@@ -11,10 +15,6 @@ import java.util.List;
 
 /**
  * Created by pranavb on 10/15/16.
- */
-
-/*
- * Copyright (c) 2016 Robocracy 9773
  */
 
 public class RobotConfigReader extends JsonReader {

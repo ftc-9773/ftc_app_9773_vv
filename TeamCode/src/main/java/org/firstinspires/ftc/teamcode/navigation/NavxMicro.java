@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2017 Robocracy 9773
+ */
+
 package org.firstinspires.ftc.teamcode.navigation;
 
 import com.kauailabs.navx.ftc.AHRS;
@@ -9,10 +13,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.FTCRobot;
-
-/*
- * Copyright (c) 2016 Robocracy 9773
- */
 
 public class NavxMicro implements GyroInterface {
     LinearOpMode curOpMode;

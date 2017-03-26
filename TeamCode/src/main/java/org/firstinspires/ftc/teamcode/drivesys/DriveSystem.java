@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2017 Robocracy 9773
+ */
+
 package org.firstinspires.ftc.teamcode.drivesys;
 
 import com.qualcomm.ftccommon.DbgLog;
@@ -13,10 +17,6 @@ import org.firstinspires.ftc.teamcode.util.JsonReaders.WheelSpecsReader;
 
 import java.lang.annotation.Annotation;
 
-
-/*
- * Copyright (c) 2016 Robocracy 9773
- */
 
 public abstract class DriveSystem {
     public enum DriveSysType {TWO_MOTOR_DRIVE, FOUR_MOTOR_6WD}

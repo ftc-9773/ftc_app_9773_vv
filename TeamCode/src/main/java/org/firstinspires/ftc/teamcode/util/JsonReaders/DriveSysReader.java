@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2017 Robocracy 9773
+ */
+
 package org.firstinspires.ftc.teamcode.util.JsonReaders;
 
 import org.json.JSONException;
@@ -5,10 +9,6 @@ import org.json.JSONObject;
 
 /**
  * Created by pranavb on 10/15/16.
- */
-
-/*
- * Copyright (c) 2016 Robocracy 9773
  */
 
 public class DriveSysReader extends JsonReader {

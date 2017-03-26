@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2017 Robocracy 9773
+ */
+
 package org.firstinspires.ftc.teamcode.attachments;
 
 import com.qualcomm.ftccommon.DbgLog;
@@ -12,10 +16,6 @@ import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-
-/*
- * Copyright (c) 2016 Robocracy 9773
- */
 
 public class CapBallLift implements  Attachment {
     FTCRobot robot;

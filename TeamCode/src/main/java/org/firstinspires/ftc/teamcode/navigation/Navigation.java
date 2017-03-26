@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2017 Robocracy 9773
+ */
+
 package org.firstinspires.ftc.teamcode.navigation;
 
 import com.qualcomm.ftccommon.DbgLog;
@@ -15,10 +19,6 @@ import org.firstinspires.ftc.teamcode.util.JsonReaders.NavigationOptionsReader;
 import org.json.JSONObject;
 
 
-
-/*
- * Copyright (c) 2016 Robocracy 9773
- */
 
 public class Navigation {
     FTCRobot robot;

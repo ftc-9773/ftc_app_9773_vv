@@ -1,8 +1,8 @@
-package org.firstinspires.ftc.teamcode.drivesys;
-
 /*
- * Copyright (c) 2016 Robocracy 9773
+ * Copyright (c) 2017 Robocracy 9773
  */
+
+package org.firstinspires.ftc.teamcode.drivesys;
 
 public class Wheel {
 

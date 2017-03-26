@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2017 Robocracy 9773
+ */
+
 package org.firstinspires.ftc.teamcode.drivesys;
 
 import com.qualcomm.ftccommon.DbgLog;
@@ -6,10 +10,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.navigation.NavigationChecks;
-
-/*
- * Copyright (c) 2016 Robocracy 9773
- */
 
 public class TwoMotorDrive extends DriveSystem{
     DcMotor motorL = null;

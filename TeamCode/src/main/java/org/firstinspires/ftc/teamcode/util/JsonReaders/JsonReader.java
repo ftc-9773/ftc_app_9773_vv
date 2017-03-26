@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2017 Robocracy 9773
+ */
+
 package org.firstinspires.ftc.teamcode.util.JsonReaders;
 
 import com.qualcomm.ftccommon.DbgLog;
@@ -10,10 +14,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Iterator;
 
-
-/*
- * Copyright (c) 2016 Robocracy 9773
- */
 
 public class JsonReader {
     public static final String baseDir = new String("/sdcard/FIRST/team9773/");

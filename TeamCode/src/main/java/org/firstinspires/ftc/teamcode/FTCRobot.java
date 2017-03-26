@@ -1,10 +1,11 @@
-package org.firstinspires.ftc.teamcode;
+/*
+ * Copyright (c) 2017 Robocracy 9773
+ */
 
-import android.view.animation.PathInterpolator;
+package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.attachments.Attachment;
 import org.firstinspires.ftc.teamcode.attachments.BeaconClaim;
@@ -24,13 +25,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.concurrent.TimeUnit;
-
-import static java.lang.Thread.sleep;
-
-
-/*
- * Copyright (c) 2016 Robocracy 9773
- */
 
 /**
  * Top-level robot class. This class contains all attachments, and calls both the TeleOp and Autonomous initialize/start

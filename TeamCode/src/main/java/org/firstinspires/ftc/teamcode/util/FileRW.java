@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2017 Robocracy 9773
+ */
+
 package org.firstinspires.ftc.teamcode.util;
 
 import com.qualcomm.ftccommon.DbgLog;
@@ -14,10 +18,6 @@ import java.util.Date;
 
 /**
  * Created by pranavb on 9/23/16.
- */
-
-/*
- * Copyright (c) 2016 Robocracy 9773
  */
 
 public class FileRW {

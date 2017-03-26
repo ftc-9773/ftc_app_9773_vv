@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2017 Robocracy 9773
+ */
+
 package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.qualcomm.ftccommon.DbgLog;
@@ -10,10 +14,6 @@ import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.firstinspires.ftc.teamcode.navigation.LineFollow;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-/*
- * Copyright (c) 2016 Robocracy 9773
- */
 
 @Autonomous(name = "AutonomousBlue", group = "Autonomous")
 public class AutonomousBlue extends LinearOpMode {

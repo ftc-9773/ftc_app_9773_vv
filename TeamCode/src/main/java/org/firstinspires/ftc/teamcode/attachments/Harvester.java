@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2017 Robocracy 9773
+ */
+
 package org.firstinspires.ftc.teamcode.attachments;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -12,10 +16,6 @@ import org.json.JSONObject;
 
 /**
  * Created by rsburugula on 10/22/16.
- */
-
-/*
- * Copyright (c) 2016 Robocracy 9773
  */
 
 public class Harvester implements Attachment {
