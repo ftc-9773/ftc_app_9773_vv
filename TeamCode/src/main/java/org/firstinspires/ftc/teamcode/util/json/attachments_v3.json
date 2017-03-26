@@ -143,7 +143,7 @@
         "motorType" : "dc",
         "__motor comment" : "The Motor used for shooter is Neverest20 with banebot p60 gear box",
         "motor" : "Neverest20",
-        "needReverse" : true,
+        "needReverse" : false,
         "fixedPositions" : false,
         "maxSpeed" : 4000,
         "__comment1" : "ramUpTime is in milli seconds",

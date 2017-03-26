@@ -60,10 +60,9 @@ public class AutonomousActions {
         while (((line = fileRW.getNextLine()) != null) && curOpMode.opModeIsActive()) {
             String[] lineElements = line.split(",");
 //            DbgLog.msg("ftc9773: lineElements length = %d", lineElements.length);
-            if(lineElements.length < 3){
+            if (lineElements.length < 3) {
                 continue;
-            }
-            else {
+            } else {
                 long timestamp = Long.parseLong(lineElements[0]);
                 double speed = Double.parseDouble(lineElements[1]);
                 double direction = Double.parseDouble(lineElements[2]);
@@ -72,16 +71,15 @@ public class AutonomousActions {
                     sleepTime = timestamp - elapsedTime;
                     TimeUnit.NANOSECONDS.sleep(sleepTime);
                 }
-                if(lineElements.length > 3){
-                    if(turnCounter == 0) {
+                if (lineElements.length > 3) {
+                    if (turnCounter == 0) {
                         DbgLog.msg("ftc9773: Yaw: %f, Target yaw = %s", robot.navigation.gyro.getYaw(), lineElements[3]);
                         robot.navigation.setRobotOrientation(Double.parseDouble(lineElements[3]),
                                 robot.navigation.turnMaxSpeed);
                         DbgLog.msg("ftc9773: Reached target orientation");
                     }
                     turnCounter++;
-                }
-                else{
+                } else {
                     turnCounter = 0;
                     driveSystem.drive((float) speed, (float) direction);
                 }
@@ -94,7 +92,7 @@ public class AutonomousActions {
         if (robot.beaconClaimObj.beaconColor != BeaconClaim.BeaconColor.NONE) {
             // Get the range sensor value and pass it on to method
             double distanceFromWall = robot.navigation.rangeSensor.getDistance(DistanceUnit.CM);
-            while (distanceFromWall >= 255){
+            while (distanceFromWall >= 255) {
                 curOpMode.sleep(20);
                 distanceFromWall = robot.navigation.rangeSensor.getDistance(DistanceUnit.CM);
             }
@@ -104,7 +102,7 @@ public class AutonomousActions {
     }
 
     private String getStrFromActionObj(JSONObject actionObj, String key) {
-        String value=null;
+        String value = null;
         try {
             key = JsonReader.getRealKeyIgnoreCase(actionObj, key);
             value = actionObj.getString(key);
@@ -116,7 +114,7 @@ public class AutonomousActions {
     }
 
     private double getDoubleFromActionObj(JSONObject actionObj, String key) {
-        double value=0.0;
+        double value = 0.0;
         try {
             key = JsonReader.getRealKeyIgnoreCase(actionObj, key);
             value = actionObj.getDouble(key);
@@ -137,8 +135,8 @@ public class AutonomousActions {
                 fwDegrees, bwDegrees, motorSpeed, robotDirection,
                 ODSfrontExtraDistFw, ODSbackExtraDistFw, ODSfrontExtraDistBw, ODSbackExtraDistBw);
         // 1: Go to till the first ODS hits the white line
-        double degrees=0;
-        double additionalDistance=0;
+        double degrees = 0;
+        double additionalDistance = 0;
         String odsPosition = null;
         boolean driveBackwards = false;
         if (robotDirection.equalsIgnoreCase("forward")) {
@@ -169,8 +167,8 @@ public class AutonomousActions {
                         "ODSbackExtraDistBw=%f",
                 fwDegrees, bwDegrees, motorSpeed, robotDirection,
                 ODSfrontExtraDistFw, ODSbackExtraDistFw, ODSfrontExtraDistBw, ODSbackExtraDistBw);
-        double degrees=0;
-        double additionalDistance=0;
+        double degrees = 0;
+        double additionalDistance = 0;
         String odsPosition = null;
         boolean driveBackwards = false;
 
@@ -199,12 +197,12 @@ public class AutonomousActions {
                        double ODSfrontExtraDistFw, double ODSbackExtraDistFw,
                        double ODSfrontExtraDistBw, double ODSbackExtraDistBw) {
         DbgLog.msg("ftc9773: goFromSide2ToSide1(): fwDegrees=%f, bwDegrees=%f, " +
-                "motorSpeed=%f, robotDirection=%s, ODSfrontExtraDistFw=%f, ODSbackExtraDistFw=%f, " +
-                "ODSfrontExtraDistBw=%f, ODSbackExtraDistBw=%f",
+                        "motorSpeed=%f, robotDirection=%s, ODSfrontExtraDistFw=%f, ODSbackExtraDistFw=%f, " +
+                        "ODSfrontExtraDistBw=%f, ODSbackExtraDistBw=%f",
                 fwDegrees, bwDegrees, motorSpeed, robotDirection,
                 ODSfrontExtraDistFw, ODSbackExtraDistFw, ODSfrontExtraDistBw, ODSbackExtraDistBw);
-        double degrees=0;
-        double additionalDistance=0;
+        double degrees = 0;
+        double additionalDistance = 0;
         String odsPosition = null;
         boolean driveBackwards = false;
         if (robotDirection.equalsIgnoreCase("forward")) {
@@ -244,7 +242,7 @@ public class AutonomousActions {
                 robot.beaconClaimObj.verifyBeaconServo();
                 break;
             }
-            case "printNavigationValues" : {
+            case "printNavigationValues": {
                 robot.navigation.printNavigationValues();
                 break;
             }
@@ -321,10 +319,10 @@ public class AutonomousActions {
                 break;
             }
             case "DriveUntilAllianceBeacon": {
-                double motorSpeed=0.5;
-                double maxDistance1=8.0; // in inches
-                double maxDistance2=13.0; // in inches
-                double degrees=0.0;
+                double motorSpeed = 0.5;
+                double maxDistance1 = 8.0; // in inches
+                double maxDistance2 = 13.0; // in inches
+                double degrees = 0.0;
                 try {
                     String key = JsonReader.getRealKeyIgnoreCase(actionObj, "degrees");
                     degrees = actionObj.getDouble(key);
@@ -343,12 +341,12 @@ public class AutonomousActions {
                         maxDistance1, maxDistance2);
                 break;
             }
-            case "DriveAndClaimAllianceBeacon" : {
+            case "DriveAndClaimAllianceBeacon": {
                 double motorSpeed = 0.0;
-                double degrees=0.0;
+                double degrees = 0.0;
                 boolean driveBackwards = false;
                 double additionalDistance = 0.0;
-                String driveToPosition="last";
+                String driveToPosition = "last";
                 String frontOrBackODS = "back";
                 try {
                     String key = JsonReader.getRealKeyIgnoreCase(actionObj, "degrees");
@@ -367,13 +365,13 @@ public class AutonomousActions {
                     e.printStackTrace();
                 }
                 DbgLog.msg("ftc9773: degrees=%f, motorSpeed=%f, driveBackwards=%b, additionalDistance=%f," +
-                        "driveToPosition=%s, ODS position=%s", degrees, motorSpeed, driveBackwards,
+                                "driveToPosition=%s, ODS position=%s", degrees, motorSpeed, driveBackwards,
                         additionalDistance, driveToPosition, frontOrBackODS);
                 robot.navigation.driveToAllianceBeaconWhileScanning(degrees, (float) motorSpeed,
                         driveBackwards, additionalDistance, driveToPosition, frontOrBackODS);
                 // Get the range sensor value and pass it on to method
                 double distanceFromWall = robot.navigation.rangeSensor.getDistance(DistanceUnit.CM);
-                while (distanceFromWall >= 255){
+                while (distanceFromWall >= 255) {
                     curOpMode.sleep(20);
                     distanceFromWall = robot.navigation.rangeSensor.getDistance(DistanceUnit.CM);
                 }
@@ -394,7 +392,7 @@ public class AutonomousActions {
                 robot.particleObj.keepParticles();
                 break;
             case "shootParticles": {
-                int numParticles=1;
+                int numParticles = 1;
                 try {
                     String key = JsonReader.getRealKeyIgnoreCase(actionObj, "numberOfParticles");
                     numParticles = actionObj.getInt(key);
@@ -406,16 +404,16 @@ public class AutonomousActions {
                     robot.particleObj.releaseParticles();
                     curOpMode.sleep(1000);
                     robot.particleObj.keepParticles();
-                }else if (numParticles == 2) {
+                } else if (numParticles == 2) {
                     robot.particleObj.releaseParticles();
                     curOpMode.sleep(2000);
                     robot.particleObj.keepParticles();
                 }
                 break;
             }
-            case "UnfoldWallFollower" : {
-                String key=null;
-                double millis=200;
+            case "UnfoldWallFollower": {
+                String key = null;
+                double millis = 200;
                 try {
                     key = JsonReader.getRealKeyIgnoreCase(actionObj, "timeToPowerTheServo");
                     millis = actionObj.getDouble(key);
@@ -425,13 +423,13 @@ public class AutonomousActions {
                 robot.wallFollowObj.activateWallFollwer(millis);
                 break;
             }
-            case "IdleWallFollower" : {
+            case "IdleWallFollower": {
                 robot.wallFollowObj.idle();
                 break;
             }
-            case "FoldWallFollower" : {
-                String key=null;
-                double millis=200;
+            case "FoldWallFollower": {
+                String key = null;
+                double millis = 200;
                 try {
                     key = JsonReader.getRealKeyIgnoreCase(actionObj, "timeToPowerTheServo");
                     millis = actionObj.getDouble(key);
@@ -444,7 +442,7 @@ public class AutonomousActions {
             case "GoStraightToDistance": {
                 double inches = 0.0;
                 double motorSpeed = 0.0;
-                double degrees=0.0;
+                double degrees = 0.0;
                 try {
                     String key = JsonReader.getRealKeyIgnoreCase(actionObj, "degrees");
                     degrees = actionObj.getDouble(key);
@@ -461,7 +459,7 @@ public class AutonomousActions {
             }
             case "GoStraightToWhiteLine": {
                 double motorSpeed = 0.0;
-                double degrees=0.0;
+                double degrees = 0.0;
                 boolean driveBackwards = false;
                 double additionalDistance = 0.0;
                 String frontOrBackODS = "back";
@@ -480,15 +478,15 @@ public class AutonomousActions {
                     e.printStackTrace();
                 }
                 DbgLog.msg("ftc9773: degrees=%f, motorSpeed=%f, driveBackwards=%b, additionalDistance=%f," +
-                        "ODS position=%s",
+                                "ODS position=%s",
                         degrees, motorSpeed, driveBackwards, additionalDistance, frontOrBackODS);
                 robot.navigation.goStraightToWhiteLine(degrees, (float) motorSpeed, driveBackwards,
                         additionalDistance, frontOrBackODS);
                 break;
             }
-            case "GoStraightToWhiteLineIfNeeded" : {
+            case "GoStraightToWhiteLineIfNeeded": {
                 double motorSpeed = 0.0;
-                double degrees=0.0;
+                double degrees = 0.0;
                 boolean driveBackwards = false;
                 double additionalDistance = 0.0;
                 String frontOrBackODS = "back";
@@ -516,18 +514,18 @@ public class AutonomousActions {
                             additionalDistance, frontOrBackODS);
                 break;
             }
-            case "GoStraight_Claim" : {
+            case "GoStraight_Claim": {
                 double motorSpeed = getDoubleFromActionObj(actionObj, "motorSpeed");
-                double fwDegrees=getDoubleFromActionObj(actionObj, "fwDegrees");
-                double bwDegrees=getDoubleFromActionObj(actionObj, "bwDegrees");
-                String robotDirection=getStrFromActionObj(actionObj, "robotDirection");
+                double fwDegrees = getDoubleFromActionObj(actionObj, "fwDegrees");
+                double bwDegrees = getDoubleFromActionObj(actionObj, "bwDegrees");
+                String robotDirection = getStrFromActionObj(actionObj, "robotDirection");
                 double ODSfrontExtraDistFw = getDoubleFromActionObj(actionObj, "ODSfrontExtraDistFw");
-                double ODSbackExtraDistFw=getDoubleFromActionObj(actionObj, "ODSbackExtraDistFw");
-                double ODSfrontExtraDistBw=getDoubleFromActionObj(actionObj, "ODSfrontExtraDistBw");
-                double ODSbackExtraDistBw=getDoubleFromActionObj(actionObj, "ODSbackExtraDistBw");
+                double ODSbackExtraDistFw = getDoubleFromActionObj(actionObj, "ODSbackExtraDistFw");
+                double ODSfrontExtraDistBw = getDoubleFromActionObj(actionObj, "ODSfrontExtraDistBw");
+                double ODSbackExtraDistBw = getDoubleFromActionObj(actionObj, "ODSbackExtraDistBw");
                 DbgLog.msg("ftc9773: invokeMethod(): fwDegrees=%f, bwDegrees=%f, motorSpeed=%f, robotDirection=%s, " +
-                        "ODSfrontExtraDistFw=%f, ODSbackExtraDistFw=%f, ODSfrontExtraDistBw=%f, " +
-                        "ODSbackExtraDistBw=%f",
+                                "ODSfrontExtraDistFw=%f, ODSbackExtraDistFw=%f, ODSfrontExtraDistBw=%f, " +
+                                "ODSbackExtraDistBw=%f",
                         fwDegrees, bwDegrees, motorSpeed, robotDirection,
                         ODSfrontExtraDistFw, ODSbackExtraDistFw, ODSfrontExtraDistBw, ODSbackExtraDistBw);
 
@@ -553,15 +551,15 @@ public class AutonomousActions {
                 }
                 break;
             }
-            case "GoStraight_Claim_Verify_Claim" : {
+            case "GoStraight_Claim_Verify_Claim": {
                 double motorSpeed = getDoubleFromActionObj(actionObj, "motorSpeed");
-                double fwDegrees=getDoubleFromActionObj(actionObj, "fwDegrees");
-                double bwDegrees=getDoubleFromActionObj(actionObj, "bwDegrees");
-                String robotDirection=getStrFromActionObj(actionObj, "robotDirection");
+                double fwDegrees = getDoubleFromActionObj(actionObj, "fwDegrees");
+                double bwDegrees = getDoubleFromActionObj(actionObj, "bwDegrees");
+                String robotDirection = getStrFromActionObj(actionObj, "robotDirection");
                 double ODSfrontExtraDistFw = getDoubleFromActionObj(actionObj, "ODSfrontExtraDistFw");
-                double ODSbackExtraDistFw=getDoubleFromActionObj(actionObj, "ODSbackExtraDistFw");
-                double ODSfrontExtraDistBw=getDoubleFromActionObj(actionObj, "ODSfrontExtraDistBw");
-                double ODSbackExtraDistBw=getDoubleFromActionObj(actionObj, "ODSbackExtraDistBw");
+                double ODSbackExtraDistFw = getDoubleFromActionObj(actionObj, "ODSbackExtraDistFw");
+                double ODSfrontExtraDistBw = getDoubleFromActionObj(actionObj, "ODSfrontExtraDistBw");
+                double ODSbackExtraDistBw = getDoubleFromActionObj(actionObj, "ODSbackExtraDistBw");
                 DbgLog.msg("ftc9773: invokeMethod(): fwDegrees=%f, bwDegrees=%f, motorSpeed=%f, robotDirection=%s, " +
                                 "ODSfrontExtraDistFw=%f, ODSbackExtraDistFw=%f, ODSfrontExtraDistBw=%f, " +
                                 "ODSbackExtraDistBw=%f",
@@ -601,7 +599,7 @@ public class AutonomousActions {
                 curOpMode.sleep(100);
                 // Set the beacon color
                 robot.beaconClaimObj.setBeaconStatus();
-                boolean reclaimNeeded=false;
+                boolean reclaimNeeded = false;
                 if (robot.beaconClaimObj.getBeaconColorString().equalsIgnoreCase(allianceColor))
                     reclaimNeeded = false;
                 else
@@ -623,23 +621,23 @@ public class AutonomousActions {
                 }
                 break;
             }
-            case "GoStraight_V_C_V_C" : {
+            case "GoStraight_V_C_V_C": {
                 double motorSpeed = getDoubleFromActionObj(actionObj, "motorSpeed");
-                double fwDegrees=getDoubleFromActionObj(actionObj, "fwDegrees");
-                double bwDegrees=getDoubleFromActionObj(actionObj, "bwDegrees");
-                String robotDirection=getStrFromActionObj(actionObj, "robotDirection");
+                double fwDegrees = getDoubleFromActionObj(actionObj, "fwDegrees");
+                double bwDegrees = getDoubleFromActionObj(actionObj, "bwDegrees");
+                String robotDirection = getStrFromActionObj(actionObj, "robotDirection");
                 double ODSfrontExtraDistFw = getDoubleFromActionObj(actionObj, "ODSfrontExtraDistFw");
-                double ODSbackExtraDistFw=getDoubleFromActionObj(actionObj, "ODSbackExtraDistFw");
-                double ODSfrontExtraDistBw=getDoubleFromActionObj(actionObj, "ODSfrontExtraDistBw");
-                double ODSbackExtraDistBw=getDoubleFromActionObj(actionObj, "ODSbackExtraDistBw");
+                double ODSbackExtraDistFw = getDoubleFromActionObj(actionObj, "ODSbackExtraDistFw");
+                double ODSfrontExtraDistBw = getDoubleFromActionObj(actionObj, "ODSfrontExtraDistBw");
+                double ODSbackExtraDistBw = getDoubleFromActionObj(actionObj, "ODSbackExtraDistBw");
                 DbgLog.msg("ftc9773: invokeMethod(): fwDegrees=%f, bwDegrees=%f, motorSpeed=%f, robotDirection=%s, " +
                                 "ODSfrontExtraDistFw=%f, ODSbackExtraDistFw=%f, ODSfrontExtraDistBw=%f, " +
                                 "ODSbackExtraDistBw=%f",
                         fwDegrees, bwDegrees, motorSpeed, robotDirection,
                         ODSfrontExtraDistFw, ODSbackExtraDistFw, ODSfrontExtraDistBw, ODSbackExtraDistBw);
 
-                boolean side1IsOurColor=false, side2IsOurColor=false;
-                int currentSide=0;
+                boolean side1IsOurColor = false, side2IsOurColor = false;
+                int currentSide = 0;
 
                 // 1. Verify
                 gotoBeaconSide1(fwDegrees, bwDegrees, motorSpeed, robotDirection,
@@ -736,12 +734,12 @@ public class AutonomousActions {
                 break;
             }
 
-            case "GoStraightAlongWall" : {
+            case "GoStraightAlongWall": {
                 double inches = 0.0;
                 double motorSpeed = 0.0;
-                double degrees=0.0;
-                double targetDistFromWall=0.0;
-                double wallKp=0.5;
+                double degrees = 0.0;
+                double targetDistFromWall = 0.0;
+                double wallKp = 0.5;
                 try {
                     String key = JsonReader.getRealKeyIgnoreCase(actionObj, "degrees");
                     degrees = actionObj.getDouble(key);
@@ -766,7 +764,7 @@ public class AutonomousActions {
                 double degrees = 0;
                 String termCondition = null;
                 double inches = 0.0;
-                double speed=0.5;
+                double speed = 0.5;
                 boolean driveUntilWhiteLine = false;
                 boolean driveBackwards = false;
                 try {
@@ -810,7 +808,7 @@ public class AutonomousActions {
                 double motorSpeed = 1.0;
                 double startingYaw = 0.0;
                 double endingYaw = 0.0;
-                boolean returnToSamePos=false;
+                boolean returnToSamePos = false;
                 try {
                     String key = JsonReader.getRealKeyIgnoreCase(actionObj, "shiftDistance");
                     shiftDistance = actionObj.getDouble(key);
@@ -836,13 +834,14 @@ public class AutonomousActions {
                 double targetDistance = 0.0; // in cm
                 double moveDistance = 0.0;
                 double motorSpeed = 1.0;
-                boolean returnToSamePos=false;
+                boolean returnToSamePos = false;
                 double distanceFromWall; // in cm
-                double distTolerance=2.0; // in cm
-                double distanceToShift=0.0;
-                double startingYaw = (allianceColor.equalsIgnoreCase("red") ? 0.0 : 180);;
+                double distTolerance = 2.0; // in cm
+                double distanceToShift = 0.0;
+                double startingYaw = (allianceColor.equalsIgnoreCase("red") ? 0.0 : 180);
+                ;
                 double endingYaw = startingYaw;
-                try{
+                try {
                     String key = JsonReader.getRealKeyIgnoreCase(actionObj, "targetDistance");
                     targetDistance = actionObj.getDouble(key);
                     key = JsonReader.getRealKeyIgnoreCase(actionObj, "distTolerance");
@@ -857,13 +856,12 @@ public class AutonomousActions {
                     startingYaw = actionObj.getDouble(key);
                     key = JsonReader.getRealKeyIgnoreCase(actionObj, "endingYaw");
                     endingYaw = actionObj.getDouble(key);
-                }
-                catch (JSONException e){
+                } catch (JSONException e) {
                     e.printStackTrace();
                 }
                 distanceFromWall = robot.navigation.rangeSensor.getDistance(DistanceUnit.CM);
-                int i=0;
-                while ((distanceFromWall >= 255) && (i<10)){ // Try for 200 milli seconds
+                int i = 0;
+                while ((distanceFromWall >= 255) && (i < 10)) { // Try for 200 milli seconds
                     curOpMode.sleep(20);
                     distanceFromWall = robot.navigation.rangeSensor.getDistance(DistanceUnit.CM);
                 }
@@ -876,11 +874,11 @@ public class AutonomousActions {
                         distanceFromWall = targetDistance;
                     }
                 }
-                if ((Math.abs(targetDistance - distanceFromWall) > distTolerance) ) {
+                if ((Math.abs(targetDistance - distanceFromWall) > distTolerance)) {
                     distanceToShift = CM2INCHES * (targetDistance - distanceFromWall);
                     DbgLog.msg("ftc9773: targetDistance=%f cm, moveDistance=%f, distanceFromWall=%f cm, " +
-                            "tolerance = %f cm, distanceToShift=%f inches, motorSpeed=%f, returnToSamePos=%b," +
-                            "startingYaw=%f, endingYaw=%f",
+                                    "tolerance = %f cm, distanceToShift=%f inches, motorSpeed=%f, returnToSamePos=%b," +
+                                    "startingYaw=%f, endingYaw=%f",
                             targetDistance, moveDistance, distanceFromWall, distTolerance,
                             distanceToShift, motorSpeed, returnToSamePos, startingYaw, endingYaw);
                     robot.navigation.shiftRobot(distanceToShift, moveDistance, motorSpeed, returnToSamePos, startingYaw, endingYaw);
@@ -894,7 +892,7 @@ public class AutonomousActions {
                 }
                 break;
             }
-            case "testEncoders":{
+            case "testEncoders": {
                 robot.driveSystem.testEncoders();
             }
         }
@@ -907,7 +905,7 @@ public class AutonomousActions {
         String replayFile;
         String methodName;
 //        DbgLog.msg("ftc9773: Number of autonomous actions = %d", len);
-        for (int i =0; i<len && curOpMode.opModeIsActive(); i++) {
+        for (int i = 0; i < len && curOpMode.opModeIsActive(); i++) {
             DbgLog.msg("ftc9773: i=%d", i);
             try {
                 actionObj = autoCfg.getAction(i);
@@ -917,12 +915,11 @@ public class AutonomousActions {
                     replayFile = this.replayFilesDir + actionObj.getString(key);
                     DbgLog.msg("ftc9773: Replaying the file %s", replayFile);
                     replayFileAction(replayFile);
-                }
-                else if (actionObj.getString(key).equalsIgnoreCase("Programmed")) {
+                } else if (actionObj.getString(key).equalsIgnoreCase("Programmed")) {
                     key = JsonReader.getRealKeyIgnoreCase(actionObj, "value");
                     methodName = actionObj.getString(key);
                     DbgLog.msg("ftc9773: Invoking method: %s", methodName);
-                    invokeMethod(methodName,actionObj);
+                    invokeMethod(methodName, actionObj);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

@@ -408,7 +408,7 @@ public class Navigation {
         String methodSignature = String.format("goStraightToWhiteLine(degrees=%f, motorSpeed=%f, driveBackwards=%b)",
                 degrees, motorSpeed, driveBackwards);
         NavigationChecks navChecks = new NavigationChecks(robot, curOpMode, this);
-        NavigationChecks.CheckForWhiteLine check1 = navChecks.new CheckForWhiteLine(this.lf, frontOrBackODS);
+        NavigationChecks.CheckForWhiteLine check1 = navChecks.new CheckForWhiteLine(this.lf, "");
         NavigationChecks.OpmodeInactiveCheck check2 = navChecks.new OpmodeInactiveCheck();
         navChecks.addNewCheck(check1);
         navChecks.addNewCheck(check2);
@@ -419,10 +419,6 @@ public class Navigation {
         // Determine the distance from wall and see if beaconServo needs to be retracted
         // It might have been pre-extended before.
         double distFromWall = rangeSensor.getDistance(DistanceUnit.CM);
-        BackgroundTasks.BeaconServoExtender beaconServoExtender =
-                robot.backgroundTasks.new BeaconServoExtender(robot.beaconClaimObj, 800);
-        beaconServoExtender.setTaskParams((distFromWall-6), 800);
-        beaconServoExtender.startTask();
 
         if (gyro.isGyroWorking()) {
             NavigationChecks.CheckRobotTilting check3 = navChecks.new CheckRobotTilting(10);
@@ -431,9 +427,25 @@ public class Navigation {
             while (!navChecks.stopNavigation()) {
                 gyro.goStraightPID(driveBackwards, degrees, motorSpeed);
                 robot.instrumentation.addInstrData();
-                beaconServoExtender.continueTask();
             }
-            if (distCorrection != 0){
+            if (check1.getODSonLine().equalsIgnoreCase("back") && frontOrBackODS.equalsIgnoreCase("front")) {
+                NavigationChecks.CheckForWhiteLine check4 = navChecks.new CheckForWhiteLine(this.lf, frontOrBackODS);
+                navChecks.addNewCheck(check4);
+                navChecks.removeCheck(check1);
+                while (!navChecks.stopNavigation()) {
+                    gyro.goStraightPID(true, degrees, motorSpeed);
+                    robot.instrumentation.addInstrData();
+                }
+            } else if (check1.getODSonLine().equalsIgnoreCase("front") && frontOrBackODS.equalsIgnoreCase("back")) {
+                NavigationChecks.CheckForWhiteLine check4 = navChecks.new CheckForWhiteLine(this.lf, frontOrBackODS);
+                navChecks.addNewCheck(check4);
+                navChecks.removeCheck(check1);
+                while (!navChecks.stopNavigation()) {
+                    gyro.goStraightPID(false, degrees, motorSpeed);
+                    robot.instrumentation.addInstrData();
+                }
+            }
+            if (distCorrection != 0) {
                 navChecks.removeCheck(check1);
                 NavigationChecks.EncoderCheckForDistance encodercheck = navChecks.new EncoderCheckForDistance(distCorrection);
                 boolean distCorrctnDrvBack = (distCorrection < 0) ? true : false;
@@ -458,7 +470,23 @@ public class Navigation {
             while (!navChecks.stopNavigation()) {
                 robot.driveSystem.drive(motorSpeed, 0);
                 robot.instrumentation.addInstrData();
-                beaconServoExtender.continueTask();
+            }
+            if (check1.getODSonLine().equalsIgnoreCase("back") && frontOrBackODS.equalsIgnoreCase("front")) {
+                NavigationChecks.CheckForWhiteLine check4 = navChecks.new CheckForWhiteLine(this.lf, frontOrBackODS);
+                navChecks.addNewCheck(check4);
+                navChecks.removeCheck(check1);
+                while (!navChecks.stopNavigation()) {
+                    gyro.goStraightPID(true, degrees, motorSpeed);
+                    robot.instrumentation.addInstrData();
+                }
+            } else if (check1.getODSonLine().equalsIgnoreCase("front") && frontOrBackODS.equalsIgnoreCase("back")) {
+                NavigationChecks.CheckForWhiteLine check4 = navChecks.new CheckForWhiteLine(this.lf, frontOrBackODS);
+                navChecks.addNewCheck(check4);
+                navChecks.removeCheck(check1);
+                while (!navChecks.stopNavigation()) {
+                    gyro.goStraightPID(false, degrees, motorSpeed);
+                    robot.instrumentation.addInstrData();
+                }
             }
             robot.driveSystem.stop();
             robot.instrumentation.addInstrData();
@@ -467,13 +495,12 @@ public class Navigation {
             if (driveBackwards) {
                 robot.driveSystem.reverse();
             }
-        }
-        beaconServoExtender.endTask();
 //        robot.instrumentation.removeAction(driveTillWhitelineInstr);
-        robot.instrumentation.removeAction(gyroDegreesInstr);
-        robot.instrumentation.removeAction(odsInstr);
-        robot.instrumentation.removeAction(colorInstr);
+            robot.instrumentation.removeAction(gyroDegreesInstr);
+            robot.instrumentation.removeAction(odsInstr);
+            robot.instrumentation.removeAction(colorInstr);
 
+        }
     }
 
     public void driveUntilAllianceBeacon(double motorSpeed, double degrees,

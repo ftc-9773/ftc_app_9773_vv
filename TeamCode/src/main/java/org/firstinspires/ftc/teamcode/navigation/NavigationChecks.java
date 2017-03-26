@@ -270,6 +270,7 @@ public class NavigationChecks {
         ElapsedTime timer;
         DriveSystem.ElapsedEncoderCounts elapsedEncoderCounts;
         String frontOrBack;
+        String onFrontOrBack;
         public CheckForWhiteLine(LineFollow lfObj, String frontOrBack) {
             this.lfObj = lfObj;
             this.frontOrBack = frontOrBack;
@@ -277,6 +278,10 @@ public class NavigationChecks {
             timer.reset();
             elapsedEncoderCounts = robot.driveSystem.getNewElapsedCountsObj();
             prev_light = prev_speed = -1.0;
+        }
+
+        public String getODSonLine(){
+            return onFrontOrBack;
         }
 
         @Override
@@ -290,15 +295,27 @@ public class NavigationChecks {
             }
             if (frontOrBack.equalsIgnoreCase("front")) {
                 if (navigationObj.lf.FrontODSonWhiteLine()) {
+                    onFrontOrBack = "front";
+                    return (true);
+                } else {
+                    return (false);
+                }
+            } else if (frontOrBack.equalsIgnoreCase("back")){
+                if (navigationObj.lf.BackODSonWhiteLine()) {
+                    onFrontOrBack = "back";
                     return (true);
                 } else {
                     return (false);
                 }
             } else {
-                if (navigationObj.lf.BackODSonWhiteLine()) {
-                    return (true);
+                if (navigationObj.lf.FrontODSonWhiteLine()){
+                    onFrontOrBack = "front";
+                    return true;
+                } else if (navigationObj.lf.BackODSonWhiteLine()){
+                    onFrontOrBack = "back";
+                    return true;
                 } else {
-                    return (false);
+                    return false;
                 }
             }
         }
