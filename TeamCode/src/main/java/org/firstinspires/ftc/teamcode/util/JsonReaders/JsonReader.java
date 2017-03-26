@@ -61,7 +61,7 @@ public class JsonReader {
             DbgLog.error("ftc9773: Error while reading the json file %s", filePath);
             DbgLog.error("ftc9773: %s", except.getMessage());
         }
-        try {
+        try {//TODO: Check this section (Does jsonRoot.keys() return ALL the root objects in the file (all the autonomousOptions?))
             jsonRoot = new JSONObject(jsonStr);
             jsonRootNames = new ArrayList<>();
             while(jsonRoot.keys().hasNext()){
