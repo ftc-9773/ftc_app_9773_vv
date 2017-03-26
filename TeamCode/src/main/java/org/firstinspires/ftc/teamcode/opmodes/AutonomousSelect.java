@@ -35,7 +35,9 @@ public class AutonomousSelect extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         try {
-            redOrBlue();
+            alliance = redOrBlue();
+            telemetry.addData("Final selected alliance: ", alliance);
+            telemetry.update();
             allOptions();
         } catch (JSONException e) {
             e.printStackTrace();
@@ -43,7 +45,7 @@ public class AutonomousSelect extends LinearOpMode {
 
     }
 
-    public void redOrBlue(){
+    public String redOrBlue(){
         alliance = "red";
         waitForStart();
 
@@ -53,25 +55,30 @@ public class AutonomousSelect extends LinearOpMode {
         while(opModeIsActive()) {
             if(gamepad1.dpad_down){
                 alliance = "blue";
-                telemetry.addData("Current alliance", alliance);
+                telemetry.addData("Current Alliance", alliance);
                 telemetry.update();
             }
             if(gamepad1.dpad_up){
                 alliance = "red";
-                telemetry.addData("Current alliance", alliance);
+                telemetry.addData("Current ALLiance", alliance);
                 telemetry.update();
             }
             else if(gamepad1.a){
-                return;
+                return alliance;
             }
         }
+        return alliance;
     }
 
     public void allOptions() throws JSONException {
+        DbgLog.msg("ftc9773: Reached here 0!");
         int index = 0;
         jsonReader = new JsonReader(JsonReader.autonomousOptFile);
+        DbgLog.msg("ftc9773: Reached here 1!");
         autonomousOptions = filtered(jsonReader.jsonRootNames, alliance);
+        DbgLog.msg("ftc9773: Reached here 2!");
         autonomousOption = autonomousOptions.get(index);
+        DbgLog.msg("ftc9773: Reached here 3!");
 
         telemetry.addData("Current autonomous option", autonomousOption);
         telemetry.update();
@@ -79,12 +86,12 @@ public class AutonomousSelect extends LinearOpMode {
 
         while(opModeIsActive()) {
             if(gamepad1.dpad_down){
-                autonomousOption = autonomousOptions.get(index<autonomousOptions.size() ? index+1 : autonomousOptions.size()-1);
+                autonomousOption = autonomousOptions.get(index<autonomousOptions.size() ? index++ : autonomousOptions.size()-1);
                 telemetry.addData("Current autonomous option", autonomousOption);
                 telemetry.update();
             }
             else if (gamepad1.dpad_up){
-                autonomousOption = autonomousOptions.get(index>0 ? index-1 : 0);
+                autonomousOption = autonomousOptions.get(index>0 ? index-- : 0);
                 telemetry.addData("Current autonomous option", autonomousOption);
                 telemetry.update();
             }
