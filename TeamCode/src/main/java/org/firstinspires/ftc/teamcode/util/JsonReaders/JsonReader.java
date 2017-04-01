@@ -66,6 +66,12 @@ public class JsonReader {
             DbgLog.error("ftc9773: Error while parsing the json file.  Error message = %s",
                     except.getMessage());
         }
+        try {
+            fileReader.close();
+        } catch (IOException e) {
+            DbgLog.error("ftc9773: Error while closing the fileReader %s", filePath);
+            e.printStackTrace();
+        }
         return;
     }
 

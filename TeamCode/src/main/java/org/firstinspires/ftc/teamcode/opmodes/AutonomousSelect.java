@@ -9,9 +9,11 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.AutonomousActions;
 import org.firstinspires.ftc.teamcode.FTCRobot;
+import org.firstinspires.ftc.teamcode.util.FileRW;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.AutonomousOptionsReader;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -112,10 +114,32 @@ public class AutonomousSelect extends LinearOpMode {
         }
     }
 
+//    private List<String> searchForColor(String color){
+//        for(String option: autonomousOptions) {
+//            if (!option.toLowerCase().contains(color.toLowerCase())) {
+//                autonomousOptions.remove(option);
+//            }
+//        }
+//    }
+//
+    //TODO: DO we need to remove and put to replace, or just put the value in?
     private void writeToFile(String path, String autonomousOption) throws JSONException {
         JsonReader reader = new JsonReader(path);
-        reader.jsonRoot.getString("autonomousOption");
+        String option = reader.jsonRoot.getString("autonomousOption");
+        String newString = reader.jsonStr.replace(option, autonomousOption).replace(",", ",\n").replace("}","\n}");
+        FileRW filerw = new FileRW(path, true);
+        filerw.fileWrite(newString);
+        filerw.close();
+        DbgLog.msg("ftc9773: Input: %s",autonomousOption);
+        DbgLog.msg("ftc9773: Result: %s",reader.jsonRoot.getString("autonomousOption"));
+        return;
+//        try(FileWriter writer = new FileWriter(path)){
+//
+//        }catch(Exception e){
+//            e.printStackTrace();
+//        }
 //        robot = new FTCRobot(this, reader.jsonRoot.getString("robot"), "Autonomous");
 //        robot.runAutonomous(autonomousOption, alliance, reader.jsonRoot.getLong("startingDelay"), reader.jsonRoot.getInt("startingPosition"), reader.jsonRoot.getBoolean("enableBackGroundTasks"));
     }
+
 }
