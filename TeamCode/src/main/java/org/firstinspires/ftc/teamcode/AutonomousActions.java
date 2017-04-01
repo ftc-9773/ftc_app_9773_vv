@@ -41,6 +41,8 @@ public class AutonomousActions {
             this.otherColor = "blue";
         else if (allianceColor.equalsIgnoreCase("blue"))
             this.otherColor = "red";
+        curOpMode.telemetry.addData("autonomous option:", "%s", autoOption);
+        curOpMode.telemetry.update();
         autoCfg = new AutonomousOptionsReader(JsonReader.autonomousOptFile, autoOption);
         if (allianceColor.equalsIgnoreCase("Blue"))
             this.replayFilesDir = JsonReader.autonomousBlueDir;
@@ -152,8 +154,25 @@ public class AutonomousActions {
         }
         DbgLog.msg("ftc9773: degrees=%f, driveBackwards=%b, odsPosition=%s, additionalDistance=%f",
                 degrees, driveBackwards, odsPosition, additionalDistance);
-        robot.navigation.goStraightToWhiteLine(degrees, (float) motorSpeed, driveBackwards,
-                additionalDistance, odsPosition);
+
+        // 1. go until either front or back ODS sensor reaches the white line
+        String odsSensorPosition = robot.navigation.goStraightToWhiteLine(degrees, (float)motorSpeed, driveBackwards,
+                additionalDistance, "either");
+        // 2. If the correct sensor sensed the white line, then drive additional distance.
+        if (odsSensorPosition.equalsIgnoreCase(odsPosition))
+            return;
+        else {
+            // 3. If the correct sensor did not sense the white line then go in the reverse direction
+            //     and try again.
+            while (!odsSensorPosition.equalsIgnoreCase(odsPosition)) {
+                double redoInches = driveBackwards ? 6 : -6;
+                double redoDegrees = driveBackwards ? fwDegrees : bwDegrees;
+                robot.navigation.goStraightToDistance(redoInches, redoDegrees, (float)motorSpeed);
+                odsSensorPosition =
+                        robot.navigation.goStraightToWhiteLine(degrees, (float) motorSpeed,
+                                driveBackwards, additionalDistance, odsPosition);
+            }
+        }
 
         return;
     }
@@ -316,29 +335,6 @@ public class AutonomousActions {
                     e.printStackTrace();
                 }
                 curOpMode.sleep(milliseconds);
-                break;
-            }
-            case "DriveUntilAllianceBeacon": {
-                double motorSpeed = 0.5;
-                double maxDistance1 = 8.0; // in inches
-                double maxDistance2 = 13.0; // in inches
-                double degrees = 0.0;
-                try {
-                    String key = JsonReader.getRealKeyIgnoreCase(actionObj, "degrees");
-                    degrees = actionObj.getDouble(key);
-                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "maxDistance1");
-                    maxDistance1 = actionObj.getDouble(key);
-                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "maxDistance2");
-                    maxDistance2 = actionObj.getDouble(key);
-                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "motorSpeed");
-                    motorSpeed = actionObj.getDouble(key);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                DbgLog.msg("ftc9773: Degrees: %f, maxDistance1: %f, maxDistance2: %f, motorSpeed: %f",
-                        degrees, maxDistance1, maxDistance2, motorSpeed);
-                robot.navigation.driveUntilAllianceBeacon(motorSpeed, degrees,
-                        maxDistance1, maxDistance2);
                 break;
             }
             case "DriveAndClaimAllianceBeacon": {
