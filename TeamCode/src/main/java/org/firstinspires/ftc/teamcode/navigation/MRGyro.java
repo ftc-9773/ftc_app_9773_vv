@@ -57,7 +57,7 @@ public class MRGyro implements GyroInterface {
         DbgLog.msg("ftc9773: Done with initializing MR Gyro");
         DbgLog.msg("ftc9773: Current Yaw=%f, pitch=%f", (double)gyro.getHeading(), (double)gyro.rawX());
         curOpMode.telemetry.addData("MRGyro: ", "curYaw=%f", (double)gyro.getHeading());
-        curOpMode.telemetry.update();
+//        curOpMode.telemetry.update();
 
         getYawTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         prevYaw = gyro.getHeading();

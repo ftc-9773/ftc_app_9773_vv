@@ -42,7 +42,6 @@ public class AutonomousActions {
         else if (allianceColor.equalsIgnoreCase("blue"))
             this.otherColor = "red";
         curOpMode.telemetry.addData("autonomous option:", "%s", autoOption);
-        curOpMode.telemetry.update();
         autoCfg = new AutonomousOptionsReader(JsonReader.autonomousOptFile, autoOption);
         if (allianceColor.equalsIgnoreCase("Blue"))
             this.replayFilesDir = JsonReader.autonomousBlueDir;

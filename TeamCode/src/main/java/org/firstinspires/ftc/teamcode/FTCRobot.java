@@ -187,6 +187,7 @@ public class FTCRobot {
         this.autonomousActions =
                 new AutonomousActions(this, curOpMode, autonomousOpt, allianceColor);
         this.enableBackgroundTasks = enableBackgroundTasks;
+        curOpMode.telemetry.update(); // one single update for all the data added
 
         try {
             curOpMode.waitForStart();

@@ -76,7 +76,7 @@
         "motor" : "Tetrix-HS755-HB",
         "needReverse" : false,
         "scaleRangeMin" : 0,
-        "scaleRangeMax" : 0.333
+        "scaleRangeMax" : 0.25
       }
     },
     "sensors" : {
