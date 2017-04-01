@@ -26,6 +26,25 @@ public class ParticleAccelerator implements Attachment{
     DcMotor launcherMotor1=null, launcherMotor2=null;
     double motorPower1=0.0, motorPower2=0.0;
     long rampUpTime = 2000; // default value in milli seconds
+    double targetSpeed = 100; // in revolutions per minute (rpm)
+    double prevSpeed=-1.0;
+
+    public class PartAccElapsedEncoderCts {
+        double encoderCount1;
+        double encoderCount2;
+
+        public PartAccElapsedEncoderCts() {
+            encoderCount1 = encoderCount2 = 0;
+        }
+
+        public void reset() {
+            if (launcherMotor1 != null)
+                encoderCount1 = launcherMotor1.getCurrentPosition();
+            if (launcherMotor2 != null)
+                encoderCount2 = launcherMotor2.getCurrentPosition();
+        }
+
+    }
 
     public ParticleAccelerator(FTCRobot robot, LinearOpMode curOpMode, JSONObject rootObj) {
         String key;
@@ -84,6 +103,16 @@ public class ParticleAccelerator implements Attachment{
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    public double partAccPIDcontroller() {
+        double motorPower = 0.5;
+
+        // Get the current speed
+
+
+
+        return motorPower;
     }
 
     public void activateParticleAccelerator() {
