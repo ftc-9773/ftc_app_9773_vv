@@ -17,6 +17,13 @@
         "strokeLength" : 16,
         "minButton" : "gamepad1.a",
         "maxButton" : "gamepad1.y"
+      },
+      "buttonWheelServo" : {
+        "motorType" : "servo",
+        "motor" : "Tetrix-HS755-HB",
+        "needReverse" : false,
+        "scaleRangeMin" : 0,
+        "scaleRangeMax" : 0.333
       }
     }
   },
@@ -63,6 +70,13 @@
         "speed" : 3.2,
         "__comment_strokeLength" : "strokeLength is in the units of cm",
         "strokeLength" : 14.0
+      },
+      "buttonWheelServo" : {
+        "motorType" : "servo",
+        "motor" : "Tetrix-HS755-HB",
+        "needReverse" : false,
+        "scaleRangeMin" : 0,
+        "scaleRangeMax" : 0.333
       }
     },
     "sensors" : {
@@ -112,12 +126,23 @@
         "maxButton" : "gamepad1.right_bumper"
       },
       "crownServo":{
-        "motorType" : "CRservo",
+        "motorType" : "CRServo",
         "motor" : "Tetrix-HS755-HB",
         "__scaleRange" : "upright:120, expand: 230",
         "scaleRangeMin" : 0.0,
         "scaleRangeMax" : 1.0,
-        "needReverse" : true,
+        "needReverse" : false,
+        "fixedPositions" : true,
+        "minButton" : "gamepad1.left_bumper",
+        "maxButton" : "gamepad1.right_bumper"
+      },
+      "crownWheelServo":{
+        "motorType" : "CRServo",
+        "motor" : "Tetrix-HS755-HB",
+        "__scaleRange" : "upright:120, expand: 230",
+        "scaleRangeMin" : 0.0,
+        "scaleRangeMax" : 1.0,
+        "needReverse" : false,
         "fixedPositions" : true,
         "minButton" : "gamepad1.left_bumper",
         "maxButton" : "gamepad1.right_bumper"
@@ -129,7 +154,7 @@
       "harvesterMotor" : {
         "motorType" : "dc",
         "motor" : "Neverest40",
-        "needReverse" : false,
+        "needReverse" : true,
         "fixedPositions" : false,
         "maxSpeed" : 1.0,
         "minButton" : "gamepad2.left_stick_y",
@@ -143,12 +168,12 @@
         "motorType" : "dc",
         "__motor comment" : "The Motor used for shooter is Neverest20 with banebot p60 gear box",
         "motor" : "Neverest20",
-        "needReverse" : false,
+        "needReverse" : true,
         "fixedPositions" : false,
         "maxSpeed" : 4000,
         "__comment1" : "ramUpTime is in milli seconds",
         "rampUpTime" : 2000,
-        "motorPower" : 0.5,
+        "motorPower" : 1.0,
         "minButton" : "gamepad1.dpad_down",
         "maxButton" : "gamepad1.dpad_up"
       },
@@ -156,12 +181,12 @@
         "motorType" : "dc",
         "__motor comment" : "The Motor used for shooter is Neverest20 with banebot p60 gear box",
         "motor" : "Neverest20",
-        "needReverse" : true,
+        "needReverse" : false,
         "fixedPositions" : false,
         "maxSpeed" : 4000,
         "__comment1" : "ramUpTime is in milli seconds",
         "rampUpTime" : 2000,
-        "motorPower" : 0.5,
+        "motorPower" : 1.0,
         "minButton" : "gamepad1.dpad_down",
         "maxButton" : "gamepad1.dpad_up"
       }
@@ -174,7 +199,7 @@
         "motor" : "Tetrix-HS755-HB",
         "__scaleRange" : "block:128, release: 255",
         "__comments for scaleRange" : "For v3 robot: open=80/255, close=0/255; For v2robot: open=0, close=0.3137",
-        "scaleRangeMin" : 0.6,
+        "scaleRangeMin" : 0.35,
         "scaleRangeMax" : 1.0,
         "needReverse" : true,
         "fixedPositions" : true,

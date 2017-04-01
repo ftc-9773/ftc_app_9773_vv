@@ -21,7 +21,7 @@ public class CapBallLift implements  Attachment {
     FTCRobot robot;
     LinearOpMode curOpMode;
     DcMotor liftMotor;
-    CRServo liftServoCR = null,crownServoCR=null;
+    CRServo liftServoCR = null,crownServoCR=null, crownWheelServoCR=null;
     Servo liftServo = null, crownServo= null;
     public boolean runToPosition = false;
     public boolean lockLift = false;
@@ -32,7 +32,7 @@ public class CapBallLift implements  Attachment {
     public CapBallLift(FTCRobot robot, LinearOpMode curOpMode, JSONObject rootObj) {
         String key;
         JSONObject liftObj = null;
-        JSONObject motorsObj = null, liftMotorObj = null, liftServoObj=null, crownServoObj=null;
+        JSONObject motorsObj = null, liftMotorObj = null, liftServoObj=null, crownServoObj=null, crownWheelServoObj=null;
 
         this.robot = robot;
         this.curOpMode = curOpMode;
@@ -96,6 +96,17 @@ public class CapBallLift implements  Attachment {
                 }
                 crownServo.setPosition(1);
             }
+            key = JsonReader.getRealKeyIgnoreCase(motorsObj, "crownWheelServo");
+            crownWheelServoObj = motorsObj.getJSONObject(key);
+            key = JsonReader.getRealKeyIgnoreCase(crownWheelServoObj, "motorType");
+            String crownWheelMotorType = crownWheelServoObj.getString(key);
+            DbgLog.msg("ftc9773: crownWheelServoType: %s", crownWheelMotorType);
+            crownWheelServoCR = curOpMode.hardwareMap.crservo.get("crownWheelServo");
+            if (crownWheelServoObj.getBoolean("needReverse")){
+                DbgLog.msg("ftc9773: Reversing the crownWheelServo");
+                crownWheelServoCR.setDirection(CRServo.Direction.REVERSE);
+            }
+
 
             liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -180,6 +191,16 @@ public class CapBallLift implements  Attachment {
         if (crownServoCR != null){
             crownServoCR.setPower(0);
         }
+    }
+
+    public void pullCapBall(){
+        crownWheelServoCR.setPower(1);
+    }
+    public void pushCapBall(){
+        crownWheelServoCR.setPower(-1);
+    }
+    public void idleCrownWheel(){
+        crownWheelServoCR.setPower(0);
     }
 
     public void goToDownPosition(){

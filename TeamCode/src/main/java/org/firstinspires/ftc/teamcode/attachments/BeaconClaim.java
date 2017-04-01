@@ -14,7 +14,6 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
-import org.firstinspires.ftc.teamcode.navigation.Navigation;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -25,6 +24,7 @@ public class BeaconClaim implements Attachment {
     private CRServo buttonServoCR =null;
     private Servo buttonServoLinear=null;
     private Servo buttonServoStandard=null;
+    private Servo buttonWheelServo =null;
     private ModernRoboticsI2cColorSensor colorSensor1=null;
     public enum BeaconColor {RED, BLUE, NONE}
     public enum IndexType {REDMAX_FIRST, BLUEMAX_FIRST, REDMAX_LAST, BLUEMAX_LAST, CURRENT}
@@ -93,8 +93,8 @@ public class BeaconClaim implements Attachment {
         this.robot = robot;
         String key=null;
         JSONObject beaconJsonObj=null;
-        JSONObject motorsObj=null, buttonServoObj=null, colorServoObj=null;
-        JSONObject sensorsObj = null,coloSensor1Obj=null;
+        JSONObject motorsObj=null, buttonServoObj=null, colorServoObj=null, buttonWheelServoObj=null;
+        JSONObject sensorsObj = null,colorSensor1Obj=null;
 
         try {
             key = JsonReader.getRealKeyIgnoreCase(rootObj, beaconClaimStrToRead);
@@ -115,8 +115,10 @@ public class BeaconClaim implements Attachment {
             if (key == null)
                 key = JsonReader.getRealKeyIgnoreCase(motorsObj, "buttonServoStandard");
             buttonServoObj = motorsObj.getJSONObject(key);
+            key = JsonReader.getRealKeyIgnoreCase(motorsObj, "buttonWheelServo");
+            buttonWheelServoObj = motorsObj.getJSONObject(key);
             key = JsonReader.getRealKeyIgnoreCase(sensorsObj, "colorSensor1");
-            coloSensor1Obj = sensorsObj.getJSONObject(key);
+            colorSensor1Obj = sensorsObj.getJSONObject(key);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -187,7 +189,7 @@ public class BeaconClaim implements Attachment {
             DbgLog.msg("ftc9773: buttonServoSpeed=%f, strokeLength=%f",
                     buttonServoSpeed, strokeLength);
         }
-        if (coloSensor1Obj != null) {
+        if (colorSensor1Obj != null) {
             DbgLog.msg("ftc9773: color sensor not null");
             colorSensor1 = curOpMode.hardwareMap.get(ModernRoboticsI2cColorSensor.class, "colorSensor1");
             // "blink" the color sensor so that we can visually see that it is working
@@ -197,9 +199,34 @@ public class BeaconClaim implements Attachment {
             curOpMode.sleep(100);
             colorSensor1.enableLed(false);
         }
+        if (buttonWheelServoObj != null){
+            DbgLog.msg("ftc9773: buttonWheelServo not null");
+            buttonWheelServo = curOpMode.hardwareMap.servo.get("buttonWheelServo");
+            try {
+                key = JsonReader.getRealKeyIgnoreCase(buttonWheelServoObj, "scaleRangeMin");
+                double scaleRangeMin = buttonWheelServoObj.getDouble(key);
+                key = JsonReader.getRealKeyIgnoreCase(buttonWheelServoObj, "scaleRangeMax");
+                double scaleRangeMax = buttonWheelServoObj.getDouble(key);
+                buttonWheelServo.scaleRange(scaleRangeMin, scaleRangeMax);
+                if (buttonWheelServoObj.getBoolean("needReverse")){
+                    DbgLog.msg("ftc9773: Reversing buttonWheelServo");
+                    buttonWheelServo.setDirection(Servo.Direction.REVERSE);
+                }
+                buttonWheelServo.setPosition(0);
+            } catch (JSONException e){
+                e.printStackTrace();
+            }
+        }
 
         beaconColor = BeaconColor.NONE;
         curLength = 0.0;
+    }
+
+    public void lowerButtonWheel(){
+        buttonWheelServo.setPosition(1);
+    }
+    public void raiseButtonWheel(){
+        buttonWheelServo.setPosition(0);
     }
 
     public double getCurLength() {
