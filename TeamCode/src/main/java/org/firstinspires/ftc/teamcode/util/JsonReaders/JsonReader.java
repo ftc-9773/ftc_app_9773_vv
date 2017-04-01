@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2017 Robocracy 9773
+ */
+
 package org.firstinspires.ftc.teamcode.util.JsonReaders;
 
 import com.qualcomm.ftccommon.DbgLog;
@@ -8,14 +12,8 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
-
-/*
- * Copyright (c) 2016 Robocracy 9773
- */
 
 public class JsonReader {
     public static final String baseDir = new String("/sdcard/FIRST/team9773/");
@@ -33,7 +31,7 @@ public class JsonReader {
     private String jsonFilePath;
     public String jsonStr;
     public JSONObject jsonRoot;
-    public java.util.List<String> jsonRootNames;
+
     public JsonReader(String filePath) {
         FileReader fileReader = null;
         BufferedReader bufReader = null;
@@ -61,12 +59,8 @@ public class JsonReader {
             DbgLog.error("ftc9773: Error while reading the json file %s", filePath);
             DbgLog.error("ftc9773: %s", except.getMessage());
         }
-        try {//TODO: Check this section (Does jsonRoot.keys() return ALL the root objects in the file (all the autonomousOptions?))
+        try {
             jsonRoot = new JSONObject(jsonStr);
-            jsonRootNames = new ArrayList<>();
-            while(jsonRoot.keys().hasNext()){
-                jsonRootNames.add(jsonRoot.keys().next());
-            }
         }
         catch (JSONException except) {
             DbgLog.error("ftc9773: Error while parsing the json file.  Error message = %s",
@@ -86,10 +80,6 @@ public class JsonReader {
         }
         return null;
     }
-
-//    public void getObject(){
-//
-//    }
 
 
 }

@@ -5,6 +5,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -23,6 +24,9 @@ public class AutonomousOptionsReader extends JsonReader {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+    public AutonomousOptionsReader(String filePath){
+        super(filePath);
     }
 
     public JSONObject getAction(int actionNum){
@@ -81,8 +85,14 @@ public class AutonomousOptionsReader extends JsonReader {
         }
         return (methodName);
     }
-    public List<String> names(){
+
+
+    public List<String> getAll(){
+        Iterator<String> keysIterator = jsonRoot.keys();
+        ArrayList<String> jsonRootNames = new ArrayList<>();
+        while (keysIterator.hasNext()){
+            jsonRootNames.add(keysIterator.next());
+        }
         return jsonRootNames;
     }
-
 }
