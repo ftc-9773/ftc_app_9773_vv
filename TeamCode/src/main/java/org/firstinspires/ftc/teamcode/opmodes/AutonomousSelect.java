@@ -6,6 +6,7 @@ import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.AutonomousActions;
 import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.AutonomousOptionsReader;
@@ -29,7 +30,7 @@ public class AutonomousSelect extends LinearOpMode {
     FTCRobot robot;
     String alliance;
     String autonomousOption;
-    JsonReader jsonReader;
+    AutonomousOptionsReader jsonReader;
     List<String> autonomousOptions;
 
     @Override
@@ -38,6 +39,7 @@ public class AutonomousSelect extends LinearOpMode {
             alliance = redOrBlue();
             telemetry.addData("Final selected alliance: ", alliance);
             telemetry.update();
+            sleep(500);
             allOptions();
         } catch (JSONException e) {
             e.printStackTrace();
@@ -66,6 +68,7 @@ public class AutonomousSelect extends LinearOpMode {
             else if(gamepad1.a){
                 return alliance;
             }
+            idle();
         }
         return alliance;
     }
@@ -73,51 +76,46 @@ public class AutonomousSelect extends LinearOpMode {
     public void allOptions() throws JSONException {
         DbgLog.msg("ftc9773: Reached here 0!");
         int index = 0;
-        jsonReader = new JsonReader(JsonReader.autonomousOptFile);//TODO: Figure out why JsonReader is not reading the options correctly
+        jsonReader = new AutonomousOptionsReader(JsonReader.autonomousOptFile);
         DbgLog.msg("ftc9773: Reached here 1!");
-        autonomousOptions = filtered(jsonReader.jsonRootNames, alliance);
+        autonomousOptions = jsonReader.getAll();
         DbgLog.msg("ftc9773: Reached here 2!");
+        DbgLog.msg("ftc9773: autonomousOptions length = %d", autonomousOptions.size());
         autonomousOption = autonomousOptions.get(index);
         DbgLog.msg("ftc9773: Reached here 3!");
 
         telemetry.addData("Current autonomous option", autonomousOption);
         telemetry.update();
-        DbgLog.msg("ftc9773: Option: ", autonomousOption);
+        DbgLog.msg("ftc9773: Option: %s", autonomousOption);
 
         while(opModeIsActive()) {
             if(gamepad1.dpad_down){
-                autonomousOption = autonomousOptions.get(index<autonomousOptions.size() ? index++ : autonomousOptions.size()-1);
+                index = (index+1) < autonomousOptions.size() ? (index+1) : 0;
+                autonomousOption = autonomousOptions.get(index);
                 telemetry.addData("Current autonomous option", autonomousOption);
                 telemetry.update();
+                DbgLog.msg("ftc9773: Current autonomous option: %s, index=%d", autonomousOption, index);
             }
             else if (gamepad1.dpad_up){
-                autonomousOption = autonomousOptions.get(index>0 ? index-- : 0);
+                index = (index-1) >= 0 ? (index-1) : (autonomousOptions.size() -1);
+                autonomousOption = autonomousOptions.get(index);
                 telemetry.addData("Current autonomous option", autonomousOption);
                 telemetry.update();
+                DbgLog.msg("ftc9773: Current autonomous option: %s, index=%d", autonomousOption, index);
             }
             else if(gamepad1.a){
-                writeToFile(JsonReader.opModesDir + (alliance.equals("red") ? "AutonomousRed.json": "AutonomousBlue.json"));
+                DbgLog.msg("ftc9773: gamepad1.a is selected");
+                writeToFile(JsonReader.opModesDir + (alliance.equals("red") ? "AutonomousRed.json": "AutonomousBlue.json"), autonomousOption);
                 return;
             }
-            idle();
+            sleep(300);
         }
     }
 
-    private List<String> filtered(List<String> ls, String alliance){
-        while(ls.iterator().hasNext()){
-            String e = ls.iterator().next();
-            if(!e.contains(alliance)){
-                ls.remove(e);
-            }
-        }
-        return ls;
-    }
-
-    private void writeToFile(String path) throws JSONException {
+    private void writeToFile(String path, String autonomousOption) throws JSONException {
         JsonReader reader = new JsonReader(path);
-        List<String> objects = reader.jsonRootNames;
         reader.jsonRoot.getString("autonomousOption");
-        robot = new FTCRobot(this, reader.jsonRoot.getString("robot"), "Autonomous");
-        robot.runAutonomous(autonomousOption, alliance, reader.jsonRoot.getLong("startingDelay"), reader.jsonRoot.getInt("startingPosition"), reader.jsonRoot.getBoolean("enableBackGroundTasks"));
+//        robot = new FTCRobot(this, reader.jsonRoot.getString("robot"), "Autonomous");
+//        robot.runAutonomous(autonomousOption, alliance, reader.jsonRoot.getLong("startingDelay"), reader.jsonRoot.getInt("startingPosition"), reader.jsonRoot.getBoolean("enableBackGroundTasks"));
     }
 }
