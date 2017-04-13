@@ -76,7 +76,7 @@ public class FTCRobot {
         // Initialize the Instrumentation object
         instrumentation = new Instrumentation(this, curOpMode, robotConfig.getString("loopRuntimeLog"),
                 robotConfig.getString("rangeSensorLog"), robotConfig.getString("gyroLog"),
-                robotConfig.getString("odsLog"), robotConfig.getString("colorLog"));
+                robotConfig.getString("odsLog"), robotConfig.getString("colorLog"), robotConfig.getString("partAccLog"));
         DbgLog.msg("ftc9773: Initialized the Instrumentation object");
 
         // Initialize the BackgroundTasks object
@@ -168,8 +168,10 @@ public class FTCRobot {
         curOpMode.waitForStart();
         while (curOpMode.opModeIsActive()) {
             driverStation.getNextCmd();
+            instrumentation.addInstrData();
             curOpMode.idle();
         }
+        instrumentation.closeLog();
     }
 
     /**

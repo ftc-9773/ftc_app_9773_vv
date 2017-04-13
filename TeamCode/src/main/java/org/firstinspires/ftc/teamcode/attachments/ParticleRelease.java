@@ -25,7 +25,9 @@ public class ParticleRelease implements Attachment{
     FTCRobot robot;
     LinearOpMode curOpMode;
     Servo particleServo;
-    
+    public enum ParticleReleaseState {OPENED, CLOSED}
+    ParticleReleaseState partRelState;
+
     public ParticleRelease(FTCRobot robot, LinearOpMode curOpMode, JSONObject rootObj){
         String key;
         JSONObject particleObj = null;
@@ -48,6 +50,7 @@ public class ParticleRelease implements Attachment{
                 particleServo.setDirection(Servo.Direction.REVERSE);
             }
             particleServo.setPosition(1.0);
+            partRelState = ParticleReleaseState.CLOSED;
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -55,10 +58,15 @@ public class ParticleRelease implements Attachment{
 
     public void releaseParticles() {
         particleServo.setPosition(0.0);
+        partRelState = ParticleReleaseState.OPENED;
     }
 
     public void keepParticles() {
         particleServo.setPosition(1.0);
+        partRelState = ParticleReleaseState.CLOSED;
     }
 
+    public ParticleReleaseState getPartRelState() {
+        return partRelState;
+    }
 }

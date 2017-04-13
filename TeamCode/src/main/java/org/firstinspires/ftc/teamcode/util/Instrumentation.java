@@ -8,6 +8,7 @@ import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
@@ -15,6 +16,7 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.attachments.BeaconClaim;
+import org.firstinspires.ftc.teamcode.attachments.ParticleAccelerator;
 import org.firstinspires.ftc.teamcode.drivesys.DriveSystem;
 import org.firstinspires.ftc.teamcode.navigation.GyroInterface;
 import org.firstinspires.ftc.teamcode.navigation.LineFollow;
@@ -32,10 +34,11 @@ import java.util.List;
 public class Instrumentation {
     LinearOpMode curOpMode;
     FTCRobot robot;
-    public enum InstrumentationID {LOOP_RUNTIME, RANGESENSOR_CM, NAVX_DEGREES, NAVX_YAW_MONITOR}
+    public enum InstrumentationID {LOOP_RUNTIME, RANGESENSOR_CM, NAVX_DEGREES, ODS_LIGHT,
+        NAVX_YAW_MONITOR, PARTACC_MOTORS}
     public enum LoopType {DRIVE_TO_DISTANCE, DRIVE_UNTIL_WHITELINE, DRIVE_TILL_BEACON, TURN_ROBOT}
     private List<InstrBaseClass> instrObjects = new ArrayList<InstrBaseClass>();
-    public String loopRuntimeLog, rangeSensorLog, gyroLog, odsLog, colorLog;
+    public String loopRuntimeLog, rangeSensorLog, gyroLog, odsLog, colorLog, partAccLog;
 
     public class InstrBaseClass {
         public InstrumentationID instrID;
@@ -310,6 +313,7 @@ public class Instrumentation {
         FileRW fileObj;
 
         public ODSlightDetected(LineFollow lfObj, boolean printEveryUpdate) {
+            instrID = InstrumentationID.ODS_LIGHT;
             this.lfObj = lfObj;
             this.printEveryUpdate = printEveryUpdate;
             elapsedCounts = robot.driveSystem.getNewElapsedCountsObj();
@@ -614,6 +618,92 @@ public class Instrumentation {
         }
     }
 
+    public class PartAccInstrumentor extends InstrBaseClass {
+        ParticleAccelerator partAccObj;
+        DcMotor launcherMotor1=null, launcherMotor2=null;
+        ElapsedTime timer;
+        boolean printEveryUpdate=true;
+        double updateCount, prevUpdateCount;
+        int prevEncoder1, prevEncoder2;
+        String logFile;
+        FileRW fileObj;
+        public PartAccInstrumentor(ParticleAccelerator partAccObj, DcMotor launcherMotor1, DcMotor launcherMotor2, boolean printEveryUpdate) {
+            instrID = InstrumentationID.PARTACC_MOTORS;
+            this.partAccObj = partAccObj;
+            this.launcherMotor1 = launcherMotor1;
+            this.launcherMotor2 = launcherMotor2;
+            iterationCount = 0;
+            updateCount = prevUpdateCount = 0;
+            prevEncoder1 = prevEncoder2 = 0;
+            this.printEveryUpdate = printEveryUpdate;
+            timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+            timer.reset();
+            if (partAccLog != null) {
+                // Create a FileRW object
+                logFile = FileRW.getTimeStampedFileName(partAccLog);
+                logFile = logFile + ".csv";
+                this.fileObj = new FileRW(logFile, true);
+                if (this.fileObj == null) {
+                    DbgLog.error("ftc9773: Error! Could not create the file %s", logFile);
+                }
+            }
+        }
+
+        @Override
+        public void reset() {
+            iterationCount = 0;
+            updateCount = prevUpdateCount =0;
+            prevEncoder1 = prevEncoder2 = 0;
+            timer.reset();
+            if (printEveryUpdate) {
+                // Write the header row
+                String strToWrite = String.format("method being instrumented=, %s", description);
+                fileObj.fileWrite(strToWrite);
+                strToWrite = String.format("voltage, millis, iteration, encoder1, encoder2, speed1, speed2, updateCount");
+                fileObj.fileWrite(strToWrite);
+            }
+        }
+
+        @Override
+        public void addInstrData() {
+            iterationCount++;
+            prevUpdateCount = updateCount;
+            int encoder1 = (launcherMotor1 != null) ? launcherMotor1.getCurrentPosition() : 0;
+            int encoder2 = (launcherMotor2 != null) ? launcherMotor2.getCurrentPosition() : 0;
+            if ((timer.milliseconds() > 10) &&
+                    ((encoder1 != prevEncoder1) || (encoder2 != prevEncoder2))) {
+                updateCount++;
+                double speed1 = ((Math.abs(encoder1 - prevEncoder1) / partAccObj.getMotorCPR()) *
+                        partAccObj.getMotorGearRatio() * (1000 * 60)) / timer.milliseconds();
+                double speed2 = ((Math.abs(encoder2 - prevEncoder2) / partAccObj.getMotorCPR()) *
+                        partAccObj.getMotorGearRatio() * (1000 * 60)) / timer.milliseconds();
+                if (printEveryUpdate) {
+                    String strToWrite = String.format("%f, %f, %d, %d, %d, %f, %f, %d", robot.getVoltage(),
+                            timer.milliseconds(), iterationCount, encoder1, encoder2, speed1, speed2, updateCount);
+                    fileObj.fileWrite(strToWrite);
+                }
+            }
+        }
+
+        @Override
+        public void writeToFile() {
+
+        }
+
+        @Override
+        public void printToConsole() {
+
+        }
+
+        @Override
+        public void closeLog() {
+            if (this.fileObj != null) {
+                DbgLog.msg("ftc9773: Instrumentation: Closing partAccInstrumentor fileobj");
+                this.fileObj.close();
+            }
+        }
+    }
+
     public class GyroYawMonitor extends InstrBaseClass {
         double yawToMonitor, tolerance;
         GyroInterface gyro;
@@ -684,7 +774,7 @@ public class Instrumentation {
     }
 
     public Instrumentation(FTCRobot robot, LinearOpMode curOpMode, String loopRuntimeLog,
-                           String rangeSensorLog, String gyroLog, String odsLog, String colorLog) {
+                           String rangeSensorLog, String gyroLog, String odsLog, String colorLog, String partAccLog) {
         this.robot = robot;
         this.curOpMode = curOpMode;
         this.loopRuntimeLog = loopRuntimeLog;
@@ -692,6 +782,7 @@ public class Instrumentation {
         this.gyroLog = gyroLog;
         this.odsLog = odsLog;
         this.colorLog = colorLog;
+        this.partAccLog = partAccLog;
     }
 
     public void addAction(InstrBaseClass action) {

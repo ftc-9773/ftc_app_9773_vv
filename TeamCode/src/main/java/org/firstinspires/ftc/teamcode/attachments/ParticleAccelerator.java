@@ -12,7 +12,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.FTCRobot;
+import org.firstinspires.ftc.teamcode.util.Instrumentation;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
+import org.firstinspires.ftc.teamcode.util.JsonReaders.MotorSpecsReader;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -25,31 +27,18 @@ public class ParticleAccelerator implements Attachment{
     LinearOpMode curOpMode;
     DcMotor launcherMotor1=null, launcherMotor2=null;
     double motorPower1=0.0, motorPower2=0.0;
+    double motorCPR;
+    double motorGearRatio;
     long rampUpTime = 2000; // default value in milli seconds
-    double targetSpeed = 100; // in revolutions per minute (rpm)
-    double prevSpeed=-1.0;
-
-    public class PartAccElapsedEncoderCts {
-        double encoderCount1;
-        double encoderCount2;
-
-        public PartAccElapsedEncoderCts() {
-            encoderCount1 = encoderCount2 = 0;
-        }
-
-        public void reset() {
-            if (launcherMotor1 != null)
-                encoderCount1 = launcherMotor1.getCurrentPosition();
-            if (launcherMotor2 != null)
-                encoderCount2 = launcherMotor2.getCurrentPosition();
-        }
-
-    }
+    Instrumentation.PartAccInstrumentor partAccInstr;
+    boolean addedPartAccInstr;
 
     public ParticleAccelerator(FTCRobot robot, LinearOpMode curOpMode, JSONObject rootObj) {
-        String key;
+        String key=null;
         JSONObject launcherObj = null;
         JSONObject motorsObj = null, launcherMotorObj1 = null, launcherMotorObj2 = null;
+        MotorSpecsReader motorSpecs;
+        String runMode = null;
 
         this.robot = robot;
         this.curOpMode = curOpMode;
@@ -69,17 +58,30 @@ public class ParticleAccelerator implements Attachment{
                 DbgLog.msg("ftc9773: Reversing the launcher motor");
                 launcherMotor1.setDirection(DcMotorSimple.Direction.REVERSE);
             }
-            key = JsonReader.getRealKeyIgnoreCase(launcherMotorObj1, "rampUpTime");
-            rampUpTime = launcherMotorObj1.getLong(key);
-            key = JsonReader.getRealKeyIgnoreCase(launcherMotorObj1, "motorPower");
-            motorPower1 = launcherMotorObj1.getDouble(key);
-            launcherMotor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            key = JsonReader.getRealKeyIgnoreCase(motorsObj, "rampUpTime");
+            rampUpTime = motorsObj.getLong(key);
+            key = JsonReader.getRealKeyIgnoreCase(motorsObj, "motorPower");
+            motorPower1 = motorsObj.getDouble(key);
+            key = JsonReader.getRealKeyIgnoreCase(motorsObj, "runMode");
+            runMode = motorsObj.getString(key);
+            if (runMode.equalsIgnoreCase("RUN_USING_ENCODER"))
+                launcherMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            else
+                launcherMotor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 //            int maxSpeed = launcherMotorObj.getInt("maxSpeed");
 //            launcherMotor.setMaxSpeed(maxSpeed);
             // Set the zero power behaviour to float sot hat the motor stops gradually
             // This is recommended for high speed low torque motors
             launcherMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            // Get motorCPR value
+            key = JsonReader.getRealKeyIgnoreCase(motorsObj, "motor");
+            String motor1Type = motorsObj.getString(key);
+            motorSpecs = new MotorSpecsReader(JsonReader.motorSpecsFile, motor1Type);
+            motorCPR = motorSpecs.getCPR();
+            key = JsonReader.getRealKeyIgnoreCase(motorsObj, "gearRatio");
+            motorGearRatio = motorsObj.getDouble(key);
         } catch (JSONException e) {
+            DbgLog.error("ftc9773: JSONException occurred! key = %s", key);
             e.printStackTrace();
         }
         try{
@@ -90,11 +92,10 @@ public class ParticleAccelerator implements Attachment{
                 DbgLog.msg("ftc9773: Reversing the launcher motor");
                 launcherMotor2.setDirection(DcMotorSimple.Direction.REVERSE);
             }
-            key = JsonReader.getRealKeyIgnoreCase(launcherMotorObj2, "rampUpTime");
-            rampUpTime = launcherMotorObj2.getLong(key);
-            key = JsonReader.getRealKeyIgnoreCase(launcherMotorObj2, "motorPower");
-            motorPower2 = launcherMotorObj2.getDouble(key);
-            launcherMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            if (runMode.equalsIgnoreCase("RUN_USING_ENCODER"))
+                launcherMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            else
+                launcherMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 //            int maxSpeed = launcherMotorObj.getInt("maxSpeed");
 //            launcherMotor.setMaxSpeed(maxSpeed);
             // Set the zero power behaviour to float sot hat the motor stops gradually
@@ -103,16 +104,10 @@ public class ParticleAccelerator implements Attachment{
         } catch (JSONException e) {
             e.printStackTrace();
         }
-    }
 
-    public double partAccPIDcontroller() {
-        double motorPower = 0.5;
-
-        // Get the current speed
-
-
-
-        return motorPower;
+        // Add partAccInstrumentation
+        partAccInstr = robot.instrumentation.new PartAccInstrumentor(this, launcherMotor1, launcherMotor2, true);
+        addedPartAccInstr = false;
     }
 
     public void activateParticleAccelerator() {
@@ -125,12 +120,25 @@ public class ParticleAccelerator implements Attachment{
 //        }
         if (launcherMotor1 != null) {  launcherMotor1.setPower(motorPower1); }
         if (launcherMotor2 != null) { launcherMotor2.setPower(motorPower2); }
+        if (!addedPartAccInstr) {
+            addedPartAccInstr = true;
+            robot.instrumentation.addAction(partAccInstr);
+            partAccInstr.reset();
+        }
     }
 
     public void deactivateParticleAccelerator() {
         // Zero power behaviour was set to FLOAT in the constructor.
         if (launcherMotor1 != null) {  launcherMotor1.setPower(0.0); }
         if (launcherMotor2 != null) { launcherMotor2.setPower(0.0); }
+    }
+
+    public double getMotorCPR() {
+        return motorCPR;
+    }
+
+    public double getMotorGearRatio() {
+        return motorGearRatio;
     }
 
 }
