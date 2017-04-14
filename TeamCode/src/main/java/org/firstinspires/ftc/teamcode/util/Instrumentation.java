@@ -7,9 +7,7 @@ package org.firstinspires.ftc.teamcode.util;
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -17,6 +15,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.attachments.BeaconClaim;
 import org.firstinspires.ftc.teamcode.attachments.ParticleAccelerator;
+import org.firstinspires.ftc.teamcode.attachments.ParticleRelease;
 import org.firstinspires.ftc.teamcode.drivesys.DriveSystem;
 import org.firstinspires.ftc.teamcode.navigation.GyroInterface;
 import org.firstinspires.ftc.teamcode.navigation.LineFollow;
@@ -623,7 +622,7 @@ public class Instrumentation {
         DcMotor launcherMotor1=null, launcherMotor2=null;
         ElapsedTime timer;
         boolean printEveryUpdate=true;
-        double updateCount, prevUpdateCount;
+        int updateCount, prevUpdateCount;
         int prevEncoder1, prevEncoder2;
         String logFile;
         FileRW fileObj;
@@ -659,7 +658,8 @@ public class Instrumentation {
                 // Write the header row
                 String strToWrite = String.format("method being instrumented=, %s", description);
                 fileObj.fileWrite(strToWrite);
-                strToWrite = String.format("voltage, millis, iteration, encoder1, encoder2, speed1, speed2, updateCount");
+                strToWrite = String.format("voltage, millis, iteration, encoder1, encoder2, " +
+                        "speed1, speed2, updateCount, partRelStatus");
                 fileObj.fileWrite(strToWrite);
             }
         }
@@ -670,7 +670,7 @@ public class Instrumentation {
             prevUpdateCount = updateCount;
             int encoder1 = (launcherMotor1 != null) ? launcherMotor1.getCurrentPosition() : 0;
             int encoder2 = (launcherMotor2 != null) ? launcherMotor2.getCurrentPosition() : 0;
-            if ((timer.milliseconds() > 10) &&
+            if ((timer.milliseconds() > 30) &&
                     ((encoder1 != prevEncoder1) || (encoder2 != prevEncoder2))) {
                 updateCount++;
                 double speed1 = ((Math.abs(encoder1 - prevEncoder1) / partAccObj.getMotorCPR()) *
@@ -678,10 +678,17 @@ public class Instrumentation {
                 double speed2 = ((Math.abs(encoder2 - prevEncoder2) / partAccObj.getMotorCPR()) *
                         partAccObj.getMotorGearRatio() * (1000 * 60)) / timer.milliseconds();
                 if (printEveryUpdate) {
-                    String strToWrite = String.format("%f, %f, %d, %d, %d, %f, %f, %d", robot.getVoltage(),
-                            timer.milliseconds(), iterationCount, encoder1, encoder2, speed1, speed2, updateCount);
+                    String partRelState =
+                            (robot.partRelObj.getPartRelState() == ParticleRelease.ParticleReleaseState.OPENED) ? "Opened" : "Closed";
+                    String strToWrite = String.format("%f, %f, %d, %d, %d, %f, %f, %d, %s",
+                            robot.getVoltage(), timer.milliseconds(), iterationCount, encoder1, encoder2, speed1, speed2, updateCount, partRelState);
                     fileObj.fileWrite(strToWrite);
+                    robot.curOpMode.telemetry.addData("Shooter speed:", "%f, %f", speed1, speed2);
+                    robot.curOpMode.telemetry.update();
                 }
+                timer.reset();
+                prevEncoder1 = encoder1;
+                prevEncoder2 = encoder2;
             }
         }
 

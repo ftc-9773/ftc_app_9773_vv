@@ -45,7 +45,7 @@ public class FTCRobot {
     public CapBallLift capBallLiftObj;
     public Harvester harvesterObj;
     public ParticleAccelerator partAccObj;
-    public ParticleRelease particleObj;
+    public ParticleRelease partRelObj;
     public double distanceLeft;
     public double distanceRight;
     public double distanceBetweenWheels;
@@ -157,8 +157,8 @@ public class FTCRobot {
                     break;
                 case "ParticleRelease":
                     attachmentsArr[i] = new ParticleRelease(this, curOpMode, rootObj);
-                    particleObj = (ParticleRelease) attachmentsArr[i];
-                    DbgLog.msg("ftc9773: particleObj created");
+                    partRelObj = (ParticleRelease) attachmentsArr[i];
+                    DbgLog.msg("ftc9773: partRelObj created");
                     break;
             }
         }

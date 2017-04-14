@@ -381,10 +381,10 @@ public class AutonomousActions {
                 robot.partAccObj.deactivateParticleAccelerator();
                 break;
             case "releaseParticles":
-                robot.particleObj.releaseParticles();
+                robot.partRelObj.releaseParticles();
                 break;
             case "keepParticles":
-                robot.particleObj.keepParticles();
+                robot.partRelObj.keepParticles();
                 break;
             case "shootParticles": {
                 int numParticles = 1;
@@ -396,13 +396,13 @@ public class AutonomousActions {
                 }
                 DbgLog.msg("ftc9773: shootParticles: numberOfParticles to shoot = %d", numParticles);
                 if (numParticles == 1) {
-                    robot.particleObj.releaseParticles();
+                    robot.partRelObj.releaseParticles();
                     curOpMode.sleep(1000);
-                    robot.particleObj.keepParticles();
+                    robot.partRelObj.keepParticles();
                 } else if (numParticles == 2) {
-                    robot.particleObj.releaseParticles();
+                    robot.partRelObj.releaseParticles();
                     curOpMode.sleep(2000);
-                    robot.particleObj.keepParticles();
+                    robot.partRelObj.keepParticles();
                 }
                 break;
             }

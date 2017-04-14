@@ -9,12 +9,10 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.util.StateMachine;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.firstinspires.ftc.teamcode.util.StateMachine;
 
 /**
  * Created by pranavburugula on 3/5/2017.
@@ -148,7 +146,7 @@ public class DriverStation {
                             robot.partAccObj.activateParticleAccelerator();
                             partAccStateMachine.switchState("On");
                         }
-                        robot.particleObj.keepParticles();
+                        robot.partRelObj.keepParticles();
                         break;
                     case "On":
                         if (curOpMode.gamepad1.dpad_down) {
@@ -156,9 +154,9 @@ public class DriverStation {
                             partAccStateMachine.switchState("Off");
                         }
                         if (curOpMode.gamepad1.a) {
-                            robot.particleObj.releaseParticles();
+                            robot.partRelObj.releaseParticles();
                         } else if (curOpMode.gamepad1.y) {
-                            robot.particleObj.keepParticles();
+                            robot.partRelObj.keepParticles();
                         }
                         break;
                 }
@@ -372,7 +370,7 @@ public class DriverStation {
                             robot.partAccObj.activateParticleAccelerator();
                             partAccStateMachine.switchState("On");
                         }
-                        robot.particleObj.keepParticles();
+                        robot.partRelObj.keepParticles();
                         break;
                     case "On":
                         if (curOpMode.gamepad1.dpad_down) {
@@ -380,9 +378,9 @@ public class DriverStation {
                             partAccStateMachine.switchState("Off");
                         }
                         if (curOpMode.gamepad1.a) {
-                            robot.particleObj.releaseParticles();
+                            robot.partRelObj.releaseParticles();
                         } else if (curOpMode.gamepad1.y) {
-                            robot.particleObj.keepParticles();
+                            robot.partRelObj.keepParticles();
                         }
                         break;
                 }

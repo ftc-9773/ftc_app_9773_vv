@@ -26,7 +26,7 @@ public class ParticleAccelerator implements Attachment{
     FTCRobot robot;
     LinearOpMode curOpMode;
     DcMotor launcherMotor1=null, launcherMotor2=null;
-    double motorPower1=0.0, motorPower2=0.0;
+    double motorPower=0.0;
     double motorCPR;
     double motorGearRatio;
     long rampUpTime = 2000; // default value in milli seconds
@@ -61,7 +61,7 @@ public class ParticleAccelerator implements Attachment{
             key = JsonReader.getRealKeyIgnoreCase(motorsObj, "rampUpTime");
             rampUpTime = motorsObj.getLong(key);
             key = JsonReader.getRealKeyIgnoreCase(motorsObj, "motorPower");
-            motorPower1 = motorsObj.getDouble(key);
+            motorPower = motorsObj.getDouble(key);
             key = JsonReader.getRealKeyIgnoreCase(motorsObj, "runMode");
             runMode = motorsObj.getString(key);
             if (runMode.equalsIgnoreCase("RUN_USING_ENCODER"))
@@ -80,6 +80,8 @@ public class ParticleAccelerator implements Attachment{
             motorCPR = motorSpecs.getCPR();
             key = JsonReader.getRealKeyIgnoreCase(motorsObj, "gearRatio");
             motorGearRatio = motorsObj.getDouble(key);
+
+            DbgLog.msg("ftc9773: created launcher motor 1");
         } catch (JSONException e) {
             DbgLog.error("ftc9773: JSONException occurred! key = %s", key);
             e.printStackTrace();
@@ -101,6 +103,7 @@ public class ParticleAccelerator implements Attachment{
             // Set the zero power behaviour to float sot hat the motor stops gradually
             // This is recommended for high speed low torque motors
             launcherMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            DbgLog.msg("ftc9773: created launcher motor 2");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -118,8 +121,8 @@ public class ParticleAccelerator implements Attachment{
 //        while ((rampUpTimer.milliseconds() < rampUpTime) && curOpMode.opModeIsActive()) {
 //            launcherMotor.setPower(1 - (rampUpTimer.milliseconds() / rampUpTime));
 //        }
-        if (launcherMotor1 != null) {  launcherMotor1.setPower(motorPower1); }
-        if (launcherMotor2 != null) { launcherMotor2.setPower(motorPower2); }
+        if (launcherMotor1 != null) {  launcherMotor1.setPower(motorPower); }
+        if (launcherMotor2 != null) { launcherMotor2.setPower(motorPower); }
         if (!addedPartAccInstr) {
             addedPartAccInstr = true;
             robot.instrumentation.addAction(partAccInstr);
@@ -131,6 +134,12 @@ public class ParticleAccelerator implements Attachment{
         // Zero power behaviour was set to FLOAT in the constructor.
         if (launcherMotor1 != null) {  launcherMotor1.setPower(0.0); }
         if (launcherMotor2 != null) { launcherMotor2.setPower(0.0); }
+        if (addedPartAccInstr) {
+            addedPartAccInstr = false;
+            robot.instrumentation.removeAction(partAccInstr);
+            curOpMode.telemetry.addData("shooter status:", "stopped");
+            curOpMode.telemetry.update();
+        }
     }
 
     public double getMotorCPR() {
