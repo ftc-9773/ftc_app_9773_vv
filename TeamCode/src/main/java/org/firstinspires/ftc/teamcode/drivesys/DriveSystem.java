@@ -19,6 +19,7 @@ import java.lang.annotation.Annotation;
 
 
 public abstract class DriveSystem {
+
     public enum DriveSysType {TWO_MOTOR_DRIVE, FOUR_MOTOR_6WD}
     LinearOpMode curOpMode;
     FTCRobot robot;
@@ -155,5 +156,7 @@ public abstract class DriveSystem {
     public abstract double getScaleMultiplier();
     public abstract void reverseTeleop();
     public abstract void unreverseTeleop();
+    public abstract DriveSysPosition getAvgPosition(DriveSysPosition pos1, DriveSysPosition pos2,
+                                                    DriveSysPosition pos3, DriveSysPosition pos4);
 
 }

@@ -389,4 +389,21 @@ public class TwoMotorDrive extends DriveSystem{
     @Override
     public void unreverseTeleop(){ reverseMultiplier = 1;}
 
+    @Override
+    public DriveSystem.DriveSysPosition getAvgPosition(DriveSystem.DriveSysPosition pos1,
+                                                       DriveSystem.DriveSysPosition pos2,
+                                                       DriveSystem.DriveSysPosition pos3,
+                                                       DriveSystem.DriveSysPosition pos4) {
+        DriveSysPosition avgPos = new DriveSysPosition();
+        DriveSysPosition pos1_2m = (DriveSysPosition) pos1;
+        DriveSysPosition pos2_2m = (DriveSysPosition) pos2;
+        DriveSysPosition pos3_2m = (DriveSysPosition) pos3;
+        DriveSysPosition pos4_2m = (DriveSysPosition) pos4;
+        avgPos.encoderCountL = pos1_2m.encoderCountL + pos2_2m.encoderCountL +
+                pos3_2m.encoderCountL + pos4_2m.encoderCountL;
+        avgPos.encoderCountR = pos1_2m.encoderCountR + pos2_2m.encoderCountR +
+                pos3_2m.encoderCountR + pos4_2m.encoderCountR;
+        return avgPos;
+    }
+
 }

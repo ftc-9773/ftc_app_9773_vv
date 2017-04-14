@@ -545,4 +545,25 @@ public class FourMotorSteeringDrive extends DriveSystem {
 
     @Override
     public void unreverseTeleop() { reverseMultiplier = 1;}
+
+    @Override
+    public DriveSystem.DriveSysPosition getAvgPosition(DriveSystem.DriveSysPosition pos1,
+                                                       DriveSystem.DriveSysPosition pos2,
+                                                       DriveSystem.DriveSysPosition pos3,
+                                                       DriveSystem.DriveSysPosition pos4) {
+        DriveSysPosition avgPos = new DriveSysPosition();
+        DriveSysPosition pos1_4m = (DriveSysPosition) pos1;
+        DriveSysPosition pos2_4m = (DriveSysPosition) pos2;
+        DriveSysPosition pos3_4m = (DriveSysPosition) pos3;
+        DriveSysPosition pos4_4m = (DriveSysPosition) pos4;
+        avgPos.encoderCountL1 = pos1_4m.encoderCountL1 + pos2_4m.encoderCountL1 +
+                pos3_4m.encoderCountL1 + pos4_4m.encoderCountL1;
+        avgPos.encoderCountL2 = pos1_4m.encoderCountL2 + pos2_4m.encoderCountL2 +
+                pos3_4m.encoderCountL2 + pos4_4m.encoderCountL2;
+        avgPos.encoderCountR1 = pos1_4m.encoderCountR1 + pos2_4m.encoderCountR1 +
+                pos3_4m.encoderCountR1 + pos4_4m.encoderCountR1;
+        avgPos.encoderCountR2 = pos1_4m.encoderCountR2 + pos2_4m.encoderCountR2 +
+                pos3_4m.encoderCountR2 + pos4_4m.encoderCountR2;
+        return avgPos;
+    }
 }

@@ -132,9 +132,9 @@ public class Instrumentation {
         BeaconClaim beaconClaimObj;
         ElapsedTime timer;
         DriveSystem.ElapsedEncoderCounts elapsedCounts;
-        DriveSystem.DriveSysPosition driveSysPosition, redMaxPostion, blueMaxPosition, firstRedMaxPosition, firstBlueMaxPosition;
+        DriveSystem.DriveSysPosition[] drvSysPositions;
         boolean redBeaconFound, blueBeaconFound;
-        int updateCnt, redMaxUpdateCnt, blueMaxUpdateCnt;
+        int updateCnt, firstRedMaxIndex, firstBlueMaxIndex, lastRedMaxIndex, lastBlueMaxIndex;
         int prevRed, prevBlue;
         int maxRed, maxBlue;
         boolean printEveryUpdate;
@@ -146,14 +146,15 @@ public class Instrumentation {
             this.printEveryUpdate = printEveryUpdate;
 
             elapsedCounts = robot.driveSystem.getNewElapsedCountsObj();
-            redMaxPostion = robot.driveSystem.getNewDrivesysPositionObj();
-            blueMaxPosition = robot.driveSystem.getNewDrivesysPositionObj();
-            firstRedMaxPosition = robot.driveSystem.getNewDrivesysPositionObj();
-            firstBlueMaxPosition = robot.driveSystem.getNewDrivesysPositionObj();
+            drvSysPositions = new DriveSystem.DriveSysPosition[20];
+            for (int i=0; i<drvSysPositions.length; i++) {
+                drvSysPositions[i] = robot.driveSystem.getNewDrivesysPositionObj();
+            }
             redBeaconFound = blueBeaconFound = false;
             timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
             timer.reset();
-            iterationCount = updateCnt = redMaxUpdateCnt = blueMaxUpdateCnt = 0;
+            iterationCount = updateCnt = 0;
+            firstRedMaxIndex = firstBlueMaxIndex = lastRedMaxIndex = lastBlueMaxIndex = -1;
             prevRed = prevBlue = maxRed = maxBlue = 0;
             if (colorLog != null) {
                 // Create a FileRW object
@@ -170,13 +171,13 @@ public class Instrumentation {
         public void reset() {
             timer.reset();
             elapsedCounts.reset();
-            redMaxPostion.resetPosition();
-            blueMaxPosition.resetPosition();
-            firstRedMaxPosition.resetPosition();
-            firstBlueMaxPosition.resetPosition();
             redBeaconFound = blueBeaconFound = false;
-            iterationCount = updateCnt = redMaxUpdateCnt = blueMaxUpdateCnt = 0;
+            iterationCount = updateCnt = 0;
+            firstRedMaxIndex = firstBlueMaxIndex = lastRedMaxIndex = lastBlueMaxIndex = -1;
             prevRed = prevBlue = maxRed = maxBlue = 0;
+            for (int i=0; i<drvSysPositions.length; i++) {
+                drvSysPositions[i].resetPosition();
+            }
             if (printEveryUpdate) {
                 String strToWrite = String.format("method being instrumented=, %s", description);
                 fileObj.fileWrite(strToWrite);
@@ -194,33 +195,32 @@ public class Instrumentation {
 
             if ((red != prevRed) || (blue != prevBlue)) {
                 updateCnt++;
+                drvSysPositions[updateCnt-1].savePostion();
                 double distanceTravelled = elapsedCounts.getDistanceTravelledInInches();
                 double millis = timer.milliseconds();
                 double speed = distanceTravelled / millis;
-                if (red >= maxRed) {
-                    if (redMaxUpdateCnt  == 0){
-                        firstRedMaxPosition.savePostion();
+                if (red > maxRed) {
+                    if (firstRedMaxIndex  < 0){
+                        firstRedMaxIndex = updateCnt-1;
                     }
-                    redMaxUpdateCnt = updateCnt;
-                    redMaxPostion.savePostion();
+                    lastRedMaxIndex = updateCnt-1;
                     maxRed = red;
-                } else {
-                    if (redMaxUpdateCnt !=0){
-                        redBeaconFound = true;
-                    }
                 }
-                if (blue >= maxBlue) {
-                    if (redMaxUpdateCnt == 0){
-                        firstBlueMaxPosition.savePostion();
+                if (blue > maxBlue) {
+                    if (firstBlueMaxIndex < 0){
+                        firstBlueMaxIndex = updateCnt-1;
                     }
-                    blueMaxUpdateCnt = updateCnt;
-                    blueMaxPosition.savePostion();
+                    lastBlueMaxIndex = updateCnt-1;
                     maxBlue = blue;
-                } else {
-                    if (blueMaxUpdateCnt != 0){
-                        blueBeaconFound = true;
-                    }
                 }
+
+                if ((firstRedMaxIndex > 0) && (red < prevRed))
+                    // the robot completed scanning the red beacon
+                    redBeaconFound = true;
+                if ((firstBlueMaxIndex > 0) && (blue < prevBlue))
+                    // the robot completed scanning the blue beacon
+                    blueBeaconFound = true;
+
                 if (printEveryUpdate) {
                     String strToWrite = String.format("%f, %f, %d, %d, %d, %d, %d, %d, %d, %d, %f, %f", robot.getVoltage(),
                             timer.milliseconds(), iterationCount, updateCnt, red, prevRed, maxRed,
@@ -263,38 +263,71 @@ public class Instrumentation {
             return false;
         }
 
-        public void driveToColor(String redOrBlue, float speed, String driveToPosition) {
+        public double getDistToColor(String redOrBlue) {
+            double dist = 0.0;
             if (redOrBlue.equalsIgnoreCase("red")) {
                 if (maxRed > 0) {
-                    if (redMaxUpdateCnt > blueMaxUpdateCnt) {
-                        redMaxPostion.driveToPosition(speed);
-                    } else {
-                        redMaxPostion.driveToPosition(speed);
-                    }
-//                    if (driveToPosition.equalsIgnoreCase("middle"))
-//                        redMaxPostion.driveToMidPosition(firstRedMaxPosition, speed);
-//                    else if (driveToPosition.equalsIgnoreCase("first"))
-//                        firstRedMaxPosition.driveToPosition(speed);
-//                    else if (driveToPosition.equalsIgnoreCase("last"))
-//                        redMaxPostion.driveToPosition(speed);
+                    DriveSystem.DriveSysPosition avgPos =
+                            robot.driveSystem.getAvgPosition(drvSysPositions[firstRedMaxIndex-1],
+                                    drvSysPositions[firstRedMaxIndex],
+                                    drvSysPositions[lastRedMaxIndex],
+                                    drvSysPositions[lastRedMaxIndex+1]);
+                    dist = avgPos.getDistanceFromCurPosition();
                 }
             } else if (redOrBlue.equalsIgnoreCase("blue")) {
                 if (maxBlue > 0) {
-                    if (driveToPosition.equalsIgnoreCase("middle"))
-                        blueMaxPosition.driveToMidPosition(firstBlueMaxPosition, speed);
-                    else if (driveToPosition.equalsIgnoreCase("first"))
-                        firstBlueMaxPosition.driveToPosition(speed);
-                    else if (driveToPosition.equalsIgnoreCase("last"))
-                        blueMaxPosition.driveToPosition(speed);
+                    DriveSystem.DriveSysPosition avgPos =
+                            robot.driveSystem.getAvgPosition(drvSysPositions[firstBlueMaxIndex-1],
+                                    drvSysPositions[firstBlueMaxIndex],
+                                    drvSysPositions[lastBlueMaxIndex],
+                                    drvSysPositions[lastBlueMaxIndex+1]);
+                    dist = avgPos.getDistanceFromCurPosition();
+                }
+            }
+
+            return dist;
+        }
+
+        public void driveToColor(String redOrBlue, float speed, String driveToPosition) {
+            if (redOrBlue.equalsIgnoreCase("red")) {
+                if (maxRed > 0) {
+                    DriveSystem.DriveSysPosition avgPos =
+                            robot.driveSystem.getAvgPosition(drvSysPositions[firstRedMaxIndex-1],
+                                    drvSysPositions[firstRedMaxIndex],
+                                    drvSysPositions[lastRedMaxIndex],
+                                    drvSysPositions[lastRedMaxIndex+1]);
+                    avgPos.driveToPosition(speed);
+                }
+            } else if (redOrBlue.equalsIgnoreCase("blue")) {
+                if (maxBlue > 0) {
+                    DriveSystem.DriveSysPosition avgPos =
+                            robot.driveSystem.getAvgPosition(drvSysPositions[firstBlueMaxIndex-1],
+                                    drvSysPositions[firstBlueMaxIndex],
+                                    drvSysPositions[lastBlueMaxIndex],
+                                    drvSysPositions[lastBlueMaxIndex+1]);
+                    avgPos.driveToPosition(speed);
                 }
             }
         }
 
         public DriveSystem.DriveSysPosition getAllianceColorPosition(String redOrBlue) {
-            if (redOrBlue.equalsIgnoreCase("red") && maxRed >= 2)
-                return (redMaxPostion);
-            else if (redOrBlue.equalsIgnoreCase("blue") && maxBlue >= 2)
-                return (blueMaxPosition);
+            if (redOrBlue.equalsIgnoreCase("red") && maxRed >= 2) {
+                DriveSystem.DriveSysPosition avgPos =
+                        robot.driveSystem.getAvgPosition(drvSysPositions[firstRedMaxIndex-1],
+                                drvSysPositions[firstRedMaxIndex],
+                                drvSysPositions[lastRedMaxIndex],
+                                drvSysPositions[lastRedMaxIndex+1]);
+
+                return (avgPos);
+            }
+            else if (redOrBlue.equalsIgnoreCase("blue") && maxBlue >= 2) {
+                DriveSystem.DriveSysPosition avgPos =
+                        robot.driveSystem.getAvgPosition(drvSysPositions[firstBlueMaxIndex - 1],
+                                drvSysPositions[firstBlueMaxIndex],
+                                drvSysPositions[lastBlueMaxIndex],
+                                drvSysPositions[lastBlueMaxIndex + 1]);
+                return avgPos;
+            }
             else
                 return null;
         }
