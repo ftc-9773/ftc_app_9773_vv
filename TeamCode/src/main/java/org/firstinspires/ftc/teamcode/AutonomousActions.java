@@ -5,7 +5,9 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.ftccommon.DbgLog;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.attachments.BeaconClaim;
@@ -681,20 +683,17 @@ public class AutonomousActions {
                 if (currentSide == 1) {
                     curOpMode.sleep(100);
                     robot.beaconClaimObj.setBeaconStatus();
-                    side1IsOurColor = (robot.beaconClaimObj.getBeaconColorString().equalsIgnoreCase(allianceColor)) ?
-                            true : false;
+                    side1IsOurColor = (robot.beaconClaimObj.getBeaconColorString().equalsIgnoreCase(allianceColor));
                     goFromSide1ToSide2(fwDegrees, bwDegrees, motorSpeed, robotDirection,
                             ODSfrontExtraDistFw, ODSbackExtraDistFw, ODSfrontExtraDistBw, ODSbackExtraDistBw);
                     currentSide = 2;
                     curOpMode.sleep(100);
                     robot.beaconClaimObj.setBeaconStatus();
-                    side2IsOurColor = (robot.beaconClaimObj.getBeaconColorString().equalsIgnoreCase(allianceColor)) ?
-                            true : false;
+                    side2IsOurColor = (robot.beaconClaimObj.getBeaconColorString().equalsIgnoreCase(allianceColor));
                 } else if (currentSide == 2) {
                     curOpMode.sleep(100);
                     robot.beaconClaimObj.setBeaconStatus();
-                    side2IsOurColor = (robot.beaconClaimObj.getBeaconColorString().equalsIgnoreCase(allianceColor)) ?
-                            true : false;
+                    side2IsOurColor = (robot.beaconClaimObj.getBeaconColorString().equalsIgnoreCase(allianceColor));
                     goFromSide2ToSide1(fwDegrees, bwDegrees, motorSpeed, robotDirection,
                             ODSfrontExtraDistFw, ODSbackExtraDistFw, ODSfrontExtraDistBw, ODSbackExtraDistBw);
                     currentSide = 1;
@@ -889,6 +888,9 @@ public class AutonomousActions {
             }
             case "testEncoders": {
                 robot.driveSystem.testEncoders();
+            }
+            case "scanBeacon":{
+                robot.beaconClaimObj.checkBeaconColor();
             }
         }
     }

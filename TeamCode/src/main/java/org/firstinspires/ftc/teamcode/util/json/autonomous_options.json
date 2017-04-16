@@ -274,5 +274,8 @@
   "testShiftToWall" : [
     {"type" : "Programmed", "value" : "shiftToWall", "targetDistance" : 24.0, "moveDistance" : 15.0,
       "motorSpeed" : 0.25, "returnToSamePos" : true}
+  ],
+  "test_ScanBeacon":[
+    {"type" : "Programmed", "value" : "scanBeacon"}
   ]
 }

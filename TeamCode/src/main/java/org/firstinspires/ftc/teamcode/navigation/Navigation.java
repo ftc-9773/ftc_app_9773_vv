@@ -229,7 +229,7 @@ public class Navigation {
         navChecks.addNewCheck(timeoutCheck);
         navChecks.addNewCheck(opmodeCheck);
         // For un-tilting, the robot has to move in the reverse direction of the original direction.
-        boolean driveBackwards = originallyGoingBackward ? false : true;
+        boolean driveBackwards = !originallyGoingBackward;
 
 //        robot.instrumentation.addAction(driveToDistInstr);
 //        robot.instrumentation.reset();
@@ -255,7 +255,7 @@ public class Navigation {
         navChecks.addNewCheck(opmodeCheck);
         navChecks.addNewCheck(encodercheck);
         robot.instrumentation.addAction(rangeInstr);
-        boolean driveBackwards = inches < 0 ? true : false;
+        boolean driveBackwards = inches < 0;
         double curDistFromWall, angleToMaintain, error, correction;
         if (gyro.isGyroWorking()) {
             DbgLog.msg("ftc9773: Gyro is working");
@@ -299,7 +299,7 @@ public class Navigation {
         navChecks.addNewCheck(encodercheck);
         robot.instrumentation.addAction(rangeInstr);
 //        robot.instrumentation.addAction(driveToDistInstr);
-        boolean driveBackwards = inches < 0 ? true : false;
+        boolean driveBackwards = inches < 0;
         if (gyro.isGyroWorking()) {
             DbgLog.msg("ftc9773: Gyro is working");
             NavigationChecks.CheckRobotTilting tiltingCheck = navChecks.new CheckRobotTilting(10);
@@ -371,7 +371,7 @@ public class Navigation {
             if (distCorrection != 0) {
                 navChecks.removeCheck(odsCheck);
                 NavigationChecks.EncoderCheckForDistance encodercheck = navChecks.new EncoderCheckForDistance(distCorrection);
-                boolean distCorrctnDrvBack = (distCorrection < 0) ? true : false;
+                boolean distCorrctnDrvBack = (distCorrection < 0);
                 navChecks.addNewCheck(encodercheck);
                 while (!navChecks.stopNavigation()) {
                     gyro.goStraightPID(distCorrctnDrvBack, degrees, motorSpeed);
@@ -440,7 +440,7 @@ public class Navigation {
                     navChecks.removeCheck(check1);
                     NavigationChecks.EncoderCheckForDistance encodercheck = navChecks.new EncoderCheckForDistance(distCorrection);
                     navChecks.addNewCheck(encodercheck);
-                    boolean distCorrctnDrvBack = (distCorrection < 0) ? true : false;
+                    boolean distCorrctnDrvBack = (distCorrection < 0);
                     while (!navChecks.stopNavigation()) {
                         gyro.goStraightPID(distCorrctnDrvBack, degrees, motorSpeed);
                         robot.instrumentation.addInstrData();
@@ -591,7 +591,7 @@ public class Navigation {
      */
     public void shiftRobot(double shiftDistance, double moveDistance, double speed,
                            boolean returnToSamePos, double startingYaw, double endingYaw){
-        boolean isForward = (moveDistance >= 0) ? true : false;
+        boolean isForward = (moveDistance >= 0);
         double diagonal = Math.sqrt(Math.pow(moveDistance, 2) + Math.pow(shiftDistance, 2));
         double angle = 90 - Math.toDegrees(Math.asin(Math.abs(moveDistance/diagonal)));
 
