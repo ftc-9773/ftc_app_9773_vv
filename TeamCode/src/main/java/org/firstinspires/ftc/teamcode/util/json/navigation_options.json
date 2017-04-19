@@ -13,7 +13,7 @@
       },
       "lineFollowVariables": {
         "white": 0.80,
-        "black" : 0.263930,
+        "black" : 0.10,
         "lowSpeed": 0.4,
         "highSpeed": 0.9,
         "timeOut": 4.0

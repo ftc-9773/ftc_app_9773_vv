@@ -157,19 +157,22 @@ public class AutonomousActions {
         // 1. go until either front or back ODS sensor reaches the white line
         String odsSensorPosition = robot.navigation.goStraightToWhiteLine(degrees, (float)motorSpeed, driveBackwards,
                 additionalDistance, "either");
+        DbgLog.msg("ftc9773: White line detected by the %s ods sensor", odsSensorPosition);
         // 2. If the correct sensor sensed the white line, then drive additional distance.
         if (odsSensorPosition.equalsIgnoreCase(odsPosition))
             return;
         else {
             // 3. If the correct sensor did not sense the white line then go in the reverse direction
             //     and try again.
+            DbgLog.msg("ftc9773: The first ODS sensor skipped the white line; so moving in the reverse direction");
             while (!odsSensorPosition.equalsIgnoreCase(odsPosition)) {
                 double redoInches = driveBackwards ? 6 : -6;
                 double redoDegrees = driveBackwards ? fwDegrees : bwDegrees;
                 robot.navigation.goStraightToDistance(redoInches, redoDegrees, (float)motorSpeed);
                 odsSensorPosition =
                         robot.navigation.goStraightToWhiteLine(degrees, (float) motorSpeed,
-                                driveBackwards, additionalDistance, odsPosition);
+                                driveBackwards, additionalDistance, "either");
+                DbgLog.msg("ftc9773: White line detected by the %s ods sensor", odsSensorPosition);
             }
         }
 
@@ -204,8 +207,10 @@ public class AutonomousActions {
         }
         DbgLog.msg("ftc9773: degrees=%f, driveBackwards=%b, odsPosition=%s, additionalDistance=%f",
                 degrees, driveBackwards, odsPosition, additionalDistance);
-        robot.navigation.goStraightToWhiteLine(degrees, (float) motorSpeed, driveBackwards,
+        String odsSensorPosition =
+                robot.navigation.goStraightToWhiteLine(degrees, (float) motorSpeed, driveBackwards,
                 additionalDistance, odsPosition);
+        DbgLog.msg("ftc9773: White line detected by the %s ods sensor", odsSensorPosition);
 
         return;
     }
@@ -236,8 +241,10 @@ public class AutonomousActions {
         }
         DbgLog.msg("ftc9773: degrees=%f, driveBackwards=%b, odsPosition=%s, additionalDistance=%f",
                 degrees, driveBackwards, odsPosition, additionalDistance);
-        robot.navigation.goStraightToWhiteLine(degrees, (float) motorSpeed, driveBackwards,
+        String odsSensorPosition =
+                robot.navigation.goStraightToWhiteLine(degrees, (float) motorSpeed, driveBackwards,
                 additionalDistance, odsPosition);
+        DbgLog.msg("ftc9773: White line detected by the %s ods sensor", odsSensorPosition);
 
         return;
     }
@@ -318,7 +325,14 @@ public class AutonomousActions {
                 break;
             }
             case "printMinMaxLightDetected": {
-                robot.navigation.lf.printMinMaxLightDetected();
+                double millis=5000;
+                try {
+                    String key = JsonReader.getRealKeyIgnoreCase(actionObj, "milliSeconds");
+                    millis = actionObj.getDouble(key);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                robot.navigation.lf.printMinMaxLightDetected(millis);
                 break;
             }
             case "reverseDriveSystem": {

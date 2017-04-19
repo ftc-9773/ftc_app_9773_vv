@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.drivesys.DriveSystem;
 
 public class LineFollow{
 
-    OpticalDistanceSensor lightSensorFront, lightSensorBack;
+    OpticalDistanceSensor lightSensorFront=null, lightSensorBack=null;
     double white, black, mid;
     double lowSpeed, highSpeed;
     double odsOffset;
@@ -79,23 +79,27 @@ public class LineFollow{
 
     }
 
-    public void printMinMaxLightDetected() {
-        double minLight = 1.0, maxLight=0.0, curLight;
-        driveSystem.setMaxSpeedCPS((int)2500);
-        robot.driveSystem.turnOrSpin(-0.4, 0.4);
-        double initialYaw = robot.navigation.gyro.getYaw();
-        double diffYaw=0.0;
-        while ((diffYaw < 45.0) && robot.curOpMode.opModeIsActive()) {
-            curLight = robot.navigation.lf.lightSensorBack.getLightDetected();
-            if (minLight > curLight) minLight = curLight;
-            if (maxLight < curLight) maxLight = curLight;
-            diffYaw = Math.abs(robot.navigation.gyro.getYaw() - initialYaw);
-            DbgLog.msg("ftc9773: diffYaw=%f, minLight=%f, maxLight=%f, curLight=%f", diffYaw,
-                    minLight, maxLight, curLight);
+    public void printMinMaxLightDetected(double milliseconds) {
+        double minLight_f = 1.0, maxLight_f=0.0, curLight_f;
+        double minLight_b = 1.0, maxLight_b=0.0, curLight_b;
+        ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+        timer.reset();
+        robot.driveSystem.drive(0.4f, 0);
+        while ((timer.milliseconds() < milliseconds) && robot.curOpMode.opModeIsActive()) {
+            curLight_f = getLightDetectedFront();
+            curLight_b = getLightDetectedBack();
+            if (minLight_f > curLight_f) minLight_f = curLight_f;
+            if (minLight_b > curLight_b) minLight_b = curLight_b;
+            if (maxLight_f < curLight_f) maxLight_f = curLight_f;
+            if (maxLight_b < curLight_b) maxLight_b = curLight_b;
+            DbgLog.msg("ftc9773: minLight_f=%f, maxLight_f=%f, curLight_f=%f",
+                    minLight_f, maxLight_f, curLight_f);
+            DbgLog.msg("ftc9773: minLight_b=%f, maxLight_b=%f, curLight_b=%f",
+                    minLight_b, maxLight_b, curLight_b);
         }
         driveSystem.stop();
-        driveSystem.resumeMaxSpeed();
-        robot.curOpMode.telemetry.addData("Light Detected:", "minLight=%f, maxLight=%f", minLight, maxLight);
+        robot.curOpMode.telemetry.addData("Light Detected (frontODS):", "minLight_f=%f, maxLight_f=%f", minLight_f, maxLight_f);
+        robot.curOpMode.telemetry.addData("Light Detected (backODS):", "minLight_b=%f, maxLight_b=%f", minLight_b, maxLight_b);
         robot.curOpMode.telemetry.update();
     }
 

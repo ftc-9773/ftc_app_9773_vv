@@ -1,15 +1,12 @@
 {
   "StLouisRed" : [
-    {"type" : "Programmed", "value" : "startPartAcc"},
-    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0, "inches" : 30.0, "motorSpeed" : 0.75},
+    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0, "inches" : 24.0, "motorSpeed" : 0.75},
     {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 20.0, "motorSpeed" : 0.3},
-    {"type" : "Programmed", "value" : "shootParticles", "numberOfParticles" : 1},
-    {"type" : "programmed", "value" : "stopPartAcc"},
-    {"type" : "Programmed", "value" : "shiftRobot", "shiftDistance" : -33.5, "moveDistance" : 20.0,
+    {"type" : "Programmed", "value" : "shiftRobot", "shiftDistance" : -33.5, "moveDistance" : 26.0,
       "motorSpeed" : 0.75, "returnToSamePos" : false, "startingYaw" : 0.0, "endingYaw" : 355.0},
     {"type" : "Programmed", "value" : "UnfoldWallFollower", "timeToPowerTheServo" : "600"},
     {"type" : "Programmed", "value" : "IdleWallFollower"},
-    {"type" : "Programmed", "value" : "GoStraightAlongWall", "degrees" : 355, "inches" : 30.0, "motorSpeed" : 0.75,
+    {"type" : "Programmed", "value" : "GoStraightAlongWall", "degrees" : 352, "inches" : 30.0, "motorSpeed" : 0.75,
       "targetDistance" : 15, "wallKp" : 0.5},
     {"type": "Programmed", "value": "GoStraight_Claim_Verify_Claim", "robotDirection" : "forward",
       "fwDegrees": 352.0, "bwDegrees" : 3, "motorSpeed" : 0.2, "ODSfrontExtraDistFw": 0.0,
@@ -259,7 +256,7 @@
     {"type" : "Programmed", "value" : "lineFollowProportional"}
   ],
   "printMinMaxLight" : [
-    {"type" : "Programmed", "value" : "printMinMaxLightDetected"}
+    {"type" : "Programmed", "value" : "printMinMaxLightDetected", "milliSeconds" : 3000}
   ],
   "partAccOnly" :[
     {"type" : "Programmed", "value" : "startPartAcc", "motorSpeed" : 1.0}

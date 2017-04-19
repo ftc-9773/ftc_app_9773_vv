@@ -247,6 +247,7 @@ public class Navigation {
                                        double wallKp) {
         String methodSignature = String.format("goStraightAlongTheWall(inches=%f, degrees=%f, speed=%f," +
                 " targetDistFromWall=%f, wallKp=%f)", inches, degrees, speed, targetDistFromWall, wallKp);
+        DbgLog.msg("ftc9773: %s", methodSignature);
         // If gyro is working, using gyro's goStraightPID() method, else use driveSystem's
         // driveToDistance method
         NavigationChecks navChecks = new NavigationChecks(robot, curOpMode, this);
@@ -290,6 +291,7 @@ public class Navigation {
     public void goStraightToDistance(double inches, double degrees, float speed) {
         String methodSignature = String.format("goStraightToDistance(inches=%f, degrees=%f, speed=%f)",
                 inches, degrees, speed);
+        DbgLog.msg("ftc9773: %s", methodSignature);
         // If gyro is working, using gyro's goStraightPID() method, else use driveSystem's
         // driveToDistance method
         NavigationChecks navChecks = new NavigationChecks(robot, curOpMode, this);
@@ -345,8 +347,11 @@ public class Navigation {
 
     public String goStraightToWhiteLine(double degrees, float motorSpeed, boolean driveBackwards,
                                       double distCorrection, String frontOrBackODS) {
-        String methodSignature = String.format("goStraightToWhiteLine(degrees=%f, motorSpeed=%f, driveBackwards=%b)",
-                degrees, motorSpeed, driveBackwards);
+        String methodSignature = String.format("goStraightToWhiteLine(degrees=%f, motorSpeed=%f, " +
+                "driveBackwards=%b, frontOrBackODS=%s)", degrees, motorSpeed,
+                driveBackwards, frontOrBackODS);
+        DbgLog.msg("ftc9773: %s", methodSignature);
+
         NavigationChecks navChecks = new NavigationChecks(robot, curOpMode, this);
         NavigationChecks.CheckForWhiteLine odsCheck = navChecks.new CheckForWhiteLine(this.lf, frontOrBackODS);
         NavigationChecks.OpmodeInactiveCheck check2 = navChecks.new OpmodeInactiveCheck();
