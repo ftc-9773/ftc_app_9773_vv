@@ -220,54 +220,54 @@ public class FourMotorSteeringDrive extends DriveSystem {
     public void drive(float speed, float direction) {
         double left = ((reverseMultiplier*speed + direction) * frictionCoefficient) * scaleMultiplier;
         double right = ((reverseMultiplier*speed - direction) * frictionCoefficient) * scaleMultiplier;
-        motorL1.setPower(left);
-        motorL2.setPower(left);
-        motorR1.setPower(right);
-        motorR2.setPower(right);
+//        motorL1.setPower(left);
+//        motorL2.setPower(left);
+//        motorR1.setPower(right);
+//        motorR2.setPower(right);
 
-//        if (prevPowerL1 != left) {
-//            motorL1.setPower(left);
-//            prevPowerL1 = left;
-//        }
-//        if (prevPowerL2 != left) {
-//            motorL2.setPower(left);
-//            prevPowerL2 = left;
-//        }
-//        if (prevPowerR1 != right) {
-//            motorR1.setPower(right);
-//            prevPowerR1 = right;
-//        }
-//
-//        if (prevPowerR2 != right) {
-//            motorR2.setPower(right);
-//            prevPowerR2 = right;
-//        }
+        if (prevPowerL1 != left) {
+            motorL1.setPower(left);
+            prevPowerL1 = left;
+        }
+        if (prevPowerL2 != left) {
+            motorL2.setPower(left);
+            prevPowerL2 = left;
+        }
+        if (prevPowerR1 != right) {
+            motorR1.setPower(right);
+            prevPowerR1 = right;
+        }
+
+        if (prevPowerR2 != right) {
+            motorR2.setPower(right);
+            prevPowerR2 = right;
+        }
     }
 
     @Override
     public void turnOrSpin(double left, double right) {
-        motorL1.setPower(left);
-        motorL2.setPower(left);
-        motorR1.setPower(right);
-        motorR2.setPower(right);
+//        motorL1.setPower(left);
+//        motorL2.setPower(left);
+//        motorR1.setPower(right);
+//        motorR2.setPower(right);
 
-//        if (prevPowerL1 != left) {
-//            motorL1.setPower(left);
-//            prevPowerL1 = left;
-//        }
-//        if (prevPowerL2 != left) {
-//            motorL2.setPower(left);
-//            prevPowerL2 = left;
-//        }
-//        if (prevPowerR1 != right) {
-//            motorR1.setPower(right);
-//            prevPowerR1 = right;
-//        }
-//
-//        if (prevPowerR2 != right) {
-//            motorR2.setPower(right);
-//            prevPowerR2 = right;
-//        }
+        if (prevPowerL1 != left) {
+            motorL1.setPower(left);
+            prevPowerL1 = left;
+        }
+        if (prevPowerL2 != left) {
+            motorL2.setPower(left);
+            prevPowerL2 = left;
+        }
+        if (prevPowerR1 != right) {
+            motorR1.setPower(right);
+            prevPowerR1 = right;
+        }
+
+        if (prevPowerR2 != right) {
+            motorR2.setPower(right);
+            prevPowerR2 = right;
+        }
     }
 
     @Override

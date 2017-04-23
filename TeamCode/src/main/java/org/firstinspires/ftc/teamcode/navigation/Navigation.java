@@ -503,6 +503,7 @@ public class Navigation {
         // at the rate of 100 milliseconds per degree of rotation at full speed
         double curYaw = encoderNav.getCurrentYaw();
         long timeoutMillis = (long) Math.abs(this.distanceBetweenAngles(targetYaw, curYaw) * 100 / motorSpeed);
+        timeoutMillis = 30000;
         NavigationChecks.TimeoutCheck check1 = navigationChecks.new TimeoutCheck(timeoutMillis);
         navigationChecks.addNewCheck(check1);
         NavigationChecks.OpmodeInactiveCheck check2 = navigationChecks.new OpmodeInactiveCheck();

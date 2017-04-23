@@ -24,7 +24,7 @@ public class BeaconClaim implements Attachment {
     private CRServo buttonServoCR =null;
     private Servo buttonServoLinear=null;
     private Servo buttonServoStandard=null;
-    private Servo buttonWheelServo =null;
+//    private Servo buttonWheelServo =null;
     private ModernRoboticsI2cColorSensor colorSensor1=null;
     public enum BeaconColor {RED, BLUE, NONE}
     public enum IndexType {REDMAX_FIRST, BLUEMAX_FIRST, REDMAX_LAST, BLUEMAX_LAST, CURRENT}
@@ -93,7 +93,8 @@ public class BeaconClaim implements Attachment {
         this.robot = robot;
         String key=null;
         JSONObject beaconJsonObj=null;
-        JSONObject motorsObj=null, buttonServoObj=null, colorServoObj=null, buttonWheelServoObj=null;
+        JSONObject motorsObj=null, buttonServoObj=null, colorServoObj=null;
+//        JSONObject buttonWheelServoObj=null;
         JSONObject sensorsObj = null,colorSensor1Obj=null;
 
         try {
@@ -115,8 +116,8 @@ public class BeaconClaim implements Attachment {
             if (key == null)
                 key = JsonReader.getRealKeyIgnoreCase(motorsObj, "buttonServoStandard");
             buttonServoObj = motorsObj.getJSONObject(key);
-            key = JsonReader.getRealKeyIgnoreCase(motorsObj, "buttonWheelServo");
-            buttonWheelServoObj = motorsObj.getJSONObject(key);
+//            key = JsonReader.getRealKeyIgnoreCase(motorsObj, "buttonWheelServo");
+//            buttonWheelServoObj = motorsObj.getJSONObject(key);
             key = JsonReader.getRealKeyIgnoreCase(sensorsObj, "colorSensor1");
             colorSensor1Obj = sensorsObj.getJSONObject(key);
 
@@ -199,35 +200,35 @@ public class BeaconClaim implements Attachment {
             curOpMode.sleep(100);
             colorSensor1.enableLed(false);
         }
-        if (buttonWheelServoObj != null){
-            DbgLog.msg("ftc9773: buttonWheelServo not null");
-            buttonWheelServo = curOpMode.hardwareMap.servo.get("buttonWheelServo");
-            try {
-                key = JsonReader.getRealKeyIgnoreCase(buttonWheelServoObj, "scaleRangeMin");
-                double scaleRangeMin = buttonWheelServoObj.getDouble(key);
-                key = JsonReader.getRealKeyIgnoreCase(buttonWheelServoObj, "scaleRangeMax");
-                double scaleRangeMax = buttonWheelServoObj.getDouble(key);
-                buttonWheelServo.scaleRange(scaleRangeMin, scaleRangeMax);
-                if (buttonWheelServoObj.getBoolean("needReverse")){
-                    DbgLog.msg("ftc9773: Reversing buttonWheelServo");
-                    buttonWheelServo.setDirection(Servo.Direction.REVERSE);
-                }
-                buttonWheelServo.setPosition(0);
-            } catch (JSONException e){
-                e.printStackTrace();
-            }
-        }
+//        if (buttonWheelServoObj != null){
+//            DbgLog.msg("ftc9773: buttonWheelServo not null");
+//            buttonWheelServo = curOpMode.hardwareMap.servo.get("buttonWheelServo");
+//            try {
+//                key = JsonReader.getRealKeyIgnoreCase(buttonWheelServoObj, "scaleRangeMin");
+//                double scaleRangeMin = buttonWheelServoObj.getDouble(key);
+//                key = JsonReader.getRealKeyIgnoreCase(buttonWheelServoObj, "scaleRangeMax");
+//                double scaleRangeMax = buttonWheelServoObj.getDouble(key);
+//                buttonWheelServo.scaleRange(scaleRangeMin, scaleRangeMax);
+//                if (buttonWheelServoObj.getBoolean("needReverse")){
+//                    DbgLog.msg("ftc9773: Reversing buttonWheelServo");
+//                    buttonWheelServo.setDirection(Servo.Direction.REVERSE);
+//                }
+//                buttonWheelServo.setPosition(0);
+//            } catch (JSONException e){
+//                e.printStackTrace();
+//            }
+//        }
 
         beaconColor = BeaconColor.NONE;
         curLength = 0.0;
     }
 
-    public void lowerButtonWheel(){
-        buttonWheelServo.setPosition(1);
-    }
-    public void raiseButtonWheel(){
-        buttonWheelServo.setPosition(0);
-    }
+//    public void lowerButtonWheel(){
+//        buttonWheelServo.setPosition(1);
+//    }
+//    public void raiseButtonWheel(){
+//        buttonWheelServo.setPosition(0);
+//    }
 
     public double getCurLength() {
         return curLength;

@@ -21,7 +21,8 @@ public class CapBallLift implements  Attachment {
     FTCRobot robot;
     LinearOpMode curOpMode;
     DcMotor liftMotor;
-    CRServo liftServoCR = null,crownServoCR=null, crownWheelServoCR=null;
+    CRServo liftServoCR = null,crownServoCR=null;
+//    CRServo crownWheelServoCR=null;
     Servo liftServo = null, crownServo= null;
     public boolean runToPosition = false;
     public boolean lockLift = false;
@@ -96,16 +97,16 @@ public class CapBallLift implements  Attachment {
                 }
                 crownServo.setPosition(1);
             }
-            key = JsonReader.getRealKeyIgnoreCase(motorsObj, "crownWheelServo");
-            crownWheelServoObj = motorsObj.getJSONObject(key);
-            key = JsonReader.getRealKeyIgnoreCase(crownWheelServoObj, "motorType");
-            String crownWheelMotorType = crownWheelServoObj.getString(key);
-            DbgLog.msg("ftc9773: crownWheelServoType: %s", crownWheelMotorType);
-            crownWheelServoCR = curOpMode.hardwareMap.crservo.get("crownWheelServo");
-            if (crownWheelServoObj.getBoolean("needReverse")){
-                DbgLog.msg("ftc9773: Reversing the crownWheelServo");
-                crownWheelServoCR.setDirection(CRServo.Direction.REVERSE);
-            }
+//            key = JsonReader.getRealKeyIgnoreCase(motorsObj, "crownWheelServo");
+//            crownWheelServoObj = motorsObj.getJSONObject(key);
+//            key = JsonReader.getRealKeyIgnoreCase(crownWheelServoObj, "motorType");
+//            String crownWheelMotorType = crownWheelServoObj.getString(key);
+//            DbgLog.msg("ftc9773: crownWheelServoType: %s", crownWheelMotorType);
+//            crownWheelServoCR = curOpMode.hardwareMap.crservo.get("crownWheelServo");
+//            if (crownWheelServoObj.getBoolean("needReverse")){
+//                DbgLog.msg("ftc9773: Reversing the crownWheelServo");
+//                crownWheelServoCR.setDirection(CRServo.Direction.REVERSE);
+//            }
 
 
             liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -193,15 +194,15 @@ public class CapBallLift implements  Attachment {
         }
     }
 
-    public void pullCapBall(){
-        crownWheelServoCR.setPower(1);
-    }
-    public void pushCapBall(){
-        crownWheelServoCR.setPower(-1);
-    }
-    public void idleCrownWheel(){
-        crownWheelServoCR.setPower(0);
-    }
+//    public void pullCapBall(){
+//        crownWheelServoCR.setPower(1);
+//    }
+//    public void pushCapBall(){
+//        crownWheelServoCR.setPower(-1);
+//    }
+//    public void idleCrownWheel(){
+//        crownWheelServoCR.setPower(0);
+//    }
 
     public void goToDownPosition(){
         runToPosition = true;

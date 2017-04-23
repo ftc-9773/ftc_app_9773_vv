@@ -197,19 +197,19 @@ public class DriverStation {
                     robot.capBallLiftObj.idleCrown();
                 }
 
-                if (curOpMode.gamepad2.dpad_down){
-                    robot.capBallLiftObj.pullCapBall();
-                } else if (curOpMode.gamepad2.dpad_up){
-                    robot.capBallLiftObj.pushCapBall();
-                } else {
-                    robot.capBallLiftObj.idleCrownWheel();
-                }
-
-                if (curOpMode.gamepad1.dpad_left){
-                    robot.beaconClaimObj.lowerButtonWheel();
-                } else if (curOpMode.gamepad1.dpad_right){
-                    robot.beaconClaimObj.raiseButtonWheel();
-                }
+//                if (curOpMode.gamepad2.dpad_down){
+//                    robot.capBallLiftObj.pullCapBall();
+//                } else if (curOpMode.gamepad2.dpad_up){
+//                    robot.capBallLiftObj.pushCapBall();
+//                } else {
+//                    robot.capBallLiftObj.idleCrownWheel();
+//                }
+//
+//                if (curOpMode.gamepad1.dpad_left){
+//                    robot.beaconClaimObj.lowerButtonWheel();
+//                } else if (curOpMode.gamepad1.dpad_right){
+//                    robot.beaconClaimObj.raiseButtonWheel();
+//                }
                 break;
             case "EndGame":
                 //DbgLog.msg("ftc9773:  lift motor current position = %f", robot.capBallLiftObj.getCurrentPosition());
@@ -425,19 +425,19 @@ public class DriverStation {
                     robot.capBallLiftObj.unfoldFork();
                 }
 
-                if (curOpMode.gamepad2.dpad_down){
-                    robot.capBallLiftObj.pullCapBall();
-                } else if (curOpMode.gamepad2.dpad_up){
-                    robot.capBallLiftObj.pushCapBall();
-                } else {
-                    robot.capBallLiftObj.idleCrownWheel();
-                }
-
-                if (curOpMode.gamepad1.dpad_left){
-                    robot.beaconClaimObj.lowerButtonWheel();
-                } else if (curOpMode.gamepad1.dpad_right){
-                    robot.beaconClaimObj.raiseButtonWheel();
-                }
+//                if (curOpMode.gamepad2.dpad_down){
+//                    robot.capBallLiftObj.pullCapBall();
+//                } else if (curOpMode.gamepad2.dpad_up){
+//                    robot.capBallLiftObj.pushCapBall();
+//                } else {
+//                    robot.capBallLiftObj.idleCrownWheel();
+//                }
+//
+//                if (curOpMode.gamepad1.dpad_left){
+//                    robot.beaconClaimObj.lowerButtonWheel();
+//                } else if (curOpMode.gamepad1.dpad_right){
+//                    robot.beaconClaimObj.raiseButtonWheel();
+//                }
                 break;
         }
     }

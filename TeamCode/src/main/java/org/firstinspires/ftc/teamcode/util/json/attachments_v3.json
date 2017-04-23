@@ -174,13 +174,13 @@
       "maxSpeed" : 4000,
       "__comment1" : "ramUpTime is in milli seconds",
       "rampUpTime" : 2000,
-      "runMode" : "RUN_USING_ENCODER",
+      "runMode" : "RUN_WITHOUT_ENCODER",
       "partAccMotor1": {
-        "needReverse" : true,
+        "needReverse" : false,
         "fixedPositions" : false
       },
       "partAccMotor2": {
-        "needReverse" : false,
+        "needReverse" : true,
         "fixedPositions" : false
       }
     }

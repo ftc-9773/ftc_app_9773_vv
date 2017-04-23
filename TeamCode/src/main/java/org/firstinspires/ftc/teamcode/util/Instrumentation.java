@@ -620,6 +620,7 @@ public class Instrumentation {
     public class PartAccInstrumentor extends InstrBaseClass {
         ParticleAccelerator partAccObj;
         DcMotor launcherMotor1=null, launcherMotor2=null;
+        DcMotor.RunMode launcherRunMode = DcMotor.RunMode.RUN_WITHOUT_ENCODER;
         ElapsedTime timer;
         boolean printEveryUpdate=true;
         int updateCount, prevUpdateCount;
@@ -631,6 +632,10 @@ public class Instrumentation {
             this.partAccObj = partAccObj;
             this.launcherMotor1 = launcherMotor1;
             this.launcherMotor2 = launcherMotor2;
+            if (launcherMotor1.getMode() == DcMotor.RunMode.RUN_USING_ENCODER)
+                this.launcherRunMode = DcMotor.RunMode.RUN_USING_ENCODER;
+            else
+                this.launcherRunMode = DcMotor.RunMode.RUN_WITHOUT_ENCODER;
             iterationCount = 0;
             updateCount = prevUpdateCount = 0;
             prevEncoder1 = prevEncoder2 = 0;
@@ -666,6 +671,8 @@ public class Instrumentation {
 
         @Override
         public void addInstrData() {
+            if (launcherRunMode == DcMotor.RunMode.RUN_WITHOUT_ENCODER)
+                return;
             iterationCount++;
             prevUpdateCount = updateCount;
             int encoder1 = (launcherMotor1 != null) ? launcherMotor1.getCurrentPosition() : 0;
