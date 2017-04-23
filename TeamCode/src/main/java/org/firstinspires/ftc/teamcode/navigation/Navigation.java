@@ -32,10 +32,11 @@ public class Navigation {
     public double driveSysTeleopMaxSpeed=1.0;
 //    private Instrumentation.LoopRuntime driveToDistInstr, driveTillWhitelineInstr, turnRobotInstr;
 //    private Instrumentation.LoopRuntime driveTillBeaconInstr;
-    private Instrumentation.GyroDegrees gyroDegreesInstr;
-    private Instrumentation.RangeSensorDistance rangeInstr;
-    private Instrumentation.ODSlightDetected odsInstr;
-    private Instrumentation.ColorSensorInstr colorInstr;
+    private Instrumentation.GyroDegrees gyroDegreesInstr=null;
+    private Instrumentation.RangeSensorDistance rangeInstr=null;
+    private Instrumentation.ODSlightDetected odsInstr=null;
+    private Instrumentation.ColorSensorInstr colorInstr=null;
+    private boolean printEveryUpdate=false;
     public enum GyroType {NAVX_MICRO, MR_GYRO}
 
 
@@ -94,19 +95,25 @@ public class Navigation {
             this.straightDrMaxSpeed = navOption.getStraightLineMaxSpeed();
             this.turnMaxSpeed = navOption.getTurningMaxSpeed();
             this.driveSysTeleopMaxSpeed = navOption.getDoubleDriveSysEncVar("DriveSysTeleOpMaxSpeed");
+            this.encoderNav = new EncoderNavigation(robot, robot.driveSystem, curOpMode, this);
         }
 
-        this.encoderNav = new EncoderNavigation(robot, robot.driveSystem, curOpMode, this);
 
         // Instantiate the common instrumentation objects (declared as inner classes in Instrumentation class
-        if (gyro!= null)
-            gyroDegreesInstr = robot.instrumentation.new GyroDegrees(this.gyro, true);
-        if (rangeSensor != null)
-            rangeInstr = robot.instrumentation.new RangeSensorDistance(this.rangeSensor, rangeSensorRunningAvg, true);
-        if (lf != null)
-            odsInstr = robot.instrumentation.new ODSlightDetected(this.lf, true);
+        if (robot.instrLevel != Instrumentation.InstrumentationLevel.NONE) {
+            if (robot.instrLevel == Instrumentation.InstrumentationLevel.COMPLETE)
+                printEveryUpdate = true;
+            else
+                printEveryUpdate = false;
+            if (gyro != null)
+                gyroDegreesInstr = robot.instrumentation.new GyroDegrees(this.gyro, printEveryUpdate);
+            if (rangeSensor != null)
+                rangeInstr = robot.instrumentation.new RangeSensorDistance(this.rangeSensor, rangeSensorRunningAvg, printEveryUpdate);
+            if (lf != null)
+                odsInstr = robot.instrumentation.new ODSlightDetected(this.lf, printEveryUpdate);
 
-        colorInstr = robot.instrumentation.new ColorSensorInstr(robot.beaconClaimObj, true);
+            colorInstr = robot.instrumentation.new ColorSensorInstr(robot.beaconClaimObj, printEveryUpdate);
+        }
 //        driveToDistInstr = robot.instrumentation.new LoopRuntime(Instrumentation.LoopType.DRIVE_TO_DISTANCE);
 //        driveTillWhitelineInstr = robot.instrumentation.new LoopRuntime(Instrumentation.LoopType.DRIVE_UNTIL_WHITELINE);
 //        driveTillBeaconInstr = robot.instrumentation.new LoopRuntime(Instrumentation.LoopType.DRIVE_TILL_BEACON);
@@ -121,11 +128,13 @@ public class Navigation {
 
     public double getRangeSensorRunningAvg() {
         if (rangeSensor!= null) {
-            return (rangeInstr.getRunningAvg());
+            if (rangeInstr != null)
+                return (rangeInstr.getRunningAvg());
         } else {
             DbgLog.error("ftc9773: Error! Range sensor does not exist!");
             return (-1);
         }
+        return (-1);
     }
 
     public void printNavigationValues() {
@@ -236,7 +245,8 @@ public class Navigation {
         // move until the robot tilt goes down below 3 degrees
         while (!navChecks.stopNavigation() && (gyro.getPitch() > 3)) {
             gyro.goStraightPID(driveBackwards, degrees, speed);
-//            robot.instrumentation.addInstrData();
+//            if (rangeInstr != null)
+//                robot.instrumentation.addInstrData();
         }
 //        robot.instrumentation.printToConsole();
 //        robot.instrumentation.writeToFile();
@@ -247,7 +257,8 @@ public class Navigation {
                                        double wallKp) {
         String methodSignature = String.format("goStraightAlongTheWall(inches=%f, degrees=%f, speed=%f," +
                 " targetDistFromWall=%f, wallKp=%f)", inches, degrees, speed, targetDistFromWall, wallKp);
-        DbgLog.msg("ftc9773: %s", methodSignature);
+        if (robot.printDebugMsg)
+            DbgLog.msg("ftc9773: %s", methodSignature);
         // If gyro is working, using gyro's goStraightPID() method, else use driveSystem's
         // driveToDistance method
         NavigationChecks navChecks = new NavigationChecks(robot, curOpMode, this);
@@ -255,15 +266,19 @@ public class Navigation {
         NavigationChecks.OpmodeInactiveCheck opmodeCheck = navChecks.new OpmodeInactiveCheck();
         navChecks.addNewCheck(opmodeCheck);
         navChecks.addNewCheck(encodercheck);
-        robot.instrumentation.addAction(rangeInstr);
+        if (rangeInstr != null)
+            robot.instrumentation.addAction(rangeInstr);
         boolean driveBackwards = inches < 0 ? true : false;
         double curDistFromWall, angleToMaintain, error, correction;
         if (gyro.isGyroWorking()) {
-            DbgLog.msg("ftc9773: Gyro is working");
+            if (robot.printDebugMsg)
+                DbgLog.msg("ftc9773: Gyro is working");
             NavigationChecks.CheckRobotTilting tiltingCheck = navChecks.new CheckRobotTilting(10);
             navChecks.addNewCheck(tiltingCheck);
-            robot.instrumentation.addAction(gyroDegreesInstr);
-            robot.instrumentation.reset(methodSignature);
+            if (gyroDegreesInstr != null)
+                robot.instrumentation.addAction(gyroDegreesInstr);
+            if (robot.instrLevel != Instrumentation.InstrumentationLevel.NONE)
+                robot.instrumentation.reset(methodSignature);
             while (!navChecks.stopNavigation()) {
                 curDistFromWall = rangeSensor.getDistance(DistanceUnit.CM);
                 error = targetDistFromWall - curDistFromWall;
@@ -282,7 +297,10 @@ public class Navigation {
             robot.instrumentation.addInstrData();
             robot.instrumentation.printToConsole();
             robot.instrumentation.writeToFile();
-            robot.instrumentation.removeAction(gyroDegreesInstr);
+            if (gyroDegreesInstr != null)
+                robot.instrumentation.removeAction(gyroDegreesInstr);
+            if (rangeInstr != null)
+                robot.instrumentation.removeAction(rangeInstr);
             // Update the encoderNav's current yaw with that of gyro
             encoderNav.setCurrentYaw(gyro.getYaw());
         }
@@ -291,7 +309,8 @@ public class Navigation {
     public void goStraightToDistance(double inches, double degrees, float speed) {
         String methodSignature = String.format("goStraightToDistance(inches=%f, degrees=%f, speed=%f)",
                 inches, degrees, speed);
-        DbgLog.msg("ftc9773: %s", methodSignature);
+        if (robot.printDebugMsg)
+            DbgLog.msg("ftc9773: %s", methodSignature);
         // If gyro is working, using gyro's goStraightPID() method, else use driveSystem's
         // driveToDistance method
         NavigationChecks navChecks = new NavigationChecks(robot, curOpMode, this);
@@ -299,14 +318,17 @@ public class Navigation {
         NavigationChecks.OpmodeInactiveCheck opmodeCheck = navChecks.new OpmodeInactiveCheck();
         navChecks.addNewCheck(opmodeCheck);
         navChecks.addNewCheck(encodercheck);
-        robot.instrumentation.addAction(rangeInstr);
+        if (rangeInstr != null)
+            robot.instrumentation.addAction(rangeInstr);
 //        robot.instrumentation.addAction(driveToDistInstr);
         boolean driveBackwards = inches < 0 ? true : false;
         if (gyro.isGyroWorking()) {
-            DbgLog.msg("ftc9773: Gyro is working");
+            if (robot.printDebugMsg)
+                DbgLog.msg("ftc9773: Gyro is working");
             NavigationChecks.CheckRobotTilting tiltingCheck = navChecks.new CheckRobotTilting(10);
             navChecks.addNewCheck(tiltingCheck);
-            robot.instrumentation.addAction(gyroDegreesInstr);
+            if (gyroDegreesInstr != null)
+                robot.instrumentation.addAction(gyroDegreesInstr);
             robot.instrumentation.reset(methodSignature);
             while (!navChecks.stopNavigation()) {
                 gyro.goStraightPID(driveBackwards, degrees, speed);
@@ -320,13 +342,16 @@ public class Navigation {
             robot.instrumentation.addInstrData();
             robot.instrumentation.printToConsole();
             robot.instrumentation.writeToFile();
-            robot.instrumentation.removeAction(gyroDegreesInstr);
+            if (gyroDegreesInstr != null)
+                robot.instrumentation.removeAction(gyroDegreesInstr);
             // Update the encoderNav's current yaw with that of gyro
             encoderNav.setCurrentYaw(gyro.getYaw());
         } else {
-            DbgLog.msg("ftc9773: Gyro is not working");
+            if (robot.printDebugMsg)
+                DbgLog.msg("ftc9773: Gyro is not working");
             // Use purely encoder based navigation
-            DbgLog.msg("ftc9773: Speed: %f, distance: %f", speed, inches);
+            if (robot.printDebugMsg)
+                DbgLog.msg("ftc9773: Speed: %f, distance: %f", speed, inches);
             if (inches < 0) {
                 // If driving backwards, then negate the speed
                 speed = -speed;
@@ -341,7 +366,8 @@ public class Navigation {
             robot.instrumentation.printToConsole();
             robot.instrumentation.writeToFile();
         }
-        robot.instrumentation.removeAction(rangeInstr);
+        if (rangeInstr != null)
+            robot.instrumentation.removeAction(rangeInstr);
 //        robot.instrumentation.removeAction(driveToDistInstr);
     }
 
@@ -350,7 +376,8 @@ public class Navigation {
         String methodSignature = String.format("goStraightToWhiteLine(degrees=%f, motorSpeed=%f, " +
                 "driveBackwards=%b, frontOrBackODS=%s)", degrees, motorSpeed,
                 driveBackwards, frontOrBackODS);
-        DbgLog.msg("ftc9773: %s", methodSignature);
+        if (robot.printDebugMsg)
+            DbgLog.msg("ftc9773: %s", methodSignature);
 
         NavigationChecks navChecks = new NavigationChecks(robot, curOpMode, this);
         NavigationChecks.CheckForWhiteLine odsCheck = navChecks.new CheckForWhiteLine(this.lf, frontOrBackODS);
@@ -358,9 +385,12 @@ public class Navigation {
         navChecks.addNewCheck(odsCheck);
         navChecks.addNewCheck(check2);
 //        robot.instrumentation.addAction(driveTillWhitelineInstr);
-        robot.instrumentation.addAction(odsInstr);
-        robot.instrumentation.addAction(colorInstr);
-        robot.instrumentation.addAction(gyroDegreesInstr);
+        if (odsInstr != null)
+            robot.instrumentation.addAction(odsInstr);
+        if (colorInstr != null)
+            robot.instrumentation.addAction(colorInstr);
+        if (gyroDegreesInstr != null)
+            robot.instrumentation.addAction(gyroDegreesInstr);
         // Determine the distance from wall and see if beaconServo needs to be retracted
         // It might have been pre-extended before.
         double distFromWall = rangeSensor.getDistance(DistanceUnit.CM);
@@ -408,9 +438,12 @@ public class Navigation {
             }
         }
 //        robot.instrumentation.removeAction(driveTillWhitelineInstr);
-        robot.instrumentation.removeAction(gyroDegreesInstr);
-        robot.instrumentation.removeAction(odsInstr);
-        robot.instrumentation.removeAction(colorInstr);
+        if (gyroDegreesInstr != null)
+            robot.instrumentation.removeAction(gyroDegreesInstr);
+        if (odsInstr != null)
+            robot.instrumentation.removeAction(odsInstr);
+        if (colorInstr != null)
+            robot.instrumentation.removeAction(colorInstr);
         return (odsCheck.getODSonLine());
     }
 
@@ -488,7 +521,8 @@ public class Navigation {
         if (driveSysPosition != null) {
             double distanceInInches = driveSysPosition.getDistanceFromCurPosition();
             distanceInInches = (driveBackwards ? distanceInInches : -distanceInInches);
-            DbgLog.msg("ftc9773: distance to go back from current position = %f", distanceInInches);
+            if (robot.printDebugMsg)
+                DbgLog.msg("ftc9773: distance to go back from current position = %f", distanceInInches);
             // In red alliance, we have to move at 0 degrees whereas is blue alliance we have to move at 180 degrees.
             double degreesToUse = (robot.autonomousActions.allianceColor.equalsIgnoreCase("red") ? 0 : 180);
             goStraightToDistance(distanceInInches, degreesToUse, motorSpeed);
@@ -509,8 +543,8 @@ public class Navigation {
         NavigationChecks.OpmodeInactiveCheck check2 = navigationChecks.new OpmodeInactiveCheck();
         navigationChecks.addNewCheck(check2);
 
-        robot.instrumentation.addAction(gyroDegreesInstr);
-//        robot.instrumentation.addAction(turnRobotInstr);
+        if (gyroDegreesInstr != null)
+            robot.instrumentation.addAction(gyroDegreesInstr);
 
         DriveSystem.ElapsedEncoderCounts elapsedEncoderCounts = robot.driveSystem.getNewElapsedCountsObj();
         elapsedEncoderCounts.reset();
@@ -519,7 +553,8 @@ public class Navigation {
         if (gyro.isGyroWorking()) {
             curOpMode.telemetry.addData("Set Robot Orientation", "Using Gyro");
             curOpMode.telemetry.update();
-            DbgLog.msg("ftc9773: Set Robot Orientation, Using Gyro");
+            if (robot.printDebugMsg)
+                DbgLog.msg("ftc9773: Set Robot Orientation, Using Gyro");
             // The difference between the encoder-based degrees and gyro based degrees can easily
             // go upto 10 degrees even when gyro is working well.  So, we should not have too low
             // value for the CheckWhileTurning constructor.  Ensure that we do not check for less
@@ -541,7 +576,8 @@ public class Navigation {
                 leftPower = -motorSpeed;
             }
             rightPower = -leftPower;
-            DbgLog.msg("ftc9773: power left = %f, right = %f",leftPower, rightPower);
+            if (robot.printDebugMsg)
+                DbgLog.msg("ftc9773: power left = %f, right = %f",leftPower, rightPower);
             robot.instrumentation.reset(methodSignature);
             while (!navigationChecks.stopNavigation()) {
                 robot.driveSystem.turnOrSpin(leftPower, rightPower);
@@ -560,7 +596,8 @@ public class Navigation {
                 elapsedEncoderCounts.reset();
                 curOpMode.telemetry.addData("Set Robot Orientation", "Not Using Gyro");
                 curOpMode.telemetry.update();
-                DbgLog.msg("ftc9773: Set Robot Orientation, Not Using Gyro");
+                if (robot.printDebugMsg)
+                    DbgLog.msg("ftc9773: Set Robot Orientation, Not Using Gyro");
 //                navigationChecks.removeCheck(check3);
                 navigationChecks.removeCheck(gyroCheck);
                 encoderNav.setRobotOrientation(targetYaw, motorSpeed, navigationChecks);
@@ -577,15 +614,17 @@ public class Navigation {
             // First, do the encoder based turning.
             curOpMode.telemetry.addData("Set Robot Orientation", "Not Using Gyro");
             curOpMode.telemetry.update();
-            DbgLog.msg("ftc9773: Set Robot Orientation, Not Using Gyro");
+            if (robot.printDebugMsg)
+                DbgLog.msg("ftc9773: Set Robot Orientation, Not Using Gyro");
             encoderNav.setRobotOrientation(targetYaw, motorSpeed, navigationChecks);
             encoderNav.updateCurrentYaw(elapsedEncoderCounts.getDegreesTurned());
-            DbgLog.msg("ftc9773: currYaw: %f", encoderNav.getCurrentYaw());
+            if (robot.printDebugMsg)
+                DbgLog.msg("ftc9773: currYaw: %f", encoderNav.getCurrentYaw());
         }
         // Add the instrumentation data one last time before removing the instrumentation actions.
         robot.instrumentation.addInstrData();
-        robot.instrumentation.removeAction(gyroDegreesInstr);
-//        robot.instrumentation.removeAction(turnRobotInstr);
+        if (gyroDegreesInstr != null)
+            robot.instrumentation.removeAction(gyroDegreesInstr);
     }
 
     /**
@@ -606,14 +645,16 @@ public class Navigation {
         // If moveDistance and shiftDistance have opposite signs -- i.e. move forward & shift left
         //  or move backward & shift right -- then turn counter clockwise, else turn clockwise
         angle *= Math.signum(moveDistance) * Math.signum(shiftDistance);
-        DbgLog.msg("ftc9773: shiftDistance=%f, diagonal=%f, moveDistance=%f, isForward=%b, speed=%f, angle=%f",
+        if (robot.printDebugMsg)
+            DbgLog.msg("ftc9773: shiftDistance=%f, diagonal=%f, moveDistance=%f, isForward=%b, speed=%f, angle=%f",
                 shiftDistance, diagonal, moveDistance, isForward, speed, angle);
 
         // Step 1.  Turn the robot to move forward / backward
         if (startingYaw < 0)
             startingYaw = (gyro.isGyroWorking() ? gyro.getYaw() : encoderNav.getCurrentYaw());
         double turningYaw = this.getTargetYaw(startingYaw, angle);
-        DbgLog.msg("ftc9773: startingYaw=%f, turningYaw=%f", startingYaw, turningYaw);
+        if (robot.printDebugMsg)
+            DbgLog.msg("ftc9773: startingYaw=%f, turningYaw=%f", startingYaw, turningYaw);
         this.setRobotOrientation(turningYaw, turnMaxSpeed);
         // Step 2:  Drive to diagonal distance
         this.goStraightToDistance(diagonal, turningYaw, (float)speed);

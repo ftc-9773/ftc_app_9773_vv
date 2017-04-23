@@ -30,8 +30,8 @@ public class ParticleAccelerator implements Attachment{
     double motorCPR;
     double motorGearRatio;
     long rampUpTime = 2000; // default value in milli seconds
-    Instrumentation.PartAccInstrumentor partAccInstr;
-    boolean addedPartAccInstr;
+    Instrumentation.PartAccInstrumentor partAccInstr=null;
+    boolean addedPartAccInstr=false;
 
     public ParticleAccelerator(FTCRobot robot, LinearOpMode curOpMode, JSONObject rootObj) {
         String key=null;
@@ -109,7 +109,12 @@ public class ParticleAccelerator implements Attachment{
         }
 
         // Add partAccInstrumentation
-        partAccInstr = robot.instrumentation.new PartAccInstrumentor(this, launcherMotor1, launcherMotor2, true);
+        if (robot.instrLevel != Instrumentation.InstrumentationLevel.NONE) {
+            if (robot.instrLevel == Instrumentation.InstrumentationLevel.COMPLETE)
+                partAccInstr = robot.instrumentation.new PartAccInstrumentor(this, launcherMotor1, launcherMotor2, true);
+            else
+                partAccInstr = robot.instrumentation.new PartAccInstrumentor(this, launcherMotor1, launcherMotor2, false);
+        }
         addedPartAccInstr = false;
     }
 
@@ -123,7 +128,7 @@ public class ParticleAccelerator implements Attachment{
 //        }
         if (launcherMotor1 != null) {  launcherMotor1.setPower(motorPower); }
         if (launcherMotor2 != null) { launcherMotor2.setPower(motorPower); }
-        if (!addedPartAccInstr) {
+        if ((partAccInstr != null) && !addedPartAccInstr) {
             addedPartAccInstr = true;
             robot.instrumentation.addAction(partAccInstr);
             partAccInstr.reset();
@@ -134,7 +139,7 @@ public class ParticleAccelerator implements Attachment{
         // Zero power behaviour was set to FLOAT in the constructor.
         if (launcherMotor1 != null) {  launcherMotor1.setPower(0.0); }
         if (launcherMotor2 != null) { launcherMotor2.setPower(0.0); }
-        if (addedPartAccInstr) {
+        if ((partAccInstr != null) && addedPartAccInstr) {
             addedPartAccInstr = false;
             robot.instrumentation.removeAction(partAccInstr);
             curOpMode.telemetry.addData("shooter status:", "stopped");

@@ -75,6 +75,39 @@ public class JsonReader {
         return;
     }
 
+    public String getStringValueForKey(JSONObject obj, String key) {
+        String value=null;
+        try {
+            value = obj.getString(key);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            DbgLog.error("ftc9773: Error getting value for the key %s", key);
+        }
+        return (value);
+    }
+
+    public double getDoubleValueForKey(JSONObject obj, String key) {
+        double value=0.0;
+        try {
+            value = obj.getDouble(key);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            DbgLog.error("ftc9773: Error getting value for the key %s", key);
+        }
+        return (value);
+    }
+
+    public boolean getBooleanValueForKey(JSONObject obj, String key) {
+        boolean value=false;
+        try {
+            value = obj.getBoolean(key);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            DbgLog.error("ftc9773: Error getting value for the key %s", key);
+        }
+        return (value);
+    }
+
     // This is a class method
     public static String getRealKeyIgnoreCase(JSONObject jobj, String key) throws JSONException {
         Iterator<String> iter = jobj.keys();

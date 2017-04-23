@@ -83,7 +83,7 @@ public abstract class DriveSystem {
             }
             DbgLog.msg("ftc9773: maxSpeedCPS = %d", maxSpeedCPS);
             fourMotorSteeringDrive = new FourMotorSteeringDrive(fMotorL, rMotorL, fMotorR, rMotorR,
-                    maxSpeedCPS, frictionCoeff, robot.distanceBetweenWheels, wheel, CPR);
+                    maxSpeedCPS, frictionCoeff, robot.distanceBetweenWheels, wheel, CPR, robot.autoOrTeleop);
             fourMotorSteeringDrive.curOpMode = curOpMode;
             fourMotorSteeringDrive.robot = robot;
             fourMotorSteeringDrive.driveSysType = DriveSysType.FOUR_MOTOR_6WD;

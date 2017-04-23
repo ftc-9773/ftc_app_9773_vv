@@ -182,7 +182,8 @@ public class FourMotorSteeringDrive extends DriveSystem {
 
     public FourMotorSteeringDrive(DcMotor motorL1, DcMotor motorL2, DcMotor motorR1, DcMotor motorR2,
                                   int maxSpeedCPS, double frictionCoefficient,
-                                  double distanceBetweenWheels, Wheel wheel, int motorCPR) {
+                                  double distanceBetweenWheels, Wheel wheel, int motorCPR,
+                                  String autoOrTeleop) {
         this.motorL1 = motorL1;
         this.motorL2 = motorL2;
         this.motorR1 = motorR1;
@@ -191,8 +192,12 @@ public class FourMotorSteeringDrive extends DriveSystem {
         this.motorR2.setDirection(DcMotorSimple.Direction.REVERSE);
         this.motorL1.setDirection(DcMotorSimple.Direction.FORWARD);
         this.motorL2.setDirection(DcMotorSimple.Direction.FORWARD);
-        this.setDriveSysMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // reset the encoders first
-        this.setDriveSysMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        if (autoOrTeleop.equalsIgnoreCase("Autonomous")) {
+            this.setDriveSysMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // reset the encoders first
+            this.setDriveSysMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        } else {
+            this.setDriveSysMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
         this.setZeroPowerMode(DcMotor.ZeroPowerBehavior.BRAKE);
         this.frictionCoefficient = frictionCoefficient;
         this.maxSpeedCPS = maxSpeedCPS;

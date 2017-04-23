@@ -24,7 +24,7 @@ public class AutonomousRedRecord extends LinearOpMode {
         }
         // TODO: 12/31/16 Instead of passing a 3rd parameter Autonomous/Teleop, use annotations to detect
         //     that FTCRobot is being instantiated for Autonomous or Teleop mode
-        FTCRobot robot = new FTCRobot(this, robotName, "Autonomous");
+        FTCRobot robot = new FTCRobot(this, robotName, "Autonomous", opmodeCfg);
         robot.autonomousRecord(opmodeCfg, "red");
     }
 }

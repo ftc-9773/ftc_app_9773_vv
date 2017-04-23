@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.AutonomousActions;
 import org.firstinspires.ftc.teamcode.FTCRobot;
+import org.firstinspires.ftc.teamcode.util.Instrumentation;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.firstinspires.ftc.teamcode.navigation.LineFollow;
 import org.json.JSONException;
@@ -38,9 +39,10 @@ public class AutonomousBlue extends LinearOpMode {
             e.printStackTrace();
         }
 
+
         // TODO: 12/31/16 Instead of passing a 3rd parameter Autonomous/Teleop, use annotations to detect
         //     that FTCRobot is being instantiated for Autonomous or Teleop mode
-        robot = new FTCRobot(this, robotName, "Autonomous");
+        robot = new FTCRobot(this, robotName, "Autonomous", opmodeCfg);
         robot.runAutonomous(autonomousOpt, "blue", startingDelay, startingPosition, enableBackGroundTasks);
     }
 }

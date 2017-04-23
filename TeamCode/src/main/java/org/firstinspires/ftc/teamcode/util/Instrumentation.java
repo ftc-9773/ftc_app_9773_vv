@@ -36,6 +36,7 @@ public class Instrumentation {
     public enum InstrumentationID {LOOP_RUNTIME, RANGESENSOR_CM, NAVX_DEGREES, ODS_LIGHT,
         NAVX_YAW_MONITOR, PARTACC_MOTORS}
     public enum LoopType {DRIVE_TO_DISTANCE, DRIVE_UNTIL_WHITELINE, DRIVE_TILL_BEACON, TURN_ROBOT}
+    public enum InstrumentationLevel {NONE, SUMMARY, COMPLETE}
     private List<InstrBaseClass> instrObjects = new ArrayList<InstrBaseClass>();
     public String loopRuntimeLog, rangeSensorLog, gyroLog, odsLog, colorLog, partAccLog;
 
@@ -460,10 +461,12 @@ public class Instrumentation {
             if (curDistance > maxDistance) { maxDistance = curDistance; }
             totalDistance += curDistance;
             runningAvg = curDistance * runningAvgWeight + (1 - runningAvgWeight) * runningAvg;
-            if (printEveryUpdate && (curDistance != prevDistance)) {
-                String strToWrite = String.format("%f, %f, %d, %f, %f", robot.getVoltage(),
-                        timer.milliseconds(), iterationCount, curDistance, runningAvg);
-                fileObj.fileWrite(strToWrite);
+            if (curDistance != prevDistance) {
+                if (printEveryUpdate) {
+                    String strToWrite = String.format("%f, %f, %d, %f, %f", robot.getVoltage(),
+                            timer.milliseconds(), iterationCount, curDistance, runningAvg);
+                    fileObj.fileWrite(strToWrite);
+                }
                 prevDistance = curDistance;
             }
         }
@@ -567,7 +570,7 @@ public class Instrumentation {
             iterationCount++;
             prevUpdateCount = updateCount;
             updateCount = gyro.getUpdateCount();
-            if (printEveryUpdate && (updateCount != prevUpdateCount)) {
+            if (updateCount != prevUpdateCount) {
                 double speed = 0;
                 numUpdates++;
                 double curDegrees = gyro.getYaw();
@@ -584,10 +587,12 @@ public class Instrumentation {
                 prevTimeStamp = curTimeStamp;
                 totalDegrees += curDegrees;
 
-                String strToWrite = String.format("%f, %f, %d, %f, %f, %f, %f, %s", robot.getVoltage(),
-                        curTimeStamp, iterationCount, curDegrees, speed, gyro.getPitch(),
-                        updateCount, robot.driveSystem.getDriveSysInstrData());
-                fileObj.fileWrite(strToWrite);
+                if (printEveryUpdate) {
+                    String strToWrite = String.format("%f, %f, %d, %f, %f, %f, %f, %s", robot.getVoltage(),
+                            curTimeStamp, iterationCount, curDegrees, speed, gyro.getPitch(),
+                            updateCount, robot.driveSystem.getDriveSysInstrData());
+                    fileObj.fileWrite(strToWrite);
+                }
             }
         }
 

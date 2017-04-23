@@ -53,6 +53,8 @@ public class FTCRobot {
     public Instrumentation instrumentation;
     public BackgroundTasks backgroundTasks;
     public boolean enableBackgroundTasks=false;
+    public boolean printDebugMsg=false;
+    public Instrumentation.InstrumentationLevel instrLevel= Instrumentation.InstrumentationLevel.SUMMARY;
 
     /**
      * Reads robots JSON file, initializes drive system and attachments.
@@ -60,10 +62,21 @@ public class FTCRobot {
      * @param robotName Name of the robot configuration to initialize.
      * @param autoOrTeleop
      */
-    public FTCRobot(LinearOpMode curOpMode, String robotName, String autoOrTeleop) {
+    public FTCRobot(LinearOpMode curOpMode, String robotName, String autoOrTeleop,
+                    JsonReader opmodeCfg) {
         this.curOpMode = curOpMode;
         this.driverStation = new DriverStation(this, curOpMode);
         this.autoOrTeleop = autoOrTeleop;
+        this.printDebugMsg = opmodeCfg.getBooleanValueForKey(opmodeCfg.jsonRoot, "printDebugMsg");
+        String instrLevelStr = opmodeCfg.getStringValueForKey(opmodeCfg.jsonRoot, "InstrumentationLevel");
+        if (instrLevelStr.equalsIgnoreCase("none")) {
+            instrLevel = Instrumentation.InstrumentationLevel.NONE;
+        } else if (instrLevelStr.equalsIgnoreCase("summary")) {
+            instrLevel = Instrumentation.InstrumentationLevel.SUMMARY;
+        } else {
+            instrLevel = Instrumentation.InstrumentationLevel.COMPLETE;
+        }
+
         RobotConfigReader robotConfig;
         robotConfig = new RobotConfigReader(JsonReader.baseDir+"robots.json",  robotName);
         String driveSysName = null;
@@ -74,10 +87,14 @@ public class FTCRobot {
         DbgLog.msg("ftc9773: distanceBetweenWheels=%f", distanceBetweenWheels);
 
         // Initialize the Instrumentation object
-        instrumentation = new Instrumentation(this, curOpMode, robotConfig.getString("loopRuntimeLog"),
-                robotConfig.getString("rangeSensorLog"), robotConfig.getString("gyroLog"),
-                robotConfig.getString("odsLog"), robotConfig.getString("colorLog"), robotConfig.getString("partAccLog"));
-        DbgLog.msg("ftc9773: Initialized the Instrumentation object");
+        if (instrLevel != Instrumentation.InstrumentationLevel.NONE) {
+            instrumentation = new Instrumentation(this, curOpMode, robotConfig.getString("loopRuntimeLog"),
+                    robotConfig.getString("rangeSensorLog"), robotConfig.getString("gyroLog"),
+                    robotConfig.getString("odsLog"), robotConfig.getString("colorLog"), robotConfig.getString("partAccLog"));
+            DbgLog.msg("ftc9773: Initialized the Instrumentation object");
+        } else {
+            DbgLog.msg("ftc9773: Instrumentation has been disabled");
+        }
 
         // Initialize the BackgroundTasks object
         backgroundTasks = new BackgroundTasks(this, curOpMode);
