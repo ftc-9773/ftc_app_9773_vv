@@ -5,18 +5,18 @@
         <Motor name="rMotorR" port="2" />
     </MotorController>
     <ServoController name="Servo Controller 2" serialNumber="AL00VDHH">
-        <ContinuousRotationServo name="liftServo" port="1" />
-        <Servo name="crownServo" port="6" />
-    </ServoController>
-    <ServoController name="Main Servos" serialNumber="AL00XLTB">
-        <Servo name="particleReleaseServo" port="1" />
-        <ContinuousRotationServo name="wallServo" port="3" />
-        <ContinuousRotationServo name="buttonServo" port="6" />
+        <ContinuousRotationServo name="crownServo" port="1" />
+        <ContinuousRotationServo name="liftServo" port="6" />
     </ServoController>
     <MotorController name="Left Motor Controller" serialNumber="AL00VHR9">
         <Motor name="fMotorL" port="1" />
         <Motor name="rMotorL" port="2" />
     </MotorController>
+    <ServoController name="Main Servos" serialNumber="AL00XLTB">
+        <Servo name="particleReleaseServo" port="1" />
+        <ContinuousRotationServo name="wallServo" port="3" />
+        <ContinuousRotationServo name="buttonServo" port="6" />
+    </ServoController>
     <DeviceInterfaceModule name="dim2" serialNumber="AI041UBC">
         <Gyro name="gyro" port="0" />
         <ModernRoboticsI2cRangeSensor name="rangeSensor1" port="2" />
