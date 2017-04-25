@@ -11,8 +11,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.navigation.NavigationChecks;
 
-import java.util.zip.DeflaterOutputStream;
-
 public class FourMotorSteeringDrive extends DriveSystem {
     DcMotor motorL1 = null;
     DcMotor motorL2 = null;
@@ -27,7 +25,11 @@ public class FourMotorSteeringDrive extends DriveSystem {
     double distBetweenWheels;
     boolean L1IsZero, L2IsZero, R1IsZero, R2IsZero;
     ElapsedTime L1Timer, L2Timer, R1Timer, R2Timer;
-    double scaleMultiplier = 1.0;
+    double scaleDriveMultiplier = 1.0;
+
+
+
+    double scaleSpinMultiplier=1.0;
     int reverseMultiplier = 1;
 
     public class ElapsedEncoderCounts implements DriveSystem.ElapsedEncoderCounts {
@@ -223,8 +225,14 @@ public class FourMotorSteeringDrive extends DriveSystem {
 
     @Override
     public void drive(float speed, float direction) {
-        double left = ((reverseMultiplier*speed + direction) * frictionCoefficient) * scaleMultiplier;
-        double right = ((reverseMultiplier*speed - direction) * frictionCoefficient) * scaleMultiplier;
+        double left = 0.0, right = 0.0;
+        if (speed != 0.0) {
+            left = ((reverseMultiplier * speed + direction) * frictionCoefficient) * scaleDriveMultiplier;
+            right = ((reverseMultiplier * speed - direction) * frictionCoefficient) * scaleDriveMultiplier;
+        } else if (speed == 0.0){
+            left = ((reverseMultiplier * speed + direction) * frictionCoefficient) * scaleSpinMultiplier;
+            right = ((reverseMultiplier * speed - direction) * frictionCoefficient) * scaleSpinMultiplier;
+        }
 //        motorL1.setPower(left);
 //        motorL2.setPower(left);
 //        motorR1.setPower(right);
@@ -545,12 +553,21 @@ public class FourMotorSteeringDrive extends DriveSystem {
     }
 
     @Override
-    public void scalePower(double scaleMultiplier){
-        this.scaleMultiplier = scaleMultiplier;
+    public void scaleDrivePower(double scaleDriveMultiplier){
+        this.scaleDriveMultiplier = scaleDriveMultiplier;
+    }
+    @Override
+    public double getScaleDriveMultiplier(){ return scaleDriveMultiplier;}
+
+    @Override
+    public void scaleSpinPower(double scaleSpinMultiplier){
+        this.scaleSpinMultiplier = scaleSpinMultiplier;
     }
 
     @Override
-    public double getScaleMultiplier(){ return scaleMultiplier;}
+    public double getScaleSpinMultiplier() {
+        return scaleSpinMultiplier;
+    }
 
     @Override
     public void reverseTeleop(){

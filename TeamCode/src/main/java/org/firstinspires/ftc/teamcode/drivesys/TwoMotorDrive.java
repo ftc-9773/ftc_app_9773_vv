@@ -375,12 +375,21 @@ public class TwoMotorDrive extends DriveSystem{
         return curPos;
     }
     @Override
-    public void scalePower(double scaleMultiplier){
+    public void scaleDrivePower(double scaleMultiplier){
         this.scaleMultiplier = scaleMultiplier;
     }
 
+    public double getScaleDriveMultiplier(){ return scaleMultiplier;}
+
     @Override
-    public double getScaleMultiplier(){ return scaleMultiplier;}
+    public void scaleSpinPower(double multiplier) {
+
+    }
+
+    @Override
+    public double getScaleSpinMultiplier() {
+        return 0;
+    }
 
     @Override
     public void reverseTeleop(){

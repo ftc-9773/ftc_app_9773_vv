@@ -180,6 +180,9 @@ public class DriverStation {
                 if (curOpMode.gamepad1.x){
                     robot.driveSystem.reverseTeleop();
                 }
+                if (curOpMode.gamepad1.b){
+                    robot.driveSystem.unreverseTeleop();
+                }
 
                 if (curOpMode.gamepad1.left_bumper){
                     robot.wallFollowObj.activateWallFollwer(600);
@@ -218,8 +221,11 @@ public class DriverStation {
                         if (!robot.capBallLiftObj.lockLift) {
                             robot.capBallLiftObj.lockLiftMotor();
                         }
-                        if (robot.driveSystem.getScaleMultiplier() != 1.0){
-                            robot.driveSystem.scalePower(1.0);
+                        if (robot.driveSystem.getScaleDriveMultiplier() != 1.0){
+                            robot.driveSystem.scaleDrivePower(1.0);
+                        }
+                        if (robot.driveSystem.getScaleSpinMultiplier() != 1.0){
+                            robot.driveSystem.scaleSpinPower(1.0);
                         }
                         if (curOpMode.gamepad2.a) {
                             robot.capBallLiftObj.autoPlacement();
@@ -240,8 +246,11 @@ public class DriverStation {
                         }
                         break;
                     case "Down":
-                        if (robot.driveSystem.getScaleMultiplier() != 0.5){
-                            robot.driveSystem.scalePower(0.5);
+                        if (robot.driveSystem.getScaleDriveMultiplier() != 0.5){
+                            robot.driveSystem.scaleDrivePower(0.5);
+                        }
+                        if (robot.driveSystem.getScaleSpinMultiplier() != 0.5){
+                            robot.driveSystem.scaleSpinPower(0.5);
                         }
                         if (curOpMode.gamepad2.y) {
                             robot.capBallLiftObj.foldFork();
@@ -268,8 +277,11 @@ public class DriverStation {
 
                         break;
                     case "Lifting":
-                        if (robot.driveSystem.getScaleMultiplier() != 0.2){
-                            robot.driveSystem.scalePower(0.2);
+                        if (robot.driveSystem.getScaleDriveMultiplier() != 0.35){
+                            robot.driveSystem.scaleDrivePower(0.35);
+                        }
+                        if (robot.driveSystem.getScaleSpinMultiplier() != 0.5){
+                            robot.driveSystem.scaleSpinPower(0.5);
                         }
                         if (robot.capBallLiftObj.lockLift) {
                             robot.capBallLiftObj.unlockLiftMotor();
@@ -300,8 +312,11 @@ public class DriverStation {
 
                         break;
                     case "Mid":
-                        if (robot.driveSystem.getScaleMultiplier() != 1.0){
-                            robot.driveSystem.scalePower(1.0);
+                        if (robot.driveSystem.getScaleDriveMultiplier() != 1.0){
+                            robot.driveSystem.scaleDrivePower(1.0);
+                        }
+                        if (robot.driveSystem.getScaleSpinMultiplier() != 1.0){
+                            robot.driveSystem.scaleSpinPower(1.0);
                         }
                         if (!robot.capBallLiftObj.lockLift) {
                             robot.capBallLiftObj.lockLiftMotor();
@@ -324,8 +339,11 @@ public class DriverStation {
 
                         break;
                     case "Up":
-                        if (robot.driveSystem.getScaleMultiplier() != 0.2){
-                            robot.driveSystem.scalePower(0.2);
+                        if (robot.driveSystem.getScaleDriveMultiplier() != 0.35){
+                            robot.driveSystem.scaleDrivePower(0.35);
+                        }
+                        if (robot.driveSystem.getScaleSpinMultiplier() != 0.5){
+                            robot.driveSystem.scaleSpinPower(0.5);
                         }
                         if (!robot.capBallLiftObj.lockLift) {
                             robot.capBallLiftObj.lockLiftMotor();

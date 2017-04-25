@@ -151,8 +151,10 @@ public abstract class DriveSystem {
 
     public void testEncoders(){return;}
 
-    public abstract void scalePower(double multiplier);
-    public abstract double getScaleMultiplier();
+    public abstract void scaleDrivePower(double multiplier);
+    public abstract double getScaleDriveMultiplier();
+    public abstract void scaleSpinPower(double multiplier);
+    public abstract double getScaleSpinMultiplier();
     public abstract void reverseTeleop();
     public abstract void unreverseTeleop();
 
