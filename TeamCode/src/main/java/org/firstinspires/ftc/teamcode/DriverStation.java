@@ -249,8 +249,8 @@ public class DriverStation {
                         if (robot.driveSystem.getScaleDriveMultiplier() != 0.5){
                             robot.driveSystem.scaleDrivePower(0.5);
                         }
-                        if (robot.driveSystem.getScaleSpinMultiplier() != 0.5){
-                            robot.driveSystem.scaleSpinPower(0.5);
+                        if (robot.driveSystem.getScaleSpinMultiplier() != 0.7){
+                            robot.driveSystem.scaleSpinPower(0.7);
                         }
                         if (curOpMode.gamepad2.y) {
                             robot.capBallLiftObj.foldFork();
@@ -280,8 +280,8 @@ public class DriverStation {
                         if (robot.driveSystem.getScaleDriveMultiplier() != 0.35){
                             robot.driveSystem.scaleDrivePower(0.35);
                         }
-                        if (robot.driveSystem.getScaleSpinMultiplier() != 0.5){
-                            robot.driveSystem.scaleSpinPower(0.5);
+                        if (robot.driveSystem.getScaleSpinMultiplier() != 0.7){
+                            robot.driveSystem.scaleSpinPower(0.7);
                         }
                         if (robot.capBallLiftObj.lockLift) {
                             robot.capBallLiftObj.unlockLiftMotor();
@@ -342,8 +342,8 @@ public class DriverStation {
                         if (robot.driveSystem.getScaleDriveMultiplier() != 0.35){
                             robot.driveSystem.scaleDrivePower(0.35);
                         }
-                        if (robot.driveSystem.getScaleSpinMultiplier() != 0.5){
-                            robot.driveSystem.scaleSpinPower(0.5);
+                        if (robot.driveSystem.getScaleSpinMultiplier() != 0.7){
+                            robot.driveSystem.scaleSpinPower(0.7);
                         }
                         if (!robot.capBallLiftObj.lockLift) {
                             robot.capBallLiftObj.lockLiftMotor();
